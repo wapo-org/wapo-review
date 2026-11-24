@@ -42,7 +42,10 @@ type verdictArgs struct {
 	Reason    string `json:"reason"`
 }
 
-type verdictTool struct{ record func(verdictArgs) }
+type verdictTool struct {
+	allowedIDs map[string]bool
+	record     func(verdictArgs)
+}
 
 func (t verdictTool) Info(context.Context) (*schema.ToolInfo, error) {
 	return &schema.ToolInfo{Name: "record_verdict", Desc: "Record a keep or drop verdict for one candidate finding", ParamsOneOf: schema.NewParamsOneOfByJSONSchema(jsonschema.Reflect(verdictArgs{}))}, nil
@@ -55,6 +58,9 @@ func (t verdictTool) InvokableRun(_ context.Context, raw string, _ ...tool.Optio
 	}
 	if args.Verdict != "keep" && args.Verdict != "drop" {
 		return "", fmt.Errorf("verdict must be keep or drop")
+	}
+	if !t.allowedIDs[args.FindingID] {
+		return "", fmt.Errorf("finding_id not in assigned batch")
 	}
 	t.record(args)
 	return `{"recorded":true}`, nil
@@ -100,7 +106,11 @@ func RunAdversarialGate(ctx context.Context, modelFactory func(context.Context) 
 			for _, f := range batch {
 				ids = append(ids, f.ID)
 			}
-			tools := []tool.InvokableTool{verdictTool{record: func(a verdictArgs) { decisions[a.FindingID] = a }}}
+			allowedIDs := make(map[string]bool, len(batch))
+			for _, f := range batch {
+				allowedIDs[f.ID] = true
+			}
+			tools := []tool.InvokableTool{verdictTool{allowedIDs: allowedIDs, record: func(a verdictArgs) { decisions[a.FindingID] = a }}}
 			tools = append(tools, extraTools...)
 			loop := &agent.ReviewLoop{Model: m, SystemPrompt: "You are an adversarial code-review verifier. For each candidate finding, check the surrounding code (and use read_file/grep on callers/guards if needed) and try to disprove the claimed failure scenario. Call record_verdict for EVERY finding_id in the batch. Verdict MUST be `keep` for every concrete, verifiable bug (including subtle concurrency races, migration/compatibility breaks, UTF-16/size-limit bugs, and logic bugs). Verdict MUST be `drop` ONLY when the finding is factually contradicted by the code or caller guards, garbled/uncertain/nonsensical, purely speculative without a real trigger, or a semantic duplicate of another finding in the same file (if two findings in the same file report the same root cause with different wording or nearby lines, keep the stronger/higher-severity one and drop the redundant one). Batch multiple record_verdict calls per turn.", Tools: tools, Guards: []agent.CompletionGuard{agent.RequireAllItemsCompleted(ids)}, MaxTurns: 8, MaxNudges: 1, Redactor: redactor, OnToolResult: func(rec agent.ToolRecord, ev *agent.ReviewEvidence) {
 				if rec.Name == "record_verdict" && rec.Error == "" {

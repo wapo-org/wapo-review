@@ -76,24 +76,54 @@ func isPlaceholderLine(line string) bool {
 	return false
 }
 
+func isTestPath(path string) bool {
+	low := "/" + strings.Trim(filepath.ToSlash(strings.ToLower(path)), "/") + "/"
+	base := filepath.Base(low)
+	return strings.HasSuffix(base, "_test.go") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") ||
+		strings.Contains(low, "/tests/") || strings.Contains(low, "/__tests__/") || strings.Contains(low, "/fixtures/") || strings.Contains(low, "/testdata/")
+}
+
+func secretCandidates(line string, pattern *regexp.Regexp) []string {
+	if pattern == secretPatterns[3] {
+		matches := pattern.FindAllStringSubmatch(line, -1)
+		values := make([]string, 0, len(matches))
+		for _, match := range matches {
+			if len(match) > 2 {
+				values = append(values, match[2])
+			}
+		}
+		return values
+	}
+	return pattern.FindAllString(line, -1)
+}
+
 func ScanFile(path string, src []byte) []Finding {
 	low := strings.ToLower(path)
-	if strings.Contains(low, "test") || strings.Contains(low, "example") || strings.Contains(low, "fixture") {
+	if isTestPath(path) {
 		return nil
 	}
 	var out []Finding
 	lines := strings.Split(string(src), "\n")
 	isWorkflow := strings.Contains(low, ".github/workflows/")
 	isDockerfile := strings.HasPrefix(strings.ToLower(filepath.Base(path)), "dockerfile")
+	isContainerConfig := isDockerfile || strings.Contains(low, "docker-compose") || strings.Contains(low, "k8s/") || strings.Contains(low, "kubernetes/")
+	isShell := strings.HasSuffix(low, ".sh") || strings.HasSuffix(low, ".bash") || strings.Contains(low, ".github/workflows/") || isDockerfile
+	isIAM := strings.HasSuffix(low, ".json") || strings.HasSuffix(low, ".yaml") || strings.HasSuffix(low, ".yml") || strings.HasSuffix(low, ".tf") || strings.Contains(low, "iam")
 	isPackageJSON := strings.EqualFold(filepath.Base(path), "package.json")
 
 	for i, line := range lines {
-		if !isPlaceholderLine(line) && !isEnvVarConstantLine(line) {
-			for _, p := range secretPatterns {
-				if p.MatchString(line) {
+		for _, p := range secretPatterns {
+			for _, candidate := range secretCandidates(line, p) {
+				if isPlaceholderLine(candidate) || (p == secretPatterns[3] && envVarNameRe.MatchString(candidate)) {
+					continue
+				}
+				if candidate != "" {
 					out = append(out, newFinding("SECURITY.secret", "security", "critical", path, i+1, i+1, "Possible credential exposed", "[redacted]"))
 					break
 				}
+			}
+			if len(out) > 0 && out[len(out)-1].StartLine == i+1 && out[len(out)-1].RuleID == "SECURITY.secret" {
+				break
 			}
 		}
 		l := strings.ToLower(strings.TrimSpace(line))
@@ -107,15 +137,15 @@ func ScanFile(path string, src []byte) []Finding {
 				}
 			}
 		}
-		if isDockerfile || strings.Contains(l, "user root") {
+		if isContainerConfig {
 			if strings.HasPrefix(l, "user root") || strings.Contains(l, "user root") {
 				out = append(out, newFinding("CONTAINER.root-user", "security", "high", path, i+1, i+1, "Container runs as root user", strings.TrimSpace(line)))
 			}
 		}
-		if strings.Contains(l, "curl") && (strings.Contains(l, "| sh") || strings.Contains(l, "| bash")) {
+		if isShell && strings.Contains(l, "curl") && (strings.Contains(l, "| sh") || strings.Contains(l, "| bash")) {
 			out = append(out, newFinding("CONTAINER.curl-pipe-shell", "security", "high", path, i+1, i+1, "Downloads and pipes remote script directly into shell", strings.TrimSpace(line)))
 		}
-		if strings.Contains(l, `"action"`) && strings.Contains(l, `"*"`) {
+		if isIAM && strings.Contains(l, `"action"`) && strings.Contains(l, `"*"`) {
 			out = append(out, newFinding("IAC.wildcard-iam", "security", "high", path, i+1, i+1, "Overly permissive wildcard IAM action", strings.TrimSpace(line)))
 		}
 	}

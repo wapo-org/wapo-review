@@ -1,10 +1,24 @@
 package redact
 
 import (
+	"log/slog"
 	"strings"
 	"sync"
 	"testing"
 )
+
+func TestRedactAttrNestedGroups(t *testing.T) {
+	r := New("secret-value")
+	attr := r.RedactAttr(slog.Group("outer", slog.String("token", "secret-value"), slog.Group("inner", slog.Any("value", "prefix secret-value"))))
+	outer := attr.Value.Group()
+	if len(outer) != 2 || outer[0].Value.String() != Replacement {
+		t.Fatalf("outer group was not redacted: %#v", outer)
+	}
+	inner := outer[1].Value.Group()
+	if len(inner) != 1 || inner[0].Value.String() != "prefix "+Replacement {
+		t.Fatalf("nested group was not redacted: %#v", inner)
+	}
+}
 
 func TestRedactStringsAndNestedValues(t *testing.T) {
 	r := New("custom-secret")

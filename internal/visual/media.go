@@ -5,6 +5,7 @@ import (
 	"errors"
 	"image"
 	"image/draw"
+	_ "image/gif"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -102,7 +103,7 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 		if e != nil {
 			return e
 		}
-		im, _, e := image.Decode(f)
+		im, _, e := decodeBounded(f)
 		_ = f.Close()
 		if e != nil {
 			return e
@@ -138,6 +139,30 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 		e = os.Chmod(output, 0600)
 	}
 	return e
+}
+
+const maxImageBytes = 20 << 20
+
+func decodeBounded(f *os.File) (image.Image, string, error) {
+	info, err := f.Stat()
+	if err != nil {
+		return nil, "", err
+	}
+	if info.Size() > maxImageBytes {
+		return nil, "", errors.New("image exceeds 20 MiB limit")
+	}
+	cfg, format, err := image.DecodeConfig(f)
+	if err != nil {
+		return nil, "", err
+	}
+	if cfg.Width <= 0 || cfg.Height <= 0 || cfg.Width > 16384 || cfg.Height > 16384 || int64(cfg.Width)*int64(cfg.Height) > 40000000 {
+		return nil, "", errors.New("image dimensions exceed limit")
+	}
+	if _, err := f.Seek(0, 0); err != nil {
+		return nil, "", err
+	}
+	im, _, err := image.Decode(f)
+	return im, format, err
 }
 func downscaleMaxWidth(src image.Image, maxW int) image.Image {
 	b := src.Bounds()

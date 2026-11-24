@@ -1,6 +1,8 @@
 package memory
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"github.com/wapo-org/wapo-review/internal/branding"
@@ -9,7 +11,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 const MaxNotesPerRepo = 50
@@ -28,6 +32,7 @@ type Note struct {
 type Store struct {
 	Dir      string
 	Redactor *redact.Redactor
+	mu       sync.Mutex
 }
 
 func NewStore(dir string, secrets ...string) *Store {
@@ -38,7 +43,8 @@ func repoFile(repo string) (string, error) {
 	if len(p) != 2 || !slug.MatchString(p[0]) || !slug.MatchString(p[1]) || strings.Contains(repo, "..") || strings.Contains(repo, "\\") {
 		return "", errors.New("invalid repository name")
 	}
-	return p[0] + "_" + p[1] + ".json", nil
+	h := sha256.Sum256([]byte(repo))
+	return p[0] + "_" + p[1] + "_" + hex.EncodeToString(h[:6]) + ".json", nil
 }
 func (s *Store) path(repo string) (string, error) {
 	n, e := repoFile(repo)
@@ -52,6 +58,12 @@ func (s *Store) path(repo string) (string, error) {
 	return filepath.Join(d, n), nil
 }
 func (s *Store) Load(repo string) ([]Note, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.load(repo)
+}
+
+func (s *Store) load(repo string) ([]Note, error) {
 	p, e := s.path(repo)
 	if e != nil {
 		return nil, e
@@ -68,6 +80,8 @@ func (s *Store) Load(repo string) ([]Note, error) {
 	return n, e
 }
 func (s *Store) Add(repo, text, scope, source string) (Note, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if scope == "" {
 		scope = "all"
 	}
@@ -83,12 +97,12 @@ func (s *Store) Add(repo, text, scope, source string) (Note, error) {
 		norm = s.Redactor.RedactString(norm)
 	}
 	if len(norm) > MaxNoteChars {
-		norm = norm[:MaxNoteChars]
+		norm = truncateRunes(norm, MaxNoteChars)
 	}
 	if norm == "" {
 		return Note{}, errors.New("empty note")
 	}
-	notes, e := s.Load(repo)
+	notes, e := s.load(repo)
 	if e != nil && !os.IsNotExist(e) {
 		return Note{}, e
 	}
@@ -125,7 +139,9 @@ func (s *Store) Add(repo, text, scope, source string) (Note, error) {
 	return note, nil
 }
 func (s *Store) Remove(repo, id string) (bool, error) {
-	n, e := s.Load(repo)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	n, e := s.load(repo)
 	if e != nil {
 		return false, e
 	}
@@ -151,4 +167,14 @@ func (s *Store) Remove(repo, id string) (bool, error) {
 	}
 	e = os.WriteFile(p, b, 0600)
 	return e == nil, e
+}
+
+func truncateRunes(value string, maxBytes int) string {
+	if len(value) <= maxBytes {
+		return value
+	}
+	for maxBytes > 0 && !utf8.RuneStart(value[maxBytes]) {
+		maxBytes--
+	}
+	return value[:maxBytes]
 }

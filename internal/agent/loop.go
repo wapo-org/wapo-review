@@ -210,6 +210,7 @@ func (l *ReviewLoop) Run(ctx context.Context, request string) (Result, error) {
 				result.Evidence.CalledTools[call.Function.Name] = true
 				result.Evidence.ToolCallCounts[call.Function.Name]++
 			}
+			toolPayload = redactor.RedactString(toolPayload)
 			result.Turns[len(result.Turns)-1].ToolRecords = append(result.Turns[len(result.Turns)-1].ToolRecords, rec)
 			if l.OnToolResult != nil {
 				l.OnToolResult(rec, &result.Evidence)
@@ -263,15 +264,15 @@ func isTransientGenerateErr(err error) bool {
 }
 
 func generateWithRetry(ctx context.Context, m model.ToolCallingChatModel, messages []*schema.Message) (*schema.Message, error) {
-	backoffs := []time.Duration{time.Second, 3 * time.Second}
+	backoffs := []time.Duration{time.Second}
 	var lastErr error
-	for attempt := 0; attempt <= len(backoffs); attempt++ {
+	for attempt := 0; attempt < len(backoffs)+1; attempt++ {
 		msg, err := m.Generate(ctx, messages)
 		if err == nil {
 			return msg, nil
 		}
 		lastErr = err
-		if attempt == len(backoffs) || ctx.Err() != nil || !isTransientGenerateErr(err) {
+		if attempt >= len(backoffs) || ctx.Err() != nil || !isTransientGenerateErr(err) {
 			return nil, err
 		}
 		t := time.NewTimer(backoffs[attempt])

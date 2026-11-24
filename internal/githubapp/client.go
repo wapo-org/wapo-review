@@ -142,11 +142,6 @@ func (c *Client) SubmitReview(ctx context.Context, repo string, n int, head, eve
 	}
 	if r.StatusCode == 422 && event == "REQUEST_CHANGES" {
 		r.Body.Close()
-		payload["event"] = "COMMENT"
-		r, e = c.request(ctx, "POST", fmt.Sprintf("/repos/%s/pulls/%d/reviews", repo, n), payload)
-		if e != nil {
-			return e
-		}
 	}
 	if r.StatusCode == 422 && len(comments) > 0 {
 		r.Body.Close()
@@ -188,10 +183,10 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 			a.EndLine = a.StartLine
 		}
 		if len(a.Message) > 4000 {
-			a.Message = a.Message[:4000]
+			a.Message = truncateUTF8(a.Message, 4000)
 		}
 		if len(a.Title) > 255 {
-			a.Title = a.Title[:255]
+			a.Title = truncateUTF8(a.Title, 255)
 		}
 		clean = append(clean, a)
 	}
@@ -231,7 +226,7 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 	}
 	for _, chunk := range chunks[1:] {
 		for attempt := 0; ; attempt++ {
-			resp, err := c.request(ctx, "PATCH", fmt.Sprintf("/repos/%s/check-runs/%d", repo, created.ID), map[string]any{"output": map[string]any{"annotations": chunk}})
+			resp, err := c.request(ctx, "PATCH", fmt.Sprintf("/repos/%s/check-runs/%d", repo, created.ID), map[string]any{"output": map[string]any{"title": title, "summary": summary, "annotations": chunk}})
 			if err != nil {
 				return 0, err
 			}
@@ -253,6 +248,20 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 		}
 	}
 	return created.ID, nil
+}
+
+func truncateUTF8(value string, limit int) string {
+	if len(value) <= limit {
+		return value
+	}
+	for limit > 0 && !isUTF8Boundary(value, limit) {
+		limit--
+	}
+	return value[:limit]
+}
+
+func isUTF8Boundary(value string, index int) bool {
+	return index == len(value) || value[index]&0xc0 != 0x80
 }
 func (c *Client) GetPullReviewComment(ctx context.Context, repo string, id int64) (map[string]any, error) {
 	var out map[string]any

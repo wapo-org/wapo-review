@@ -69,26 +69,59 @@ type Pipeline struct {
 }
 
 type runState struct {
-	mu          sync.Mutex
-	in          orchestrator.ReviewInput
-	pr          githubapp.PullRequest
-	diffBase    string
-	files       []githubapp.File
-	container   sandbox.Container
-	ws          *workspace.SharedWorkspace
-	workRoot    string
-	cfg         analyzer.RepoConfig
-	head        map[string][]byte
-	baseFiles   map[string][]byte
-	idx         *graph.CodebaseIndex
-	retriever   *semantic.Retriever
-	ver         *verifier.Verifier
-	specialist  specialistSummary
-	sandboxPass map[string]bool
-	statics     []analyzer.Finding
-	complex     []analyzer.FunctionComplexity
-	gate        gate.Result
-	final       consolidator.ConsolidatedResult
+	mu           sync.Mutex
+	generation   uint64
+	publishedSHA string
+	in           orchestrator.ReviewInput
+	pr           githubapp.PullRequest
+	diffBase     string
+	files        []githubapp.File
+	container    sandbox.Container
+	ws           *workspace.SharedWorkspace
+	workRoot     string
+	cfg          analyzer.RepoConfig
+	head         map[string][]byte
+	baseFiles    map[string][]byte
+	idx          *graph.CodebaseIndex
+	retriever    *semantic.Retriever
+	ver          *verifier.Verifier
+	specialist   specialistSummary
+	sandboxPass  map[string]bool
+	statics      []analyzer.Finding
+	complex      []analyzer.FunctionComplexity
+	gate         gate.Result
+	final        consolidator.ConsolidatedResult
+}
+
+func safePRPath(workspaceDir, name string) (string, error) {
+	if name == "" || filepath.IsAbs(name) || filepath.Clean(name) != name || strings.Contains(filepath.ToSlash(name), "../") || name == ".." {
+		return "", fmt.Errorf("unsafe PR filename %q", name)
+	}
+	root, err := filepath.Abs(workspaceDir)
+	if err != nil {
+		return "", err
+	}
+	path := filepath.Join(root, filepath.FromSlash(name))
+	resolved, err := filepath.EvalSymlinks(path)
+	if err != nil && !os.IsNotExist(err) {
+		return "", err
+	}
+	if err == nil {
+		rel, relErr := filepath.Rel(root, resolved)
+		if relErr != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			return "", fmt.Errorf("PR filename escapes workspace")
+		}
+		path = resolved
+	} else {
+		parent, parentErr := filepath.EvalSymlinks(filepath.Dir(path))
+		if parentErr == nil {
+			rel, relErr := filepath.Rel(root, parent)
+			if relErr != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+				return "", fmt.Errorf("PR filename escapes workspace")
+			}
+		}
+	}
+	return path, nil
 }
 
 var _ orchestrator.ReviewStages = (*Pipeline)(nil)
@@ -125,6 +158,11 @@ func (p *Pipeline) logInfo(msg string, args ...any) {
 }
 
 func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (orchestrator.StageResult, error) {
+	s := p.state(in.RunID)
+	s.mu.Lock()
+	s.generation++
+	generation := s.generation
+	s.mu.Unlock()
 	p.logInfo("stage_start", "stage", "prepare_pr", "run_id", in.RunID, "repo", in.Repo, "pr", in.PRNumber)
 	c, err := p.client(ctx, in)
 	if err != nil {
@@ -144,6 +182,13 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 		return orchestrator.StageResult{}, err
 	}
 	var container sandbox.Container = &sandbox.LocalContainer{Root: filepath.Join(root, "repo")}
+	cleanup := true
+	defer func() {
+		if cleanup {
+			_ = container.Close(context.Background())
+			_ = os.RemoveAll(root)
+		}
+	}()
 	if p.ContainerFactory != nil {
 		container, err = p.ContainerFactory(ctx)
 		if err != nil {
@@ -192,6 +237,10 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 	baseBytes := map[string][]byte{}
 	for i := range files {
 		f := &files[i]
+		path, pathErr := safePRPath(container.WorkspaceDir(), f.Filename)
+		if pathErr != nil {
+			return orchestrator.StageResult{}, pathErr
+		}
 		if repoCfg.Excluded(f.Filename) {
 			continue
 		}
@@ -202,8 +251,10 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 				f.Patch = gd.Stdout
 			}
 		}
-		if b, e := os.ReadFile(filepath.Join(container.WorkspaceDir(), filepath.Clean(f.Filename))); e == nil {
-			headBytes[f.Filename] = b
+		if info, e := os.Stat(path); e == nil && info.Mode().IsRegular() && info.Size() <= 2<<20 {
+			if b, e := os.ReadFile(path); e == nil {
+				headBytes[f.Filename] = b
+			}
 		}
 		if show, e := sandbox.GitShow(ctx, container, diffBase, f.Filename); e == nil && show.ExitCode == 0 {
 			baseBytes[f.Filename] = []byte(show.Stdout)
@@ -215,8 +266,11 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 		return orchestrator.StageResult{}, err
 	}
 
-	s := p.state(in.RunID)
 	s.mu.Lock()
+	if s.generation != generation {
+		s.mu.Unlock()
+		return orchestrator.StageResult{}, fmt.Errorf("review run superseded")
+	}
 	s.in = in
 	s.pr = pr
 	s.diffBase = diffBase
@@ -228,6 +282,7 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 	s.head = headBytes
 	s.baseFiles = baseBytes
 	s.mu.Unlock()
+	cleanup = false
 
 	p.logInfo("stage_done", "stage", "prepare_pr", "run_id", in.RunID, "files", len(files), "diff_base", diffBase)
 	return orchestrator.StageResult{
@@ -246,6 +301,7 @@ func (p *Pipeline) SandboxGates(ctx context.Context, in orchestrator.ReviewInput
 	s := p.state(in.RunID)
 	s.mu.Lock()
 	container := s.container
+	generation := s.generation
 	s.mu.Unlock()
 	if container == nil {
 		return orchestrator.StageResult{}, fmt.Errorf("PR is not prepared")
@@ -273,7 +329,9 @@ func (p *Pipeline) SandboxGates(ctx context.Context, in orchestrator.ReviewInput
 	}
 
 	s.mu.Lock()
-	s.sandboxPass = passed
+	if s.generation == generation {
+		s.sandboxPass = passed
+	}
 	s.mu.Unlock()
 
 	return orchestrator.StageResult{Version: 1, Status: "completed", Data: res}, nil
@@ -286,6 +344,7 @@ func (p *Pipeline) GraphAndStatic(ctx context.Context, in orchestrator.ReviewInp
 	s := p.state(in.RunID)
 	s.mu.Lock()
 	container := s.container
+	generation := s.generation
 	pr := s.pr
 	files := s.files
 	cfg := s.cfg
@@ -359,10 +418,12 @@ func (p *Pipeline) GraphAndStatic(ctx context.Context, in orchestrator.ReviewInp
 	}
 
 	s.mu.Lock()
-	s.idx = idx
-	s.retriever = ret
-	s.statics = statics
-	s.complex = complexities
+	if s.generation == generation {
+		s.idx = idx
+		s.retriever = ret
+		s.statics = statics
+		s.complex = complexities
+	}
 	s.mu.Unlock()
 
 	p.logInfo("stage_done", "stage", "graph_and_static", "run_id", in.RunID, "parsed_files", idx.ParsedFilesCount, "static_findings", len(statics))
@@ -527,6 +588,7 @@ func (p *Pipeline) ReviewShards(ctx context.Context, in orchestrator.ReviewInput
 		sys.WriteString("3. Backwards compatibility & rollout migrations (breaking existing stored encodings, keyring/envelope parity across services, namespaces, schemas, or required env vars).\n")
 		sys.WriteString("4. Platform/runtime limits & resource leaks (unbounded buffering before size checks, byte-bounded purge/compaction batches, pre-deletion upload blobs, missing cron sweeps, UTF-16/Unicode surrogate slicing).\n")
 		sys.WriteString("5. Security, auth & crypto (wrong auth source on destructive actions, raw secret used instead of hashed key ID, bypassable consent/validation, injection).\n")
+		sys.WriteString("Anchor architecture and implementation bugs to the actual source code file (.go, .ts, .py, etc.), not docs/*.md, unless the documentation itself contains a broken command, secret, or factual error.\n")
 		sys.WriteString("IMPORTANT — Do NOT stop early after finding one bug in a file: before calling mark_file_reviewed, explicitly inspect EVERY remaining changed hunk in that file for any second distinct bug. ")
 		sys.WriteString("For EVERY real, verifiable bug you find, call submit_finding with exact file, start_line, end_line, severity (critical|high|medium|low), category, concise title, concrete failure scenario + fix in body, and exact evidence_quote from the file. ")
 		sys.WriteString("If you spot an invariant or parity question spanning a file outside your shard, call post_lead with target_file, invariant_type, evidence, and question. ")
@@ -1259,11 +1321,16 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInput, _ orchestrator.StageResult, _ orchestrator.StageResult) (orchestrator.StageResult, error) {
 	s := p.state(in.RunID)
 	s.mu.Lock()
+	generation := s.generation
 	pr := s.pr
 	gateRes := s.gate
 	final := s.final
 	container := s.container
 	workRoot := s.workRoot
+	if s.publishedSHA == pr.Head.SHA {
+		s.mu.Unlock()
+		return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": pr.Head.SHA, "idempotent": true}}, nil
+	}
 	s.mu.Unlock()
 
 	defer func() {
@@ -1273,6 +1340,15 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 		if workRoot != "" {
 			_ = os.RemoveAll(workRoot)
 		}
+		p.mu.Lock()
+		if p.runs[in.RunID] == s {
+			s.mu.Lock()
+			if s.generation == generation {
+				delete(p.runs, in.RunID)
+			}
+			s.mu.Unlock()
+		}
+		p.mu.Unlock()
 	}()
 
 	c, err := p.client(ctx, in)
@@ -1287,6 +1363,11 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	if err := c.SubmitReview(ctx, in.Repo, in.PRNumber, pr.Head.SHA, formatted.Event, formatted.Body, formatted.Comments); err != nil {
 		return orchestrator.StageResult{}, err
 	}
+	s.mu.Lock()
+	if s.generation == generation {
+		s.publishedSHA = pr.Head.SHA
+	}
+	s.mu.Unlock()
 	p.logInfo("stage_done", "stage", "publish_review", "run_id", in.RunID, "check_run_id", checkID, "event", formatted.Event, "inline_comments", len(formatted.Comments), "total_findings", len(final.Findings))
 	return orchestrator.StageResult{
 		Version: 1,

@@ -1,6 +1,8 @@
 package graph
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -13,7 +15,12 @@ type ProfilerCache struct{ Root string }
 func NewProfilerCache(root string) *ProfilerCache { return &ProfilerCache{Root: root} }
 
 func (c *ProfilerCache) directory(tenant, repo string) string {
-	return filepath.Join(c.Root, clean(tenant), clean(repo))
+	return filepath.Join(c.Root, cacheKey(tenant), cacheKey(repo))
+}
+
+func cacheKey(value string) string {
+	h := sha256.Sum256([]byte(value))
+	return clean(value) + "-" + hex.EncodeToString(h[:6])
 }
 
 func clean(s string) string {
@@ -64,7 +71,7 @@ func (c *ProfilerCache) Save(x *CodebaseIndex, baseSHA string) error {
 	if err != nil {
 		return err
 	}
-	if err := atomicWriteFile(filepath.Join(d, clean(x.CommitSHA)+".json"), b, 0o600); err != nil {
+	if err := atomicWriteFile(filepath.Join(d, cacheKey(x.CommitSHA)+".json"), b, 0o600); err != nil {
 		return err
 	}
 	meta, err := json.Marshal(map[string]string{"commit_sha": x.CommitSHA, "base_sha": baseSHA})
@@ -75,7 +82,7 @@ func (c *ProfilerCache) Save(x *CodebaseIndex, baseSHA string) error {
 }
 
 func (c *ProfilerCache) Load(tenant, repo, sha string) (*CodebaseIndex, error) {
-	b, err := os.ReadFile(filepath.Join(c.directory(tenant, repo), clean(sha)+".json"))
+	b, err := os.ReadFile(filepath.Join(c.directory(tenant, repo), cacheKey(sha)+".json"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +117,7 @@ func (c *ProfilerCache) Prune(tenant, repo string, max int, protected ...string)
 	protect := map[string]bool{"latest.json": true}
 	for _, p := range protected {
 		if p != "" {
-			protect[clean(p)+".json"] = true
+			protect[cacheKey(p)+".json"] = true
 		}
 	}
 	type item struct {

@@ -98,6 +98,11 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 					"arguments": tc.Function.Arguments,
 				})
 			}
+			if reasoning, ok := msg.Extra["openai_responses_reasoning_items"].([]map[string]any); ok {
+				for _, item := range reasoning {
+					input = append(input, item)
+				}
+			}
 		case schema.Tool:
 			input = append(input, map[string]any{
 				"type":    "function_call_output",
@@ -169,9 +174,17 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 	}
 
 	var parsed struct {
-		OutputText string `json:"output_text"`
-		Output     []struct {
-			Type      string `json:"type"`
+		OutputText        string `json:"output_text"`
+		Status            string `json:"status"`
+		IncompleteDetails *struct {
+			Reason string `json:"reason"`
+		} `json:"incomplete_details"`
+		Output []struct {
+			Type    string `json:"type"`
+			Summary []struct {
+				Type string `json:"type"`
+				Text string `json:"text"`
+			} `json:"summary"`
 			CallID    string `json:"call_id"`
 			ID        string `json:"id"`
 			Name      string `json:"name"`
@@ -196,6 +209,13 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 	if err := json.Unmarshal(respBody, &parsed); err != nil {
 		return nil, fmt.Errorf("decode openai-responses body: %w", err)
 	}
+	if parsed.Status == "incomplete" {
+		reason := "unknown reason"
+		if parsed.IncompleteDetails != nil && parsed.IncompleteDetails.Reason != "" {
+			reason = parsed.IncompleteDetails.Reason
+		}
+		return nil, fmt.Errorf("incomplete response: %s", reason)
+	}
 
 	out := &schema.Message{
 		Role: schema.Assistant,
@@ -215,8 +235,11 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 	}
 
 	var textParts []string
+	var reasoningItems []map[string]any
 	for _, item := range parsed.Output {
 		switch item.Type {
+		case "reasoning":
+			reasoningItems = append(reasoningItems, map[string]any{"type": "reasoning", "id": item.ID, "summary": item.Summary})
 		case "message":
 			for _, c := range item.Content {
 				if (c.Type == "output_text" || c.Type == "text") && c.Text != "" {
@@ -237,6 +260,9 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 				},
 			})
 		}
+	}
+	if len(reasoningItems) > 0 {
+		out.Extra = map[string]any{"openai_responses_reasoning_items": reasoningItems}
 	}
 	if len(textParts) > 0 {
 		out.Content = strings.Join(textParts, "\n")

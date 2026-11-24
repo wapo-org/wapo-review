@@ -152,12 +152,12 @@ func (a ChainedAdapter) ListKeys(ctx context.Context) ([]string, error) {
 	var errs []error
 	for _, x := range a.Adapters {
 		k, e := x.ListKeys(ctx)
+		for _, v := range k {
+			set[v] = true
+		}
 		if e != nil {
 			errs = append(errs, e)
 			continue
-		}
-		for _, v := range k {
-			set[v] = true
 		}
 	}
 	out := make([]string, 0, len(set))

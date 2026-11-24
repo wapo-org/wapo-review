@@ -223,7 +223,7 @@ func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb Speciali
 		reasons[focus] = append(reasons[focus], reason)
 	}
 	p, path := strings.ToLower(f.Patch), strings.ToLower(f.Path)
-	hunks := strings.Count(f.Patch, "@@")
+	hunks := sharder.CountHunks(f.Patch)
 	changedLines := countChangedLines(f.Patch)
 	removedGuardOrCleanup := hasRemovedGuardOrCleanup(f.Patch)
 	maxDelta := 0

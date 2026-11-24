@@ -50,6 +50,14 @@ type Config struct {
 type Lookup func(string) (string, bool)
 
 func Load(envLookup Lookup, credPath string) (Config, error) {
+	c, err := LoadUnvalidated(envLookup, credPath)
+	if err != nil {
+		return c, err
+	}
+	return c, c.Validate()
+}
+
+func LoadUnvalidated(envLookup Lookup, credPath string) (Config, error) {
 	c := Config{Providers: map[string]ProviderConfig{}, OrchestratorMode: "local", StateDir: ".wapo-review"}
 	var solModel, solEffort string
 	if credPath != "" {
@@ -58,7 +66,17 @@ func Load(envLookup Lookup, credPath string) (Config, error) {
 			return c, fmt.Errorf("read credentials: %w", err)
 		}
 		if err := json.Unmarshal(b, &c); err != nil {
-			return c, fmt.Errorf("decode credentials: %w", err)
+			var raw map[string]any
+			if json.Unmarshal(b, &raw) != nil {
+				return c, fmt.Errorf("decode credentials: %w", err)
+			}
+			if id, ok := raw["GITHUB_APP_ID"].(float64); ok {
+				raw["GITHUB_APP_ID"] = strconv.FormatInt(int64(id), 10)
+			}
+			fixed, marshalErr := json.Marshal(raw)
+			if marshalErr != nil || json.Unmarshal(fixed, &c) != nil {
+				return c, fmt.Errorf("decode credentials: %w", err)
+			}
 		}
 		if c.Providers == nil {
 			c.Providers = map[string]ProviderConfig{}
@@ -178,7 +196,7 @@ func Load(envLookup Lookup, credPath string) (Config, error) {
 		}
 	}
 
-	return c, c.Validate()
+	return c, nil
 }
 
 var tomlKVRe = regexp.MustCompile(`^\s*([A-Za-z0-9_.-]+)\s*=\s*"([^"]*)"`)
@@ -228,8 +246,7 @@ func LoadCodexKeyProvider(dir, fallbackModel, fallbackEffort string, envLookup L
 	var psec map[string]string
 	if providerName != "" {
 		psec = providers[providerName]
-	}
-	if psec == nil {
+	} else {
 		for _, v := range providers {
 			psec = v
 			break

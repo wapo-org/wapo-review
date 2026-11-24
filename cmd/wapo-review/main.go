@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -78,17 +79,17 @@ func NewServer(c ServerConfig) http.Handler {
 		Secrets:  c.WebhookSecrets,
 		AppMode:  c.AppMode,
 		BotLogin: c.BotLogin,
-		Handle: func(e githubapp.WebhookEvent) {
+		HandleError: func(e githubapp.WebhookEvent) error {
 			switch e.Name {
 			case "pull_request":
 				switch e.Action {
 				case "opened", "reopened", "synchronize", "ready_for_review":
 				default:
-					return
+					return nil
 				}
 				n := e.PullRequest.Number
 				if n < 1 || c.Runner == nil {
-					return
+					return nil
 				}
 				// Coalesce by repo:pr so a newer push cancels an in-flight stale run.
 				rid := fmt.Sprintf("%s:%d", e.Repository.FullName, n)
@@ -96,7 +97,7 @@ func NewServer(c ServerConfig) http.Handler {
 				if tenant == "" {
 					tenant = "default"
 				}
-				_, _ = c.Runner.Start(context.Background(), orchestrator.ReviewInput{
+				_, err := c.Runner.Start(context.Background(), orchestrator.ReviewInput{
 					Version:        1,
 					RunID:          rid,
 					TenantID:       tenant,
@@ -105,20 +106,24 @@ func NewServer(c ServerConfig) http.Handler {
 					Trigger:        "pull_request:" + e.Action,
 					InstallationID: e.Installation.ID,
 				})
+				if err != nil {
+					log.Printf("start review for %s#%d: %v", e.Repository.FullName, n, err)
+				}
+				return err
 			case "issue_comment":
 				if e.Action != "created" {
-					return
+					return nil
 				}
 				n := e.Issue.Number
 				if n < 1 || c.Runner == nil {
-					return
+					return nil
 				}
 				rid := fmt.Sprintf("%s:%d", e.Repository.FullName, n)
 				tenant := strings.Split(e.Repository.FullName, "/")[0]
 				if tenant == "" {
 					tenant = "default"
 				}
-				_, _ = c.Runner.Start(context.Background(), orchestrator.ReviewInput{
+				_, err := c.Runner.Start(context.Background(), orchestrator.ReviewInput{
 					Version:        1,
 					RunID:          rid,
 					TenantID:       tenant,
@@ -128,16 +133,21 @@ func NewServer(c ServerConfig) http.Handler {
 					InstallationID: e.Installation.ID,
 					UIChecks:       strings.Contains(strings.ToLower(e.Comment.Body), " ui"),
 				})
+				if err != nil {
+					log.Printf("start review for %s#%d: %v", e.Repository.FullName, n, err)
+				}
+				return err
 			case "pull_request_review_comment":
 				if e.Action != "created" || c.Client == nil || c.Memory == nil {
-					return
+					return nil
 				}
 				cli := *c.Client
 				if tok, err := githubapp.ResolveToken(context.Background(), c.AppMode, e.Installation.ID, []string{e.Repository.FullName}, c.TokenResolver, c.LegacyToken); err == nil && tok != "" {
 					cli.Token = tok
 				}
-				_ = review.HandleReviewCommentReply(context.Background(), &cli, c.Memory, e)
+				return review.HandleReviewCommentReply(context.Background(), &cli, c.Memory, e)
 			}
+			return nil
 		},
 	}
 
@@ -270,11 +280,14 @@ func run(args []string) error {
 		defer stop()
 
 		credPath := os.Getenv("WAPO_REVIEW_CREDENTIALS_PATH")
-		cfg, err := config.Load(os.LookupEnv, credPath)
+		cfg, err := config.LoadUnvalidated(os.LookupEnv, credPath)
 		if err != nil {
 			return err
 		}
 		overlayVaultSecrets(ctx, &cfg)
+		if err := cfg.Validate(); err != nil {
+			return err
+		}
 
 		stateDir := cfg.StateDir
 		if stateDir == "" {
@@ -520,7 +533,9 @@ func run(args []string) error {
 			ReadHeaderTimeout: 5 * time.Second,
 		}
 
+		shutdownDone := make(chan struct{})
 		go func() {
+			defer close(shutdownDone)
 			<-ctx.Done()
 			shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
@@ -533,6 +548,7 @@ func run(args []string) error {
 
 		err = server.ListenAndServe()
 		if err == http.ErrServerClosed {
+			<-shutdownDone
 			return nil
 		}
 		return err

@@ -29,6 +29,22 @@ func isDisallowedHost(host string) bool {
 	return false
 }
 
+func isDisallowedResolvedHost(host string) bool {
+	if isDisallowedHost(host) {
+		return true
+	}
+	ips, err := net.LookupIP(host)
+	if err != nil || len(ips) == 0 {
+		return true
+	}
+	for _, ip := range ips {
+		if ip.IsPrivate() || ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() {
+			return true
+		}
+	}
+	return false
+}
+
 func ResolvePreviewURL(statuses, deployments, comments []string, baseURL string) (string, error) {
 	all := make([]string, 0, len(statuses)+len(deployments)+len(comments)+1)
 	all = append(all, statuses...)
@@ -45,7 +61,7 @@ func ResolvePreviewURL(statuses, deployments, comments []string, baseURL string)
 		if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil {
 			continue
 		}
-		if isDisallowedHost(u.Hostname()) {
+		if isDisallowedResolvedHost(u.Hostname()) {
 			continue
 		}
 		return u.String(), nil

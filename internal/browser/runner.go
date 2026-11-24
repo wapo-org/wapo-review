@@ -97,11 +97,19 @@ async function main() {
   });
   const ctxOpts = {};
   if (plan.storage_state) ctxOpts.storageState = plan.storage_state;
-  if (plan.extra_http_headers) ctxOpts.extraHTTPHeaders = plan.extra_http_headers;
   if (plan.record_video) ctxOpts.recordVideo = { dir: screenshotDir };
 
   const context = await browser.newContext(ctxOpts);
   const page = await context.newPage();
+  if (plan.extra_http_headers) {
+    const targetOrigin = new URL(plan.url).origin;
+    await page.route("**/*", async (route) => {
+      const req = route.request();
+      const headers = { ...req.headers() };
+      if (new URL(req.url()).origin === targetOrigin) Object.assign(headers, plan.extra_http_headers);
+      await route.continue({ headers });
+    });
+  }
 
   const report = {
     passed: true,

@@ -2,6 +2,7 @@ package redact
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strings"
 	"sync"
@@ -71,3 +72,30 @@ func (r *Redactor) RedactValue(value any) any {
 }
 
 func (r *Redactor) Redact(value any) string { return r.RedactString(fmt.Sprint(value)) }
+
+func (r *Redactor) RedactAttr(a slog.Attr) slog.Attr {
+	a.Key = r.RedactString(a.Key)
+	return slog.Attr{Key: a.Key, Value: r.redactLogValue(a.Value)}
+}
+
+func (r *Redactor) redactLogValue(v slog.Value) slog.Value {
+	v = v.Resolve()
+	switch v.Kind() {
+	case slog.KindString:
+		return slog.StringValue(r.RedactString(v.String()))
+	case slog.KindGroup:
+		attrs := v.Group()
+		out := make([]slog.Attr, len(attrs))
+		for i, a := range attrs {
+			out[i] = r.RedactAttr(a)
+		}
+		return slog.GroupValue(out...)
+	case slog.KindAny:
+		if x, ok := v.Any().(slog.LogValuer); ok {
+			return r.redactLogValue(x.LogValue())
+		}
+		return slog.StringValue(r.RedactString(fmt.Sprint(v.Any())))
+	default:
+		return v
+	}
+}

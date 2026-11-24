@@ -14,12 +14,14 @@ func ParseUnifiedDiff(patch string) Diff {
 	d := Diff{Files: map[string][]LineRange{}, ChangedLines: map[string]map[int]bool{}}
 	file := ""
 	line := 0
+	inHunk := false
 	for _, s := range strings.Split(patch, "\n") {
-		if strings.HasPrefix(s, "+++ b/") {
+		if !inHunk && strings.HasPrefix(s, "+++ b/") {
 			file = strings.TrimPrefix(s, "+++ b/")
 			continue
 		}
 		if strings.HasPrefix(s, "@@") {
+			inHunk = true
 			i := strings.Index(s, "+")
 			if i >= 0 {
 				x := strings.Fields(s[i+1:])
@@ -30,7 +32,11 @@ func ParseUnifiedDiff(patch string) Diff {
 			}
 			continue
 		}
-		if file == "" || strings.HasPrefix(s, "---") || strings.HasPrefix(s, "diff ") || strings.HasPrefix(s, "index ") {
+		if strings.HasPrefix(s, "diff ") || strings.HasPrefix(s, "--- ") {
+			inHunk = false
+			continue
+		}
+		if file == "" || strings.HasPrefix(s, "index ") {
 			continue
 		}
 		if strings.HasPrefix(s, "+") {

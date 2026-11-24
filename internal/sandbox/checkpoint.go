@@ -66,7 +66,13 @@ printf '%s %s\n' "$head_rev" "$tree_hash"
 			Timeout:        15 * time.Second,
 			MaxOutputBytes: 4096,
 		})
-		if err == nil && r.ExitCode == 0 {
+		if err != nil {
+			return Checkpoint{}, err
+		}
+		if r.ExitCode != 0 {
+			return Checkpoint{}, fmt.Errorf("checkpoint snapshot failed (exit %d): %s", r.ExitCode, strings.TrimSpace(r.Stderr))
+		}
+		{
 			fields := strings.Fields(strings.TrimSpace(r.Stdout))
 			if len(fields) >= 1 {
 				cp.Revision = fields[0]

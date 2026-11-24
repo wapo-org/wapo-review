@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -41,6 +43,25 @@ func ReadFile(ctx context.Context, c Container, relPath string, startLine, endLi
 		endLine = 0
 	}
 	ws := workspaceDir(c)
+	root, err := filepath.EvalSymlinks(ws)
+	if err != nil {
+		return "", fmt.Errorf("resolve workspace: %w", err)
+	}
+	target, err := filepath.EvalSymlinks(filepath.Join(root, filepath.FromSlash(p)))
+	if err != nil {
+		return "", fmt.Errorf("resolve file %s: %w", p, err)
+	}
+	rel, err := filepath.Rel(root, target)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", fmt.Errorf("path escapes workspace: %q", relPath)
+	}
+	info, err := os.Stat(target)
+	if err != nil {
+		return "", err
+	}
+	if !info.Mode().IsRegular() {
+		return "", fmt.Errorf("not a regular file: %s", p)
+	}
 	// Pure POSIX sh + awk: verifies canonical path stays inside workspace root,
 	// avoiding any Python dependency inside minimal tool containers.
 	script := `set -eu
@@ -59,7 +80,7 @@ esac
 [ -f "$resolved" ] || { echo "file not found: $2" >&2; exit 1; }
 awk -v a="$3" -v b="$4" 'NR>=a && (b==0 || NR<=b) {printf "%d: %s\n", NR, $0}' "$resolved"
 `
-	args := []string{"sh", "-c", script, "sh", ws, p, fmt.Sprint(startLine), fmt.Sprint(endLine)}
+	args := []string{"sh", "-c", script, "sh", root, filepath.ToSlash(rel), fmt.Sprint(startLine), fmt.Sprint(endLine)}
 	r, err := c.Exec(ctx, ExecOpts{Command: args, Timeout: 20 * time.Second, MaxOutputBytes: 1 << 20})
 	if err != nil {
 		return "", err

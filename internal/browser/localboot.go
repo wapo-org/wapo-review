@@ -344,6 +344,9 @@ func shellQuote(s string) string {
 // application locally inside the isolated sandbox container so browser QA tests
 // the exact checked-out PR code by default.
 func BootLocalApp(ctx context.Context, container sandbox.Container, hostRepoDir string) (*LocalBootHandle, error) {
+	if _, isLocal := container.(*sandbox.LocalContainer); isLocal {
+		return nil, errors.New("refusing to execute untrusted local app commands on host container")
+	}
 	if container == nil {
 		return nil, errors.New("sandbox container is required")
 	}

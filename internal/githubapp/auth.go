@@ -61,7 +61,6 @@ func NewInstallationTokenCache(appID string, key *rsa.PrivateKey, apiURL string,
 }
 func (c *InstallationTokenCache) Resolve(ctx context.Context, id int64, repos []string) (string, error) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
 	now := time.Now()
 	old, ok := c.cache[id]
 	covered := ok && old.expiry.After(now.Add(c.SafetyMargin))
@@ -69,8 +68,10 @@ func (c *InstallationTokenCache) Resolve(ctx context.Context, id int64, repos []
 		covered = covered && old.repos[r]
 	}
 	if covered {
+		c.mu.Unlock()
 		return old.token, nil
 	}
+	c.mu.Unlock()
 	jwtToken, err := MintAppJWT(c.AppID, c.Key, now)
 	if err != nil {
 		return "", err
@@ -119,6 +120,17 @@ func (c *InstallationTokenCache) Resolve(ctx context.Context, id int64, repos []
 	for _, r := range repos {
 		set[r] = true
 	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if current, ok := c.cache[id]; ok && current.expiry.After(time.Now().Add(c.SafetyMargin)) {
+		allCovered := true
+		for _, repo := range repos {
+			allCovered = allCovered && current.repos[repo]
+		}
+		if allCovered {
+			return current.token, nil
+		}
+	}
 	c.cache[id] = cachedToken{data.Token, data.Expires, set}
 	return data.Token, nil
 }
@@ -148,6 +160,11 @@ func (h *OAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if client == nil {
 		client = http.DefaultClient
 	}
+	if r.URL.Path == "/auth/logout" || strings.HasPrefix(r.URL.Path, "/auth/logout/") {
+		http.SetCookie(w, &http.Cookie{Name: "github_session", Value: "", Path: "/", MaxAge: -1, HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode})
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
 	switch r.URL.Path {
 	case "/auth/github/login":
 		b := make([]byte, 32)
@@ -170,7 +187,11 @@ func (h *OAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		values := url.Values{"client_id": {h.Config.ClientID}, "client_secret": {h.Config.ClientSecret}, "code": {r.URL.Query().Get("code")}}
-		req, _ := http.NewRequestWithContext(r.Context(), "POST", strings.TrimRight(h.Config.OAuthURL, "/")+"/login/oauth/access_token", strings.NewReader(values.Encode()))
+		base := h.Config.OAuthURL
+		if base == "" {
+			base = "https://github.com"
+		}
+		req, _ := http.NewRequestWithContext(r.Context(), "POST", strings.TrimRight(base, "/")+"/login/oauth/access_token", strings.NewReader(values.Encode()))
 		req.Header.Set("Accept", "application/json")
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		resp, err := client.Do(req)

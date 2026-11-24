@@ -58,19 +58,25 @@ func RegisterHatchet(client *hatchet.Client, stages ReviewStages, tenantLimit in
 
 	gates := w.NewTask("sandbox_gates", func(ctx hatchet.Context, in ReviewInput) (StageResult, error) {
 		var prep StageResult
-		_ = ctx.ParentOutput(prepare, &prep)
+		if err := ctx.ParentOutput(prepare, &prep); err != nil {
+			return StageResult{}, fmt.Errorf("read prepare output: %w", err)
+		}
 		return stages.SandboxGates(ctx, in, prep)
 	}, hatchet.WithParents(prepare), hatchet.WithRetries(2), hatchet.WithExecutionTimeout(30*time.Minute))
 
 	graphTask := w.NewTask("graph_and_static", func(ctx hatchet.Context, in ReviewInput) (StageResult, error) {
 		var prep StageResult
-		_ = ctx.ParentOutput(prepare, &prep)
+		if err := ctx.ParentOutput(prepare, &prep); err != nil {
+			return StageResult{}, fmt.Errorf("read prepare output: %w", err)
+		}
 		return stages.GraphAndStatic(ctx, in, prep)
 	}, hatchet.WithParents(prepare), hatchet.WithRetries(2), hatchet.WithExecutionTimeout(30*time.Minute))
 
 	shards := w.NewTask("review_shards", func(ctx hatchet.Context, in ReviewInput) (ShardsOutput, error) {
 		var prep StageResult
-		_ = ctx.ParentOutput(prepare, &prep)
+		if err := ctx.ParentOutput(prepare, &prep); err != nil {
+			return ShardsOutput{}, fmt.Errorf("read prepare output: %w", err)
+		}
 		res, err := stages.ReviewShards(ctx, in, prep)
 		return ShardsOutput{Shards: res}, err
 	}, hatchet.WithParents(prepare, graphTask), hatchet.WithRetries(2), hatchet.WithExecutionTimeout(30*time.Minute))
@@ -78,22 +84,37 @@ func RegisterHatchet(client *hatchet.Client, stages ReviewStages, tenantLimit in
 	consolidate := w.NewTask("consolidate", func(ctx hatchet.Context, in ReviewInput) (StageResult, error) {
 		var gRes, grRes StageResult
 		var sRes ShardsOutput
-		_ = ctx.ParentOutput(gates, &gRes)
-		_ = ctx.ParentOutput(graphTask, &grRes)
-		_ = ctx.ParentOutput(shards, &sRes)
+		if err := ctx.ParentOutput(gates, &gRes); err != nil {
+			return StageResult{}, fmt.Errorf("read sandbox gates output: %w", err)
+		}
+		if err := ctx.ParentOutput(graphTask, &grRes); err != nil {
+			return StageResult{}, fmt.Errorf("read graph output: %w", err)
+		}
+		if err := ctx.ParentOutput(shards, &sRes); err != nil {
+			return StageResult{}, fmt.Errorf("read shard output: %w", err)
+		}
 		return stages.Consolidate(ctx, in, gRes, grRes, sRes.Shards)
 	}, hatchet.WithParents(gates, graphTask, shards), hatchet.WithRetries(2), hatchet.WithExecutionTimeout(15*time.Minute))
 
 	browser := w.NewTask("browser_qa", func(ctx hatchet.Context, in ReviewInput) (StageResult, error) {
+		if !in.UIChecks {
+			return StageResult{Status: "skipped"}, nil
+		}
 		var cRes StageResult
-		_ = ctx.ParentOutput(consolidate, &cRes)
+		if err := ctx.ParentOutput(consolidate, &cRes); err != nil {
+			return StageResult{}, fmt.Errorf("read consolidate output: %w", err)
+		}
 		return stages.BrowserAndVisualQA(ctx, in, cRes)
 	}, hatchet.WithParents(consolidate), hatchet.WithRetries(1), hatchet.WithExecutionTimeout(30*time.Minute))
 
 	w.NewTask("publish_review", func(ctx hatchet.Context, in ReviewInput) (StageResult, error) {
 		var cRes, bRes StageResult
-		_ = ctx.ParentOutput(consolidate, &cRes)
-		_ = ctx.ParentOutput(browser, &bRes)
+		if err := ctx.ParentOutput(consolidate, &cRes); err != nil {
+			return StageResult{}, fmt.Errorf("read consolidate output: %w", err)
+		}
+		if err := ctx.ParentOutput(browser, &bRes); err != nil {
+			return StageResult{}, fmt.Errorf("read browser output: %w", err)
+		}
 		return stages.PublishReview(ctx, in, cRes, bRes)
 	}, hatchet.WithParents(consolidate, browser), hatchet.WithRetries(3), hatchet.WithExecutionTimeout(10*time.Minute))
 

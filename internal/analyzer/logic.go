@@ -150,19 +150,29 @@ func checkLoopBounds(n *gts.Node, path string, src []byte) (Finding, bool) {
 	line := int(n.StartPoint().Row) + 1
 	if m := loopBoundGoRe.FindStringSubmatch(txt); m != nil {
 		idxVar, arrVar := m[1], m[2]
-		if strings.Contains(txt, arrVar+"["+idxVar+"]") {
+		if strings.Contains(txt, arrVar+"["+idxVar+"]") && !hasTerminalBoundsGuard(txt, idxVar, arrVar) {
 			return newFinding("LOGIC.bounds", "logic", "high", path, line, int(n.EndPoint().Row)+1,
 				fmt.Sprintf("Off-by-one loop condition %s <= len(%s) indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), m[0]), true
 		}
 	}
 	if m := loopBoundJSRe.FindStringSubmatch(txt); m != nil {
 		idxVar, arrVar := m[1], m[2]
-		if strings.Contains(txt, arrVar+"["+idxVar+"]") {
+		if strings.Contains(txt, arrVar+"["+idxVar+"]") && !hasTerminalBoundsGuard(txt, idxVar, arrVar) {
 			return newFinding("LOGIC.bounds", "logic", "high", path, line, int(n.EndPoint().Row)+1,
 				fmt.Sprintf("Off-by-one loop condition %s <= %s.length indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), m[0]), true
 		}
 	}
 	return Finding{}, false
+}
+
+func hasTerminalBoundsGuard(loop, index, slice string) bool {
+	guard := regexp.MustCompile(`(?s)if\s+` + regexp.QuoteMeta(index) + `\s*(?:==|>=)\s*(?:len\(\s*` + regexp.QuoteMeta(slice) + `\s*\)|` + regexp.QuoteMeta(slice) + `\.length)\s*\{?\s*(?:return\b|break\b|continue\b)`)
+	match := guard.FindStringIndex(loop)
+	if match == nil {
+		return false
+	}
+	indexing := strings.Index(loop, slice+"["+index+"]")
+	return indexing < 0 || match[0] < indexing
 }
 
 func checkGoGuardOffByOne(fn *gts.Node, path string, src []byte) (Finding, bool) {

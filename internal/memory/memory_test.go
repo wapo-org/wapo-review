@@ -29,7 +29,8 @@ func TestStoreSecurityDedupRedactionAndCap(t *testing.T) {
 	if e != nil || len(notes) != MaxNotesPerRepo {
 		t.Fatalf("notes %d err %v", len(notes), e)
 	}
-	fi, _ := os.Stat(filepath.Join(filepath.Dir(filepath.Join(s.Dir, "owner_repo.json")), "owner_repo.json"))
+	name, _ := repoFile("owner/repo")
+	fi, _ := os.Stat(filepath.Join(s.Dir, name))
 	if fi.Mode().Perm() != 0600 {
 		t.Fatalf("mode %o", fi.Mode().Perm())
 	}

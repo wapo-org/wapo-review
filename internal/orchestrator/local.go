@@ -65,8 +65,13 @@ func NewLocalRunner(stages ReviewStages, maxShards, tenantLimit int, db *sql.DB)
 
 var _ WorkflowRunner = (*LocalRunner)(nil)
 
-func (l *LocalRunner) persistDelivery(in ReviewInput, status string, out *ReviewOutput, runErr error) {
+func (l *LocalRunner) persistDelivery(in ReviewInput, gen uint64, status string, out *ReviewOutput, runErr error) {
 	if l.DB == nil {
+		return
+	}
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if current := l.runs[in.RunID]; current == nil || current.gen != gen {
 		return
 	}
 	var blob []byte
@@ -113,7 +118,7 @@ func (l *LocalRunner) Start(ctx context.Context, in ReviewInput) (RunRef, error)
 	}
 	l.mu.Unlock()
 
-	l.persistDelivery(in, "queued", nil, nil)
+	l.persistDelivery(in, entry.gen, "queued", nil, nil)
 
 	go func() {
 		defer close(entry.done)
@@ -124,16 +129,17 @@ func (l *LocalRunner) Start(ctx context.Context, in ReviewInput) (RunRef, error)
 			entry.err = runCtx.Err()
 			entry.cancel = nil
 			l.mu.Unlock()
-			l.persistDelivery(in, "canceled", nil, runCtx.Err())
+			l.persistDelivery(in, entry.gen, "canceled", nil, runCtx.Err())
 			return
 		}
 		defer func() { <-slot }()
 
-		l.persistDelivery(in, "running", nil, nil)
+		l.persistDelivery(in, entry.gen, "running", nil, nil)
 		out, err := l.execute(runCtx, in)
 
 		l.mu.Lock()
-		if err == nil {
+		current := l.runs[id] == entry && runCtx.Err() == nil
+		if err == nil && current {
 			res := ReviewResult{Ref: RunRef{ID: id}, Output: out}
 			entry.result = &res
 		} else {
@@ -143,11 +149,11 @@ func (l *LocalRunner) Start(ctx context.Context, in ReviewInput) (RunRef, error)
 		l.mu.Unlock()
 
 		if err == nil {
-			l.persistDelivery(in, "completed", &out, nil)
+			l.persistDelivery(in, entry.gen, "completed", &out, nil)
 		} else if errors.Is(err, context.Canceled) {
-			l.persistDelivery(in, "canceled", nil, err)
+			l.persistDelivery(in, entry.gen, "canceled", nil, err)
 		} else {
-			l.persistDelivery(in, "failed", nil, err)
+			l.persistDelivery(in, entry.gen, "failed", nil, err)
 		}
 	}()
 

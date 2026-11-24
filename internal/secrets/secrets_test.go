@@ -42,6 +42,18 @@ func TestChainAndSandboxFilter(t *testing.T) {
 		}
 	}
 }
+
+func TestCollectSandboxVaultSecretsFiltersProfile(t *testing.T) {
+	profile := &QAProfile{Secrets: map[string]QASecret{
+		"qa_allowed":   {Value: "ok"},
+		"GITHUB_TOKEN": {Value: "blocked"},
+		"ADMIN_KEY":    {Value: "blocked"},
+	}}
+	got := CollectSandboxVaultSecrets(context.Background(), profile, nil)
+	if got["QA_ALLOWED"] != "ok" || got["GITHUB_TOKEN"] != "" || got["ADMIN_KEY"] != "" {
+		t.Fatalf("unexpected profile vault values: %#v", got)
+	}
+}
 func TestVaultCLIUsesArgumentVector(t *testing.T) {
 	d := t.TempDir()
 	p := filepath.Join(d, "vault")

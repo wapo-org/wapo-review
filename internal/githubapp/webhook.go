@@ -33,6 +33,7 @@ type WebhookEvent struct {
 		Body string `json:"body"`
 		User struct {
 			Login string `json:"login"`
+			Type  string `json:"type"`
 		} `json:"user"`
 		InReplyTo int64 `json:"in_reply_to_id"`
 	} `json:"comment"`
@@ -69,11 +70,12 @@ func VerifyWebhookSignature(body []byte, signature, secret string) bool {
 }
 
 type WebhookHandler struct {
-	Secret   string
-	Secrets  []string
-	AppMode  bool
-	BotLogin string
-	Handle   func(WebhookEvent)
+	Secret      string
+	Secrets     []string
+	AppMode     bool
+	BotLogin    string
+	Handle      func(WebhookEvent)
+	HandleError func(WebhookEvent) error
 }
 
 func (h WebhookHandler) verifyAny(body []byte, sig string) bool {
@@ -108,16 +110,35 @@ func (h WebhookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
-	if e.Name == "issue_comment" && (e.Issue.PullRequest == nil || !strings.Contains(strings.ToLower(e.Comment.Body), "/wapo-review")) {
+	if e.Name == "issue_comment" && (e.Issue.PullRequest == nil || isBot(e.Comment.User.Login, e.Comment.User.Type) || !hasSlashCommand(e.Comment.Body)) {
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
-	if e.Name == "pull_request_review_comment" && (h.BotLogin == "" || e.Comment.User.Login == h.BotLogin || e.Comment.InReplyTo == 0) {
+	if e.Name == "pull_request_review_comment" && (h.BotLogin == "" || e.Comment.User.Login == h.BotLogin || isBot(e.Comment.User.Login, e.Comment.User.Type) || e.Comment.InReplyTo == 0) {
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
-	if h.Handle != nil {
+	if h.HandleError != nil {
+		if err := h.HandleError(e); err != nil {
+			http.Error(w, "Failed to start review", http.StatusInternalServerError)
+			return
+		}
+	} else if h.Handle != nil {
 		h.Handle(e)
 	}
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func isBot(login, userType string) bool {
+	return strings.EqualFold(userType, "Bot") || strings.HasSuffix(strings.ToLower(login), "[bot]")
+}
+
+func hasSlashCommand(body string) bool {
+	for _, line := range strings.Split(body, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "/wapo-review" || strings.HasPrefix(line, "/wapo-review ") || strings.HasPrefix(line, "/wapo-review\t") {
+			return true
+		}
+	}
+	return false
 }

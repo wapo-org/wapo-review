@@ -37,7 +37,7 @@ func CollectSandboxVaultSecrets(ctx context.Context, profile *QAProfile, adapter
 	if profile != nil {
 		for k, v := range profile.Secrets {
 			key := strings.ToUpper(k)
-			if v.Value != "" && sandboxKey.MatchString(key) {
+			if v.Value != "" && IsAllowedSandboxVaultKey(key) {
 				out[key] = v.Value
 			}
 		}

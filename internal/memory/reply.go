@@ -51,5 +51,5 @@ func ExtractMemoryFromReply(body string, isInlineReviewReply bool) (string, stri
 	} else if isInlineReviewReply {
 		scope = "code_review"
 	}
-	return scope, text[:min(len(text), MaxNoteChars)], true
+	return scope, truncateRunes(text, MaxNoteChars), true
 }

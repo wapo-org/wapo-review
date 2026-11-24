@@ -5,6 +5,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"image"
+	_ "image/png"
 	"os"
 
 	"github.com/cloudwego/eino/components/model"
@@ -55,6 +57,25 @@ func (s VisualScorer) Score(ctx context.Context, r VisualScoreRequest) (VisualSc
 	}
 	if p == "" {
 		return VisualScoreResult{}, errors.New("contact sheet or frame is required")
+	}
+	info, err := os.Stat(p)
+	if err != nil {
+		return VisualScoreResult{}, err
+	}
+	if info.Size() > maxImageBytes {
+		return VisualScoreResult{}, errors.New("image exceeds 20 MiB limit")
+	}
+	f, err := os.Open(p)
+	if err != nil {
+		return VisualScoreResult{}, err
+	}
+	cfg, _, err := image.DecodeConfig(f)
+	_ = f.Close()
+	if err != nil {
+		return VisualScoreResult{}, err
+	}
+	if cfg.Width <= 0 || cfg.Height <= 0 || cfg.Width > 16384 || cfg.Height > 16384 || int64(cfg.Width)*int64(cfg.Height) > 40000000 {
+		return VisualScoreResult{}, errors.New("image dimensions exceed limit")
 	}
 	pngBytes, err := os.ReadFile(p)
 	if err != nil {

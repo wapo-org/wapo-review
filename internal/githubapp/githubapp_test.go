@@ -73,7 +73,7 @@ func TestMergedPullRequestUsesBaseSHA(t *testing.T) {
 	}
 }
 
-func TestSubmitReviewDowngradesRequestChangesOn422(t *testing.T) {
+func TestSubmitReviewPreservesRequestChangesOn422(t *testing.T) {
 	var events []string
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body strings.Builder
@@ -88,8 +88,8 @@ func TestSubmitReviewDowngradesRequestChangesOn422(t *testing.T) {
 		}
 		if strings.Contains(body.String(), `"REQUEST_CHANGES"`) {
 			events = append(events, "REQUEST_CHANGES")
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			_, _ = w.Write([]byte(`{"message":"Cannot request changes on merged PR"}`))
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"id":1}`))
 			return
 		}
 		events = append(events, "COMMENT")
@@ -101,8 +101,8 @@ func TestSubmitReviewDowngradesRequestChangesOn422(t *testing.T) {
 	if err := c.SubmitReview(context.Background(), "a/b", 7, "headsha", "REQUEST_CHANGES", "body", nil); err != nil {
 		t.Fatalf("SubmitReview failed: %v", err)
 	}
-	if len(events) != 2 || events[0] != "REQUEST_CHANGES" || events[1] != "COMMENT" {
-		t.Fatalf("expected REQUEST_CHANGES -> COMMENT downgrade, got %v", events)
+	if len(events) != 1 || events[0] != "REQUEST_CHANGES" {
+		t.Fatalf("expected REQUEST_CHANGES to be preserved, got %v", events)
 	}
 }
 

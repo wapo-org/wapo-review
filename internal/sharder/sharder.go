@@ -130,7 +130,12 @@ func ShardFiles(files []PRFile, idx *graph.CodebaseIndex, tokenBudget int) []Sha
 		totalTokens += estFileTokens(f)
 		totalHunks += countHunks(f.Patch)
 	}
-	if len(production) <= maxProdFilesPerShard && totalTokens <= tokenBudget && totalHunks <= maxHunksPerShard {
+	testTokens, testHunks := 0, 0
+	for _, f := range tests {
+		testTokens += estFileTokens(f)
+		testHunks += countHunks(f.Patch)
+	}
+	if len(production) <= maxProdFilesPerShard && len(production)+len(tests) <= maxProdFilesPerShard && totalTokens+testTokens <= tokenBudget && totalHunks+testHunks <= maxHunksPerShard {
 		all := append(append([]PRFile(nil), production...), tests...)
 		if len(all) == 0 {
 			return nil
@@ -279,7 +284,22 @@ func ShardFiles(files []PRFile, idx *graph.CodebaseIndex, tokenBudget int) []Sha
 	for _, tf := range tests {
 		targetIdx := -1
 		for bi, b := range buckets {
-			if testsPerBucket[bi] >= 2 {
+			prodFiles := 0
+			for _, existing := range b {
+				if !existing.IsTest {
+					prodFiles++
+				}
+			}
+			if testsPerBucket[bi] >= 2 || prodFiles > maxProdFilesPerShard {
+				continue
+			}
+			testTokens, testHunks := estFileTokens(tf), countHunks(tf.Patch)
+			bucketTokens, bucketHunks := 0, 0
+			for _, existing := range b {
+				bucketTokens += estFileTokens(existing)
+				bucketHunks += countHunks(existing.Patch)
+			}
+			if bucketTokens+testTokens > tokenBudget || bucketHunks+testHunks > maxHunksPerShard {
 				continue
 			}
 			for _, pf := range b {
