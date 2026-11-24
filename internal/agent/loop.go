@@ -250,7 +250,8 @@ func isTransientGenerateErr(err error) bool {
 	msg := strings.ToLower(err.Error())
 	for _, needle := range []string{
 		"429", "500", "502", "503", "504",
-		"rate limit", "too many requests", "overloaded", "server_error",
+		"rate limit", "too many requests", "overloaded", "server_error", "upstream_error",
+		"request could not be completed",
 		"timeout", "timed out", "eof", "connection reset", "broken pipe",
 		"temporarily unavailable", "bad gateway", "service unavailable", "gateway timeout",
 	} {

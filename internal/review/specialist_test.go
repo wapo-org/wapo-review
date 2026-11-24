@@ -189,6 +189,25 @@ func TestSpecialistV2MultiLensFeedbackAndCrossDirectoryClustering(t *testing.T) 
 	}
 }
 
+func TestAccountDeletionSingleHunkNotEvictedFromAccountingLifecycle(t *testing.T) {
+	patch := "@@ -1,27 +1,56 @@\n+import { z } from 'zod';\n+const PurgeBatchSchema = z.strictObject({ done: z.boolean() });\n-export function accountEraser(rpc, ownership, deleteExternal) {\n-  if (result.ready && !externalDone) { await deleteExternal(userId); }\n-  ...(externalDone ? {} : {retainClerk: true}),\n+export function accountEraser(rpc, ownership) {\n+  for (;;) {\n+    const result = await rpc.mutation('account:purge', { userId });\n+    if (result.done) return;\n+  }\n+}"
+	f := sharder.PRFile{Path: "cloud/apps/api/src/account-deletion.ts", Patch: patch}
+	batches := SelectSpecialistBatchesWithFeedback([]sharder.PRFile{f}, nil, SpecialistFeedback{FindingsByFile: map[string]int{}}, 10, 12000)
+	foundAccounting := false
+	for _, b := range batches {
+		if b.Focus == "accounting_lifecycle" {
+			for _, bf := range b.Files {
+				if bf.Path == f.Path {
+					foundAccounting = true
+				}
+			}
+		}
+	}
+	if !foundAccounting {
+		t.Fatalf("account-deletion.ts was evicted from accounting_lifecycle: %+v", batches)
+	}
+}
+
 func TestSelectSpecialistBatchesEnforcesCapsAndDoesNotDropLargeFile(t *testing.T) {
 	var files []sharder.PRFile
 	for i := 0; i < 8; i++ {

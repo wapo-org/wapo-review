@@ -58,7 +58,7 @@ type scoredPRFile struct {
 	hunks   int
 }
 
-var specialistFocusOrder = []string{"abstraction_contract", "logic_bs", "state_machine", "accounting_lifecycle", "auth_crypto_parity"}
+var specialistFocusOrder = []string{"accounting_lifecycle", "state_machine", "auth_crypto_parity", "abstraction_contract", "logic_bs"}
 
 var specialistChecklists = map[string][]string{
 	"abstraction_contract": {
@@ -132,12 +132,12 @@ func SelectSpecialistBatchesWithFeedback(files []sharder.PRFile, idx *graph.Code
 		}
 	}
 	if maxBatches <= 0 {
-		maxBatches = (prodCount + 17) / 18
+		maxBatches = (prodCount + 13) / 14
 		if maxBatches < 5 {
 			maxBatches = 5
 		}
-		if maxBatches > 15 {
-			maxBatches = 15
+		if maxBatches > 20 {
+			maxBatches = 20
 		}
 	}
 	byFocus := map[string][]SpecialistBatch{}
@@ -146,7 +146,11 @@ func SelectSpecialistBatchesWithFeedback(files []sharder.PRFile, idx *graph.Code
 	}
 	var batches []SpecialistBatch
 	used := map[string]int{}
-	for round := 0; round < 2; round++ {
+	rounds := 2
+	if maxBatches >= 15 {
+		rounds = 3
+	}
+	for round := 0; round < rounds; round++ {
 		for _, focus := range specialistFocusOrder {
 			if len(byFocus[focus]) > round && len(batches) < maxBatches {
 				batches = append(batches, byFocus[focus][round])
@@ -186,6 +190,32 @@ func focusIndex(f string) int {
 	return len(specialistFocusOrder)
 }
 
+func countChangedLines(patch string) int {
+	n := 0
+	for _, line := range strings.Split(patch, "\n") {
+		if (strings.HasPrefix(line, "+") && !strings.HasPrefix(line, "+++")) ||
+			(strings.HasPrefix(line, "-") && !strings.HasPrefix(line, "---")) {
+			n++
+		}
+	}
+	return n
+}
+
+func hasRemovedGuardOrCleanup(patch string) bool {
+	for _, line := range strings.Split(patch, "\n") {
+		if !strings.HasPrefix(line, "-") || strings.HasPrefix(line, "---") {
+			continue
+		}
+		l := strings.ToLower(line)
+		for _, tok := range []string{"delete", "revoke", "clerk", "retain", "legacy", "v1.", "consent", "guard", "verify", "filter", "throw "} {
+			if strings.Contains(l, tok) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb SpecialistFeedback) (map[string]int, map[string][]string, int) {
 	scores, reasons := map[string]int{}, map[string][]string{}
 	add := func(focus, reason string, points int) {
@@ -194,23 +224,33 @@ func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb Speciali
 	}
 	p, path := strings.ToLower(f.Patch), strings.ToLower(f.Path)
 	hunks := strings.Count(f.Patch, "@@")
+	changedLines := countChangedLines(f.Patch)
+	removedGuardOrCleanup := hasRemovedGuardOrCleanup(f.Patch)
 	maxDelta := 0
 	for _, c := range fb.Complexities {
 		if c.File == f.Path && c.Delta > maxDelta {
 			maxDelta = c.Delta
 		}
 	}
-	if strings.Contains(p, "export ") || strings.Contains(p, "export type") || strings.Contains(p, "export interface") || strings.Contains(p, "schema") || strings.Contains(p, "func ") || strings.Contains(p, ".get(") || strings.Contains(p, ".post(") || strings.Contains(p, ".put(") || strings.Contains(p, ".delete(") || strings.Contains(p, "router.") || strings.Contains(path, "adapter") || strings.Contains(path, "wrapper") {
+	// Abstraction & contract signals (generic export scored lower than domain lenses so it never evicts them).
+	if strings.Contains(p, "export type") || strings.Contains(p, "export interface") || strings.Contains(p, "schema") || strings.Contains(p, ".get(") || strings.Contains(p, ".post(") || strings.Contains(p, ".put(") || strings.Contains(p, ".delete(") || strings.Contains(p, "router.") || strings.Contains(path, "adapter") || strings.Contains(path, "wrapper") || strings.Contains(path, "protocol") || strings.Contains(path, "routes") || strings.Contains(path, "contract") {
 		add("abstraction_contract", "public contract or route change", 3)
+	} else if strings.Contains(p, "export function") || strings.Contains(p, "export const") || strings.Contains(p, "export class") || strings.Contains(path, "client") {
+		add("abstraction_contract", "exported symbol or client boundary change", 2)
 	}
-	if strings.Contains(p, "catch") || strings.Contains(p, "??") || strings.Contains(p, "||") || strings.Contains(p, "return") || strings.Contains(p, "for ") || strings.Contains(p, "while") || strings.Contains(p, "cursor") || strings.Contains(p, "paginate") || strings.Contains(p, "limit") || strings.Contains(p, "guard") || strings.Contains(p, "tombstone") || strings.Contains(p, "deletedat") {
+	// Logic & bullshit signals (avoid bare `return` / `||` matching every file).
+	if strings.Contains(p, "catch") || strings.Contains(p, "cursor") || strings.Contains(p, "paginate") || strings.Contains(p, "tombstone") || strings.Contains(p, "deletedat") || strings.Contains(p, "guard") || strings.Contains(p, "limit") || strings.Contains(p, "slice(") || strings.Contains(p, "while") {
 		add("logic_bs", "logic, bounds, or fallback change", 3)
 	}
-	if strings.Contains(path, "workflow") || strings.Contains(path, "state") || strings.Contains(path, "lease") || strings.Contains(p, "status") || strings.Contains(p, "transition") || strings.Contains(p, "mutex") || strings.Contains(p, "atomic") {
-		add("state_machine", "state or concurrency signal", 3)
+	if strings.Contains(path, "workflow") || strings.Contains(path, "turn") || strings.Contains(path, "run") || strings.Contains(path, "state") || strings.Contains(path, "lease") || strings.Contains(path, "sandbox") || strings.Contains(p, "status") || strings.Contains(p, "transition") || strings.Contains(p, "mutex") || strings.Contains(p, "atomic") || strings.Contains(p, "approval") || strings.Contains(p, "cancel") || strings.Contains(p, "pause") {
+		pts := 3
+		if strings.Contains(path, "workflow") || strings.Contains(path, "turn") || strings.Contains(path, "run") || strings.Contains(path, "sandbox") || strings.Contains(path, "approval") {
+			pts += 2
+		}
+		add("state_machine", "state or concurrency signal", pts)
 	}
 	lifecycleTerms := []string{"account", "ledger", "spend", "billing", "quota", "credit", "usage", "purge", "delete", "deletion", "sweep", "cron", "compact", "compaction", "retention", "cleanup", "blob", "upload", "ticket", "receipt", "period", "slot", "capacity", "refund", "reserve", "settle", "store", "sizeguard", "hydrate", "batch"}
-	lifecycleStructural := []string{".delete(", ".patch(", ".insert(", "ctx.storage", "for (", "while", "paginate", "take(", "collect("}
+	lifecycleStructural := []string{".delete(", ".patch(", ".insert(", "ctx.storage", "for (", "for (;;)", "while", "paginate", "take(", "collect(", "rpc.mutation"}
 	lifecycleMatch := false
 	for _, term := range lifecycleTerms {
 		if strings.Contains(path, term) || strings.Contains(p, term) {
@@ -225,17 +265,33 @@ func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb Speciali
 			break
 		}
 	}
-	if lifecycleMatch && lifecycleStructure || strings.Contains(path, "account") || strings.Contains(path, "ledger") || strings.Contains(path, "spend") || strings.Contains(path, "billing") || strings.Contains(path, "quota") || strings.Contains(path, "cron") || strings.Contains(path, "webtools") {
-		add("accounting_lifecycle", "accounting or lifecycle signal", 3)
+	lifecyclePathHit := strings.Contains(path, "account") || strings.Contains(path, "ledger") || strings.Contains(path, "spend") || strings.Contains(path, "billing") || strings.Contains(path, "quota") || strings.Contains(path, "cron") || strings.Contains(path, "webtools") || strings.Contains(path, "deletion") || strings.Contains(path, "purge")
+	if lifecyclePathHit || (lifecycleMatch && lifecycleStructure) {
+		pts := 3
+		if lifecyclePathHit {
+			pts += 2
+		}
+		if lifecycleMatch && lifecycleStructure {
+			pts++
+		}
+		add("accounting_lifecycle", "accounting or lifecycle signal", pts)
 	}
-	if strings.Contains(path, "auth") || strings.Contains(path, "secret") || strings.Contains(path, "key") || strings.Contains(p, "encrypt") || strings.Contains(p, "sha256") || strings.Contains(p, "consent") || strings.Contains(p, "token") || strings.Contains(p, "hmac") {
-		add("auth_crypto_parity", "authentication or cryptography signal", 3)
+	authPathHit := strings.Contains(path, "auth") || strings.Contains(path, "secret") || strings.Contains(path, "key") || strings.Contains(path, "encrypt") || strings.Contains(path, "user") || strings.Contains(path, "session")
+	if authPathHit || strings.Contains(p, "encrypt") || strings.Contains(p, "decrypt") || strings.Contains(p, "sha256") || strings.Contains(p, "consent") || strings.Contains(p, "token") || strings.Contains(p, "hmac") || strings.Contains(p, "clerk") {
+		pts := 3
+		if authPathHit {
+			pts += 2
+		}
+		add("auth_crypto_parity", "authentication or cryptography signal", pts)
 	}
 	if maxDelta > 0 {
 		add("logic_bs", fmt.Sprintf("complexity delta +%d", maxDelta), min(6, maxDelta/4))
 	}
-	if (hunks >= 3 || maxDelta >= 4) && fb.FindingsByFile[f.Path] == 0 {
-		addEach(scores, reasons, "0 general findings across hunks", 4)
+	if removedGuardOrCleanup {
+		addEach(scores, reasons, "removed guard, compat, or cleanup logic", 4)
+	}
+	if (hunks >= 3 || changedLines >= 20 || len(f.Patch) >= 1200 || maxDelta >= 4) && fb.FindingsByFile[f.Path] == 0 {
+		addEach(scores, reasons, "0 general findings across substantial diff", 4)
 	}
 	if hunks >= 3 && fb.TurnsPerHunk[f.Path] > 0 && fb.TurnsPerHunk[f.Path] < .8 {
 		addEach(scores, reasons, "skimmed in general pass", 3)

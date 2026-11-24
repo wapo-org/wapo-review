@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/cloudwego/eino/components/model"
@@ -67,10 +68,17 @@ func RunAdversarialGate(ctx context.Context, modelFactory func(context.Context) 
 	if maxConcurrency <= 0 {
 		maxConcurrency = 6
 	}
-	batches := make([][]workspace.VerifiedFinding, 0, (len(findings)+7)/8)
-	for start := 0; start < len(findings); start += 8 {
-		end := min(len(findings), start+8)
-		batches = append(batches, findings[start:end])
+	ordered := append([]workspace.VerifiedFinding(nil), findings...)
+	sort.SliceStable(ordered, func(i, j int) bool {
+		if ordered[i].File != ordered[j].File {
+			return ordered[i].File < ordered[j].File
+		}
+		return ordered[i].StartLine < ordered[j].StartLine
+	})
+	batches := make([][]workspace.VerifiedFinding, 0, (len(ordered)+7)/8)
+	for start := 0; start < len(ordered); start += 8 {
+		end := min(len(ordered), start+8)
+		batches = append(batches, ordered[start:end])
 	}
 	report.Batches = len(batches)
 	type batchResult struct {
@@ -94,7 +102,7 @@ func RunAdversarialGate(ctx context.Context, modelFactory func(context.Context) 
 			}
 			tools := []tool.InvokableTool{verdictTool{record: func(a verdictArgs) { decisions[a.FindingID] = a }}}
 			tools = append(tools, extraTools...)
-			loop := &agent.ReviewLoop{Model: m, SystemPrompt: "You are an adversarial code-review verifier. For each candidate finding, check the surrounding code (and use read_file/grep on callers/guards if needed) and try to disprove the claimed failure scenario. Call record_verdict for EVERY finding_id in the batch. Verdict MUST be `keep` for every concrete, verifiable bug (including subtle concurrency races, migration/compatibility breaks, UTF-16/size-limit bugs, and logic bugs). Verdict MUST be `drop` ONLY when the finding is factually contradicted by the code or caller guards, garbled/uncertain/nonsensical, purely speculative without a real trigger, or an exact duplicate of another finding in the batch. Batch multiple record_verdict calls per turn.", Tools: tools, Guards: []agent.CompletionGuard{agent.RequireAllItemsCompleted(ids)}, MaxTurns: 8, MaxNudges: 1, Redactor: redactor, OnToolResult: func(rec agent.ToolRecord, ev *agent.ReviewEvidence) {
+			loop := &agent.ReviewLoop{Model: m, SystemPrompt: "You are an adversarial code-review verifier. For each candidate finding, check the surrounding code (and use read_file/grep on callers/guards if needed) and try to disprove the claimed failure scenario. Call record_verdict for EVERY finding_id in the batch. Verdict MUST be `keep` for every concrete, verifiable bug (including subtle concurrency races, migration/compatibility breaks, UTF-16/size-limit bugs, and logic bugs). Verdict MUST be `drop` ONLY when the finding is factually contradicted by the code or caller guards, garbled/uncertain/nonsensical, purely speculative without a real trigger, or a semantic duplicate of another finding in the same file (if two findings in the same file report the same root cause with different wording or nearby lines, keep the stronger/higher-severity one and drop the redundant one). Batch multiple record_verdict calls per turn.", Tools: tools, Guards: []agent.CompletionGuard{agent.RequireAllItemsCompleted(ids)}, MaxTurns: 8, MaxNudges: 1, Redactor: redactor, OnToolResult: func(rec agent.ToolRecord, ev *agent.ReviewEvidence) {
 				if rec.Name == "record_verdict" && rec.Error == "" {
 					var a verdictArgs
 					if json.Unmarshal([]byte(rec.Arguments), &a) == nil {
