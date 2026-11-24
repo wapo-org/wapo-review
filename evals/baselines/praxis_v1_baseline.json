@@ -1,0 +1,543 @@
+{
+  "cases": [
+    {
+      "base_sha": "",
+      "case_id": "clean-refactor",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "cloud/packages/sync/src/chunk.ts": "export const SYNC_PAGE_SIZE_MAX = 100;\n\nexport function chunk<T>(items: readonly T[], size: number = SYNC_PAGE_SIZE_MAX): T[][] {\n  if (!Number.isInteger(size) || size < 1) {\n    throw new RangeError(`chunk size must be a positive integer, got ${size}`);\n  }\n  const pages: T[][] = [];\n  for (let start = 0; start < items.length; start += size) {\n    pages.push(items.slice(start, start + size));\n  }\n  return pages;\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "clean-ui-copy",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "cloud/apps/web/src/components/EmptyHistory.tsx": "export function EmptyHistory() {\n  return (\n    <section className=\"empty-history\">\n      <h2>No chats yet</h2>\n      <p>Start a conversation and it will show up here.</p>\n    </section>\n  );\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "compat-shim",
+      "expected_bugs": [
+        {
+          "bug_id": "G.clean-break:cloud/apps/api/src/features/chats/legacy-routes.ts",
+          "category": "legacy",
+          "description": "A backward-compatibility shim although there are no production users.",
+          "file": "cloud/apps/api/src/features/chats/legacy-routes.ts",
+          "line_range": null,
+          "rule_ids": [
+            "G.clean-break"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/features/chats/legacy-routes.ts": "import { Hono } from 'hono';\nimport type { AdapterBundle } from '../../contracts.js';\nimport { session } from '../../session.js';\n\nexport function registerLegacyChatRoutes(app: Hono, adapters: AdapterBundle): void {\n  // Old web bundles still expect `items`.\n  app.get('/v1/chats/legacy', async (c) => {\n    const chats = await adapters.store.listChats(session(c).userId);\n    return c.json({ items: chats });\n  });\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "fail-open-store",
+      "expected_bugs": [
+        {
+          "bug_id": "R3.fail-closed:cloud/apps/api/src/adapters/run-store.ts",
+          "category": "legacy",
+          "description": "Production adapter silently falls back to an in-memory store.",
+          "file": "cloud/apps/api/src/adapters/run-store.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R3.fail-closed"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/adapters/run-store.ts": "import type { RunStore } from '../contracts.js';\nimport { createConvexRunStore } from './convex-run-store.js';\nimport { createMemoryRunStore } from './testing/memory-run-store.js';\n\nexport function createRunStore(env: Record<string, string | undefined>): RunStore {\n  const url = env.CONVEX_URL;\n  if (!url) {\n    console.warn('CONVEX_URL missing, using in-memory run store');\n    return createMemoryRunStore();\n  }\n  return createConvexRunStore(url);\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "linear-contradiction",
+      "expected_bugs": [
+        {
+          "bug_id": "G.linear-contradiction:cloud/apps/api/src/features/preferences/routes.ts",
+          "category": "legacy",
+          "description": "A new client-facing Hono route although PRA-41 retires that surface.",
+          "file": "cloud/apps/api/src/features/preferences/routes.ts",
+          "line_range": null,
+          "rule_ids": [
+            "G.linear-contradiction"
+          ]
+        },
+        {
+          "bug_id": "R1.api-thin-routes:cloud/apps/api/src/features/preferences/routes.ts",
+          "category": "legacy",
+          "description": "A new client-facing Hono route although PRA-41 retires that surface.",
+          "file": "cloud/apps/api/src/features/preferences/routes.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R1.api-thin-routes"
+          ]
+        }
+      ],
+      "external_context": {
+        "PRA-41": "Turn worker 4/4: Retire the public Hono surface\n\n**Goal:** the browser no longer uses Vercel for data.\n\n3. No client-facing route stays on Vercel. Routes that need secrets or outbound calls become Convex actions or HTTP actions."
+      },
+      "files": {
+        "cloud/apps/api/src/features/preferences/routes.ts": "import { Hono } from 'hono';\nimport { PreferencesSchema } from '@praxis/protocol';\nimport type { AdapterBundle } from '../../contracts.js';\nimport { session } from '../../session.js';\n\nexport function registerPreferencesRoutes(app: Hono, adapters: AdapterBundle): void {\n  app.post('/v1/preferences', async (c) => {\n    const preferences = PreferencesSchema.parse(await c.req.json());\n    await adapters.store.putPreferences(session(c).userId, preferences);\n    return c.json({ ok: true });\n  });\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "mechanical-any-vm",
+      "expected_bugs": [
+        {
+          "bug_id": "R4.no-any:cloud/apps/api/src/features/tools/run-snippet.ts",
+          "category": "legacy",
+          "description": "Only script-owned violations: the gate must catch them and the model must stay silent.",
+          "file": "cloud/apps/api/src/features/tools/run-snippet.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R4.no-any"
+          ]
+        },
+        {
+          "bug_id": "R5.banned-primitives:cloud/apps/api/src/features/tools/run-snippet.ts",
+          "category": "legacy",
+          "description": "Only script-owned violations: the gate must catch them and the model must stay silent.",
+          "file": "cloud/apps/api/src/features/tools/run-snippet.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R5.banned-primitives"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/features/tools/run-snippet.ts": "import vm from 'node:vm';\n\nexport function runSnippet(code: string, context: any): unknown {\n  return vm.runInNewContext(code, context);\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "owner-from-body",
+      "expected_bugs": [
+        {
+          "bug_id": "R5.owner-from-auth:cloud/apps/api/src/features/media/share-routes.ts",
+          "category": "legacy",
+          "description": "A public route trusts userId from the request body.",
+          "file": "cloud/apps/api/src/features/media/share-routes.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R5.owner-from-auth"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/features/media/share-routes.ts": "import { Hono } from 'hono';\nimport { z } from 'zod';\nimport type { AdapterBundle } from '../../contracts.js';\n\nconst ShareRequestSchema = z.object({ userId: z.string(), fileId: z.string() });\n\nexport function registerShareRoutes(app: Hono, adapters: AdapterBundle): void {\n  app.post('/v1/files/share', async (c) => {\n    const { userId, fileId } = ShareRequestSchema.parse(await c.req.json());\n    const link = await adapters.store.createShareLink(userId, fileId);\n    return c.json({ link });\n  });\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "secret-in-log",
+      "expected_bugs": [
+        {
+          "bug_id": "R5.secret-leak:cloud/apps/api/src/features/openrouter/exchange-log.ts",
+          "category": "legacy",
+          "description": "A user's OpenRouter key is written to the log.",
+          "file": "cloud/apps/api/src/features/openrouter/exchange-log.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R5.secret-leak"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/features/openrouter/exchange-log.ts": "import { jsonLog } from '../../log.js';\n\nexport interface ExchangeResult {\n  status: number;\n  key: string;\n}\n\nexport function logExchange(userId: string, result: ExchangeResult): void {\n  jsonLog('openrouter.exchange', { userId, status: result.status, key: result.key });\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "settimeout-race",
+      "expected_bugs": [
+        {
+          "bug_id": "R3.root-cause:cloud/apps/web/src/chat/scroll-to-latest.ts",
+          "category": "legacy",
+          "description": "A timer hides an ordering problem.",
+          "file": "cloud/apps/web/src/chat/scroll-to-latest.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R3.root-cause"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/web/src/chat/scroll-to-latest.ts": "const SCROLL_DELAY_MS = 50;\n\nexport function scrollToLatest(list: HTMLElement): void {\n  setTimeout(() => {\n    list.scrollTo({ top: list.scrollHeight });\n  }, SCROLL_DELAY_MS);\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    },
+    {
+      "base_sha": "",
+      "case_id": "ssrf-raw-fetch",
+      "expected_bugs": [
+        {
+          "bug_id": "R5.ssrf-egress:cloud/apps/api/src/features/tools/fetch-page.ts",
+          "category": "legacy",
+          "description": "A model-supplied URL is fetched without the egress guard.",
+          "file": "cloud/apps/api/src/features/tools/fetch-page.ts",
+          "line_range": null,
+          "rule_ids": [
+            "R5.ssrf-egress"
+          ]
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "cloud/apps/api/src/features/tools/fetch-page.ts": "import { z } from 'zod';\n\nconst FETCH_PAGE_TIMEOUT_MS = 10_000;\nconst InputSchema = z.object({ url: z.string().url() });\n\nexport async function fetchPage(input: unknown): Promise<string> {\n  const { url } = InputSchema.parse(input);\n  const response = await fetch(url, { signal: AbortSignal.timeout(FETCH_PAGE_TIMEOUT_MS) });\n  return await response.text();\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "typescript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "praxis",
+      "source_url": "",
+      "suite": "praxis-seeded"
+    }
+  ],
+  "outputs": [
+    {
+      "case_id": "clean-refactor",
+      "cost_usd": null,
+      "findings": [],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "clean-ui-copy",
+      "cost_usd": null,
+      "findings": [],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "compat-shim",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/chats/legacy-routes.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "G.clean-break",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "fail-open-store",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/adapters/run-store.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R3.fail-closed",
+          "verified": true
+        },
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/adapters/run-store.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R3.root-cause",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "linear-contradiction",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/preferences/routes.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "G.linear-contradiction",
+          "verified": true
+        },
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/preferences/routes.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R1.api-thin-routes",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "mechanical-any-vm",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/tools/run-snippet.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R4.no-any",
+          "verified": true
+        },
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/tools/run-snippet.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R5.banned-primitives",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "owner-from-body",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/media/share-routes.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R5.owner-from-auth",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "secret-in-log",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/openrouter/exchange-log.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R5.secret-leak",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "settimeout-race",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/web/src/chat/scroll-to-latest.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R3.root-cause",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    },
+    {
+      "case_id": "ssrf-raw-fetch",
+      "cost_usd": null,
+      "findings": [
+        {
+          "category": "legacy",
+          "file": "cloud/apps/api/src/features/tools/fetch-page.ts",
+          "line": null,
+          "message": "",
+          "owner": "",
+          "rule_id": "R5.ssrf-egress",
+          "verified": true
+        }
+      ],
+      "latency_seconds": null,
+      "metadata": {},
+      "tokens_total": null
+    }
+  ],
+  "report": {
+    "by_category": {
+      "legacy": {
+        "actionable_share": 0.9090909090909091,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 1.375,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 8,
+        "fn": 0,
+        "fp": 1,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 8,
+        "precision_denominator": 11,
+        "recall": 1.0,
+        "recall_denominator": 10,
+        "tp": 10
+      }
+    },
+    "by_language": {
+      "typescript": {
+        "actionable_share": 0.9090909090909091,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 1.1,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 10,
+        "fn": 0,
+        "fp": 1,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 10,
+        "precision_denominator": 11,
+        "recall": 1.0,
+        "recall_denominator": 10,
+        "tp": 10
+      }
+    },
+    "overall": {
+      "actionable_share": 0.9090909090909091,
+      "clean_pr_false_alarm_rate": 0.0,
+      "comments_per_pr": 1.1,
+      "cost_per_pr_usd": null,
+      "cost_total_usd": null,
+      "cost_unknown_count": 10,
+      "fn": 0,
+      "fp": 1,
+      "latency_mean_seconds": null,
+      "latency_p50_seconds": null,
+      "latency_p95_seconds": null,
+      "latency_unknown_count": 10,
+      "precision_denominator": 11,
+      "recall": 1.0,
+      "recall_denominator": 10,
+      "tp": 10
+    }
+  }
+}

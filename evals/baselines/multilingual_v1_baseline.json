@@ -1,0 +1,1353 @@
+{
+  "cases": [
+    {
+      "base_sha": "",
+      "case_id": "ts-null",
+      "expected_bugs": [
+        {
+          "bug_id": "null-user",
+          "category": "logic_null",
+          "description": "Dereferences nullable user and optional name.",
+          "file": "src/profile.ts",
+          "line_range": [
+            2,
+            2
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/profile.ts": "export function displayName(user: { name?: string } | null): string {\n  return user.name.trim();\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "TypeScript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "ts-injection",
+      "expected_bugs": [
+        {
+          "bug_id": "sql-interpolation",
+          "category": "security",
+          "description": "User input is interpolated into SQL.",
+          "file": "src/users.ts",
+          "line_range": [
+            2,
+            3
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/users.ts": "export async function findUser(db: any, name: string) {\n  const query = `SELECT * FROM users WHERE name = '${name}'`;\n  return db.query(query);\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "TypeScript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "ts-contract",
+      "expected_bugs": [
+        {
+          "bug_id": "contract",
+          "category": "contract_breaking",
+          "description": "Public return type no longer models the nullable email returned by the service.",
+          "file": "src/client.ts",
+          "line_range": [
+            1,
+            3
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/client.ts": "export type Account = { id: string; email: string };\nexport function loadAccount(id: string): Promise<Account> {\n  return fetch(`/accounts/${id}`).then(r => r.json());\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "TypeScript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "ts-clean",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "src/safe.ts": "export function label(user: { name?: string } | null): string {\n  return user?.name?.trim() ?? 'Anonymous';\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "TypeScript",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "py-null",
+      "expected_bugs": [
+        {
+          "bug_id": "null-name",
+          "category": "logic_null",
+          "description": "Missing user/name guard.",
+          "file": "app/profile.py",
+          "line_range": [
+            2,
+            2
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "app/profile.py": "def display_name(user):\n    return user[\"name\"].strip()\n\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Python",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "py-command",
+      "expected_bugs": [
+        {
+          "bug_id": "shell-injection",
+          "category": "security",
+          "description": "Untrusted filename reaches a shell command.",
+          "file": "app/backup.py",
+          "line_range": [
+            4,
+            5
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "app/backup.py": "import subprocess\n\ndef backup(filename):\n    command = \"tar -czf /tmp/archive \" + filename\n    return subprocess.run(command, shell=True, check=True)\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Python",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "py-resource",
+      "expected_bugs": [
+        {
+          "bug_id": "unclosed-file",
+          "category": "logic_resource",
+          "description": "File handle is not closed on success or failure.",
+          "file": "app/reader.py",
+          "line_range": [
+            2,
+            3
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "app/reader.py": "def read_lines(path):\n    handle = open(path, encoding=\"utf-8\")\n    return [line.rstrip() for line in handle]\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Python",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "py-clean",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "app/query.py": "def find_user(connection, name):\n    return connection.execute(\"SELECT * FROM users WHERE name = ?\", (name,)).fetchone()\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "Python",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "go-bounds",
+      "expected_bugs": [
+        {
+          "bug_id": "index-boundary",
+          "category": "logic_bounds",
+          "description": "Index equal to len passes the check and panics.",
+          "file": "internal/page.go",
+          "line_range": [
+            4,
+            7
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "internal/page.go": "package page\n\nfunc At(items []string, index int) string {\n    if index > len(items) {\n        return \"\"\n    }\n    return items[index]\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Go",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "go-ssrf",
+      "expected_bugs": [
+        {
+          "bug_id": "ssrf",
+          "category": "security",
+          "description": "Caller-controlled URL is fetched without destination validation.",
+          "file": "internal/fetch.go",
+          "line_range": [
+            5,
+            6
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "internal/fetch.go": "package fetch\n\nimport (\"io\"; \"net/http\")\n\nfunc Read(url string) ([]byte, error) {\n    response, err := http.Get(url)\n    if err != nil { return nil, err }\n    defer response.Body.Close()\n    return io.ReadAll(response.Body)\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Go",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "go-race",
+      "expected_bugs": [
+        {
+          "bug_id": "unsynchronized-increment",
+          "category": "logic_concurrency",
+          "description": "Concurrent goroutines mutate total without synchronization.",
+          "file": "internal/count.go",
+          "line_range": [
+            4,
+            8
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "internal/count.go": "package count\n\nfunc Increment(workers int) int {\n    total := 0\n    done := make(chan bool, workers)\n    for i := 0; i < workers; i++ {\n        go func() { total++; done <- true }()\n    }\n    for i := 0; i < workers; i++ { <-done }\n    return total\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Go",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "go-clean",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "internal/lookup.go": "package lookup\n\nfunc Find(values map[string]string, key string) (string, bool) {\n    value, ok := values[key]\n    return value, ok\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "Go",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "rust-null",
+      "expected_bugs": [
+        {
+          "bug_id": "unwrap-option",
+          "category": "logic_null",
+          "description": "Unwrap panics for absent user.",
+          "file": "src/profile.rs",
+          "line_range": [
+            2,
+            2
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/profile.rs": "pub fn display_name(user: Option<&str>) -> String {\n    user.unwrap().trim().to_owned()\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Rust",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "rust-secret",
+      "expected_bugs": [
+        {
+          "bug_id": "embedded-secret",
+          "category": "security",
+          "description": "Credential is hardcoded in source.",
+          "file": "src/client.rs",
+          "line_range": [
+            1,
+            4
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/client.rs": "const API_TOKEN: &str = \"sk_live_example_redacted\";\n\npub fn authorization() -> String {\n    format!(\"Bearer {}\", API_TOKEN)\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Rust",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "rust-dead",
+      "expected_bugs": [
+        {
+          "bug_id": "dead-format",
+          "category": "dead_code",
+          "description": "Obsolete private formatter remains after replacement.",
+          "file": "src/format.rs",
+          "line_range": [
+            1,
+            3
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/format.rs": "fn old_format(value: &str) -> String {\n    format!(\"legacy:{}\", value)\n}\n\npub fn format_value(value: &str) -> String {\n    format!(\"{}\", value.trim())\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Rust",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "rust-clean",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "src/safe.rs": "pub fn display_name(user: Option<&str>) -> String {\n    user.map(str::trim).unwrap_or(\"Anonymous\").to_owned()\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "Rust",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "java-null",
+      "expected_bugs": [
+        {
+          "bug_id": "null-account",
+          "category": "logic_null",
+          "description": "Account and name are dereferenced without null checks.",
+          "file": "src/AccountService.java",
+          "line_range": [
+            2,
+            3
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/AccountService.java": "class AccountService {\n  String displayName(Account account) {\n    return account.getName().trim();\n  }\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Java",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "java-sql",
+      "expected_bugs": [
+        {
+          "bug_id": "sql-concatenation",
+          "category": "security",
+          "description": "User input is concatenated into SQL.",
+          "file": "src/UserStore.java",
+          "line_range": [
+            3,
+            4
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/UserStore.java": "class UserStore {\n  User find(java.sql.Connection connection, String name) throws Exception {\n    var statement = connection.createStatement();\n    return map(statement.executeQuery(\"SELECT * FROM users WHERE name='\" + name + \"'\"));\n  }\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Java",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "java-complexity",
+      "expected_bugs": [
+        {
+          "bug_id": "complex-policy",
+          "category": "cognitive_complexity",
+          "description": "Deeply nested access policy is difficult to audit and maintain.",
+          "file": "src/Policy.java",
+          "line_range": [
+            2,
+            14
+          ],
+          "rule_ids": []
+        }
+      ],
+      "external_context": {},
+      "files": {
+        "src/Policy.java": "class Policy {\n  boolean allowed(User user, Request request) {\n    if (user != null) {\n      if (user.active()) {\n        if (request != null) {\n          if (request.ownerId() == user.id()) return true;\n          else if (user.admin() && request.open()) return true;\n          else if (user.support() && request.queue() != null) return true;\n        }\n      }\n    }\n    return false;\n  }\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": false,
+      "language": "Java",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    },
+    {
+      "base_sha": "",
+      "case_id": "java-clean",
+      "expected_bugs": [],
+      "external_context": {},
+      "files": {
+        "src/Names.java": "import java.util.Optional;\nclass Names {\n  String display(Optional<String> name) {\n    return name.map(String::trim).filter(s -> !s.isEmpty()).orElse(\"Anonymous\");\n  }\n}\n"
+      },
+      "head_sha": "",
+      "is_clean": true,
+      "language": "Java",
+      "license": "MIT",
+      "patch": null,
+      "pr_number": null,
+      "repo": "",
+      "source_url": "",
+      "suite": "multilingual-real-pr"
+    }
+  ],
+  "manifest": {
+    "analyzer_set": [],
+    "cases": [
+      {
+        "base_sha": "",
+        "case_id": "ts-null",
+        "expected_bugs": [
+          {
+            "bug_id": "null-user",
+            "category": "logic_null",
+            "description": "Dereferences nullable user and optional name.",
+            "file": "src/profile.ts",
+            "line_range": [
+              2,
+              2
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/profile.ts": "export function displayName(user: { name?: string } | null): string {\n  return user.name.trim();\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "TypeScript",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "ts-injection",
+        "expected_bugs": [
+          {
+            "bug_id": "sql-interpolation",
+            "category": "security",
+            "description": "User input is interpolated into SQL.",
+            "file": "src/users.ts",
+            "line_range": [
+              2,
+              3
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/users.ts": "export async function findUser(db: any, name: string) {\n  const query = `SELECT * FROM users WHERE name = '${name}'`;\n  return db.query(query);\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "TypeScript",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "ts-contract",
+        "expected_bugs": [
+          {
+            "bug_id": "contract",
+            "category": "contract_breaking",
+            "description": "Public return type no longer models the nullable email returned by the service.",
+            "file": "src/client.ts",
+            "line_range": [
+              1,
+              3
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/client.ts": "export type Account = { id: string; email: string };\nexport function loadAccount(id: string): Promise<Account> {\n  return fetch(`/accounts/${id}`).then(r => r.json());\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "TypeScript",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "ts-clean",
+        "expected_bugs": [],
+        "external_context": {},
+        "files": {
+          "src/safe.ts": "export function label(user: { name?: string } | null): string {\n  return user?.name?.trim() ?? 'Anonymous';\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": true,
+        "language": "TypeScript",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "py-null",
+        "expected_bugs": [
+          {
+            "bug_id": "null-name",
+            "category": "logic_null",
+            "description": "Missing user/name guard.",
+            "file": "app/profile.py",
+            "line_range": [
+              2,
+              2
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "app/profile.py": "def display_name(user):\n    return user[\"name\"].strip()\n\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Python",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "py-command",
+        "expected_bugs": [
+          {
+            "bug_id": "shell-injection",
+            "category": "security",
+            "description": "Untrusted filename reaches a shell command.",
+            "file": "app/backup.py",
+            "line_range": [
+              4,
+              5
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "app/backup.py": "import subprocess\n\ndef backup(filename):\n    command = \"tar -czf /tmp/archive \" + filename\n    return subprocess.run(command, shell=True, check=True)\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Python",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "py-resource",
+        "expected_bugs": [
+          {
+            "bug_id": "unclosed-file",
+            "category": "logic_resource",
+            "description": "File handle is not closed on success or failure.",
+            "file": "app/reader.py",
+            "line_range": [
+              2,
+              3
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "app/reader.py": "def read_lines(path):\n    handle = open(path, encoding=\"utf-8\")\n    return [line.rstrip() for line in handle]\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Python",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "py-clean",
+        "expected_bugs": [],
+        "external_context": {},
+        "files": {
+          "app/query.py": "def find_user(connection, name):\n    return connection.execute(\"SELECT * FROM users WHERE name = ?\", (name,)).fetchone()\n"
+        },
+        "head_sha": "",
+        "is_clean": true,
+        "language": "Python",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "go-bounds",
+        "expected_bugs": [
+          {
+            "bug_id": "index-boundary",
+            "category": "logic_bounds",
+            "description": "Index equal to len passes the check and panics.",
+            "file": "internal/page.go",
+            "line_range": [
+              4,
+              7
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "internal/page.go": "package page\n\nfunc At(items []string, index int) string {\n    if index > len(items) {\n        return \"\"\n    }\n    return items[index]\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Go",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "go-ssrf",
+        "expected_bugs": [
+          {
+            "bug_id": "ssrf",
+            "category": "security",
+            "description": "Caller-controlled URL is fetched without destination validation.",
+            "file": "internal/fetch.go",
+            "line_range": [
+              5,
+              6
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "internal/fetch.go": "package fetch\n\nimport (\"io\"; \"net/http\")\n\nfunc Read(url string) ([]byte, error) {\n    response, err := http.Get(url)\n    if err != nil { return nil, err }\n    defer response.Body.Close()\n    return io.ReadAll(response.Body)\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Go",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "go-race",
+        "expected_bugs": [
+          {
+            "bug_id": "unsynchronized-increment",
+            "category": "logic_concurrency",
+            "description": "Concurrent goroutines mutate total without synchronization.",
+            "file": "internal/count.go",
+            "line_range": [
+              4,
+              8
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "internal/count.go": "package count\n\nfunc Increment(workers int) int {\n    total := 0\n    done := make(chan bool, workers)\n    for i := 0; i < workers; i++ {\n        go func() { total++; done <- true }()\n    }\n    for i := 0; i < workers; i++ { <-done }\n    return total\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Go",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "go-clean",
+        "expected_bugs": [],
+        "external_context": {},
+        "files": {
+          "internal/lookup.go": "package lookup\n\nfunc Find(values map[string]string, key string) (string, bool) {\n    value, ok := values[key]\n    return value, ok\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": true,
+        "language": "Go",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "rust-null",
+        "expected_bugs": [
+          {
+            "bug_id": "unwrap-option",
+            "category": "logic_null",
+            "description": "Unwrap panics for absent user.",
+            "file": "src/profile.rs",
+            "line_range": [
+              2,
+              2
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/profile.rs": "pub fn display_name(user: Option<&str>) -> String {\n    user.unwrap().trim().to_owned()\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Rust",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "rust-secret",
+        "expected_bugs": [
+          {
+            "bug_id": "embedded-secret",
+            "category": "security",
+            "description": "Credential is hardcoded in source.",
+            "file": "src/client.rs",
+            "line_range": [
+              1,
+              4
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/client.rs": "const API_TOKEN: &str = \"sk_live_example_redacted\";\n\npub fn authorization() -> String {\n    format!(\"Bearer {}\", API_TOKEN)\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Rust",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "rust-dead",
+        "expected_bugs": [
+          {
+            "bug_id": "dead-format",
+            "category": "dead_code",
+            "description": "Obsolete private formatter remains after replacement.",
+            "file": "src/format.rs",
+            "line_range": [
+              1,
+              3
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/format.rs": "fn old_format(value: &str) -> String {\n    format!(\"legacy:{}\", value)\n}\n\npub fn format_value(value: &str) -> String {\n    format!(\"{}\", value.trim())\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Rust",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "rust-clean",
+        "expected_bugs": [],
+        "external_context": {},
+        "files": {
+          "src/safe.rs": "pub fn display_name(user: Option<&str>) -> String {\n    user.map(str::trim).unwrap_or(\"Anonymous\").to_owned()\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": true,
+        "language": "Rust",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "java-null",
+        "expected_bugs": [
+          {
+            "bug_id": "null-account",
+            "category": "logic_null",
+            "description": "Account and name are dereferenced without null checks.",
+            "file": "src/AccountService.java",
+            "line_range": [
+              2,
+              3
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/AccountService.java": "class AccountService {\n  String displayName(Account account) {\n    return account.getName().trim();\n  }\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Java",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "java-sql",
+        "expected_bugs": [
+          {
+            "bug_id": "sql-concatenation",
+            "category": "security",
+            "description": "User input is concatenated into SQL.",
+            "file": "src/UserStore.java",
+            "line_range": [
+              3,
+              4
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/UserStore.java": "class UserStore {\n  User find(java.sql.Connection connection, String name) throws Exception {\n    var statement = connection.createStatement();\n    return map(statement.executeQuery(\"SELECT * FROM users WHERE name='\" + name + \"'\"));\n  }\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Java",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "java-complexity",
+        "expected_bugs": [
+          {
+            "bug_id": "complex-policy",
+            "category": "cognitive_complexity",
+            "description": "Deeply nested access policy is difficult to audit and maintain.",
+            "file": "src/Policy.java",
+            "line_range": [
+              2,
+              14
+            ],
+            "rule_ids": []
+          }
+        ],
+        "external_context": {},
+        "files": {
+          "src/Policy.java": "class Policy {\n  boolean allowed(User user, Request request) {\n    if (user != null) {\n      if (user.active()) {\n        if (request != null) {\n          if (request.ownerId() == user.id()) return true;\n          else if (user.admin() && request.open()) return true;\n          else if (user.support() && request.queue() != null) return true;\n        }\n      }\n    }\n    return false;\n  }\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": false,
+        "language": "Java",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      },
+      {
+        "base_sha": "",
+        "case_id": "java-clean",
+        "expected_bugs": [],
+        "external_context": {},
+        "files": {
+          "src/Names.java": "import java.util.Optional;\nclass Names {\n  String display(Optional<String> name) {\n    return name.map(String::trim).filter(s -> !s.isEmpty()).orElse(\"Anonymous\");\n  }\n}\n"
+        },
+        "head_sha": "",
+        "is_clean": true,
+        "language": "Java",
+        "license": "MIT",
+        "patch": null,
+        "pr_number": null,
+        "repo": "",
+        "source_url": "",
+        "suite": "multilingual-real-pr"
+      }
+    ],
+    "config_id": "zero-analyzer-v1",
+    "corpus_digest": "539550015430173179f3213de52a7ab09d2e8a32de3545b861c0800a68390efa",
+    "corpus_id": "multilingual_v1",
+    "created_at": "2026-11-22T00:00:00Z",
+    "schema_version": "1"
+  },
+  "outputs": [],
+  "report": {
+    "by_category": {
+      "cognitive_complexity": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "contract_breaking": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "dead_code": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "logic_bounds": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "logic_concurrency": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "logic_null": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 4,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 4,
+        "tp": 0
+      },
+      "logic_resource": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 1,
+        "fn": 1,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 1,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 1,
+        "tp": 0
+      },
+      "security": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 5,
+        "fn": 5,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 5,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 5,
+        "tp": 0
+      }
+    },
+    "by_language": {
+      "Go": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 3,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 3,
+        "tp": 0
+      },
+      "Java": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 3,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 3,
+        "tp": 0
+      },
+      "Python": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 3,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 3,
+        "tp": 0
+      },
+      "Rust": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 3,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 3,
+        "tp": 0
+      },
+      "TypeScript": {
+        "actionable_share": 1.0,
+        "clean_pr_false_alarm_rate": 0.0,
+        "comments_per_pr": 0.0,
+        "cost_per_pr_usd": null,
+        "cost_total_usd": null,
+        "cost_unknown_count": 4,
+        "fn": 3,
+        "fp": 0,
+        "latency_mean_seconds": null,
+        "latency_p50_seconds": null,
+        "latency_p95_seconds": null,
+        "latency_unknown_count": 4,
+        "precision_denominator": 0,
+        "recall": 0.0,
+        "recall_denominator": 3,
+        "tp": 0
+      }
+    },
+    "overall": {
+      "actionable_share": 1.0,
+      "clean_pr_false_alarm_rate": 0.0,
+      "comments_per_pr": 0.0,
+      "cost_per_pr_usd": null,
+      "cost_total_usd": null,
+      "cost_unknown_count": 20,
+      "fn": 15,
+      "fp": 0,
+      "latency_mean_seconds": null,
+      "latency_p50_seconds": null,
+      "latency_p95_seconds": null,
+      "latency_unknown_count": 20,
+      "precision_denominator": 0,
+      "recall": 0.0,
+      "recall_denominator": 15,
+      "tp": 0
+    }
+  }
+}
