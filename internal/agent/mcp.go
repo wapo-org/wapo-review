@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"unicode/utf8"
 
 	einomcp "github.com/cloudwego/eino-ext/components/tool/mcp"
 	"github.com/cloudwego/eino/components/tool"
@@ -39,7 +40,11 @@ func (t *cappedTool) InvokableRun(ctx context.Context, args string, opts ...tool
 		return "", err
 	}
 	if t.limit > 0 && len(out) > t.limit {
-		return out[:t.limit] + fmt.Sprintf("\n[output truncated at %d bytes]", t.limit), nil
+		limit := t.limit
+		for limit > 0 && !utf8.RuneStart(out[limit]) {
+			limit--
+		}
+		return out[:limit] + fmt.Sprintf("\n[output truncated at %d bytes]", t.limit), nil
 	}
 	return out, nil
 }

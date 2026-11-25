@@ -102,7 +102,7 @@ func matches(f analyzer.Finding, b bug) bool {
 }
 func scoreCases(cases []corpusCase) Metrics {
 	var m Metrics
-	tn := 0
+	tn, cleanFP := 0, 0
 	for _, c := range cases {
 		fs := analyze(c.Files)
 		used := make([]bool, len(fs))
@@ -126,14 +126,18 @@ func scoreCases(cases []corpusCase) Metrics {
 				m.FP++
 			}
 		}
-		if len(c.Expected) == 0 && len(fs) == 0 {
-			tn++
+		if len(c.Expected) == 0 {
+			if len(fs) == 0 {
+				tn++
+			} else {
+				cleanFP++
+			}
 		}
 	}
 	m.Precision = Precision(m.TP, m.FP)
 	m.Recall = Recall(m.TP, m.FN)
 	m.F1 = F1(m.Precision, m.Recall)
-	m.FalsePositiveRate = FalsePositiveRate(m.FP, tn)
+	m.FalsePositiveRate = FalsePositiveRate(cleanFP, tn)
 	return m
 }
 func RunLogicRegression(path string) (LogicRegressionReport, error) {
@@ -178,14 +182,19 @@ func RunMultilingualCorpus(path string) (CorpusReport, error) {
 	}
 	r := CorpusReport{CorpusID: c.CorpusID, Cases: len(c.Cases), Languages: map[string]Metrics{}}
 	tn := map[string]int{}
+	cleanFP := map[string]int{}
 	for _, tc := range c.Cases {
 		m := scoreCases([]corpusCase{tc})
 		old := r.Languages[tc.Language]
 		old.TP += m.TP
 		old.FP += m.FP
 		old.FN += m.FN
-		if tc.Clean && m.FP == 0 {
-			tn[tc.Language]++
+		if tc.Clean {
+			if m.FP == 0 {
+				tn[tc.Language]++
+			} else {
+				cleanFP[tc.Language]++
+			}
 		}
 		r.Languages[tc.Language] = old
 	}
@@ -193,7 +202,7 @@ func RunMultilingualCorpus(path string) (CorpusReport, error) {
 		m.Precision = Precision(m.TP, m.FP)
 		m.Recall = Recall(m.TP, m.FN)
 		m.F1 = F1(m.Precision, m.Recall)
-		m.FalsePositiveRate = FalsePositiveRate(m.FP, tn[k])
+		m.FalsePositiveRate = FalsePositiveRate(cleanFP[k], tn[k])
 		r.Languages[k] = m
 		r.Overall.TP += m.TP
 		r.Overall.FP += m.FP
@@ -202,11 +211,14 @@ func RunMultilingualCorpus(path string) (CorpusReport, error) {
 	r.Overall.Precision = Precision(r.Overall.TP, r.Overall.FP)
 	r.Overall.Recall = Recall(r.Overall.TP, r.Overall.FN)
 	r.Overall.F1 = F1(r.Overall.Precision, r.Overall.Recall)
-	var totalTN int
+	var totalTN, totalCleanFP int
 	for _, n := range tn {
 		totalTN += n
 	}
-	r.Overall.FalsePositiveRate = FalsePositiveRate(r.Overall.FP, totalTN)
+	for _, n := range cleanFP {
+		totalCleanFP += n
+	}
+	r.Overall.FalsePositiveRate = FalsePositiveRate(totalCleanFP, totalTN)
 	return r, nil
 }
 func RunSonarParity(baselinesDir, fixturesDir string) (SonarParityReport, error) {
@@ -344,6 +356,30 @@ func RunGoldenCases(dir string) (GoldenReport, error) {
 			return r, fmt.Errorf("invalid golden case %s", p)
 		}
 		a := analyze(raw.Files)
+		if len(raw.Expected) == 0 && len(a) > 0 {
+			return r, fmt.Errorf("clean golden case %s produced %d unexpected static findings", raw.Name, len(a))
+		}
+		for _, expected := range raw.Expected {
+			if strings.TrimSpace(expected.Rule) == "" || strings.TrimSpace(expected.File) == "" {
+				return r, fmt.Errorf("golden case %s has invalid expectation %+v", raw.Name, expected)
+			}
+			if _, ok := raw.Files[expected.File]; !ok {
+				return r, fmt.Errorf("golden case %s expects file %q not present in fixture", raw.Name, expected.File)
+			}
+			// Assert static-analyzer rules deterministically; LLM policy rules (R*.*, G.*) are evaluated by the LLM pipeline.
+			if isStaticRuleID(expected.Rule) {
+				found := false
+				for _, finding := range a {
+					if finding.RuleID == expected.Rule && finding.File == expected.File {
+						found = true
+						break
+					}
+				}
+				if !found {
+					return r, fmt.Errorf("golden case %s missing expected static finding %s in %s", raw.Name, expected.Rule, expected.File)
+				}
+			}
+		}
 		b2 := analyze(raw.Files)
 		if fmt.Sprint(a) != fmt.Sprint(b2) {
 			r.Repeatable = false
@@ -358,6 +394,15 @@ func RunGoldenCases(dir string) (GoldenReport, error) {
 	}
 	return r, nil
 }
+func isStaticRuleID(ruleID string) bool {
+	for _, prefix := range []string{"SECURITY.", "SEC.", "LOGIC.", "COMPLEXITY.", "CLONE.", "CI.", "CONTAINER.", "IAC.", "SUPPLY."} {
+		if strings.HasPrefix(ruleID, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 func hasSnapshotTS(fs []ParityFile) bool {
 	for _, f := range fs {
 		if strings.HasSuffix(f.File, "snapshot.ts") {

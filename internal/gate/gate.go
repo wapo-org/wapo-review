@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/wapo-org/wapo-review/internal/analyzer"
 	"github.com/wapo-org/wapo-review/internal/githubapp"
@@ -97,7 +98,7 @@ func sanitizeCell(s string) string {
 	s = strings.ReplaceAll(s, "|", "\\|")
 	s = strings.ReplaceAll(s, "\n", " ")
 	if len(s) > 200 {
-		s = s[:200] + "..."
+		s = truncateUTF8(s, 200) + "..."
 	}
 	return s
 }
@@ -107,7 +108,7 @@ func BuildAnnotations(fs []analyzer.Finding) []githubapp.Annotation {
 	for _, f := range fs {
 		p := strings.TrimPrefix(strings.TrimPrefix(f.File, "./"), "/")
 		if len(p) > 255 {
-			p = p[:255]
+			p = truncateUTF8(p, 255)
 		}
 		if p == "" {
 			continue
@@ -122,11 +123,11 @@ func BuildAnnotations(fs []analyzer.Finding) []githubapp.Annotation {
 		}
 		msg := f.Message
 		if len(msg) > 4000 {
-			msg = msg[:4000]
+			msg = truncateUTF8(msg, 4000)
 		}
 		details := f.Evidence
 		if len(details) > 4000 {
-			details = details[:4000]
+			details = truncateUTF8(details, 4000)
 		}
 		level := "warning"
 		if strings.EqualFold(f.Severity, "critical") || strings.EqualFold(f.Severity, "high") {
@@ -141,11 +142,19 @@ func BuildAnnotations(fs []analyzer.Finding) []githubapp.Annotation {
 			Title:     f.RuleID,
 			Details:   details,
 		})
-		if len(out) == 50 {
-			break
-		}
 	}
 	return out
+}
+
+func truncateUTF8(s string, maxBytes int) string {
+	if len(s) <= maxBytes {
+		return s
+	}
+	s = s[:maxBytes]
+	for !utf8.ValidString(s) {
+		s = s[:len(s)-1]
+	}
+	return s
 }
 
 func PublishGateCheckRun(ctx context.Context, c *githubapp.Client, repo, headSHA string, r Result) (int64, error) {

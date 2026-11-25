@@ -33,12 +33,30 @@ func isDisallowedResolvedHost(host string) bool {
 	if isDisallowedHost(host) {
 		return true
 	}
-	ips, err := net.LookupIP(host)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
 	if err != nil || len(ips) == 0 {
 		return true
 	}
-	for _, ip := range ips {
+	for _, addr := range ips {
+		ip := addr.IP
 		if ip.IsPrivate() || ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() {
+			return true
+		}
+	}
+	return false
+}
+
+func PreviewProviderMatches(rawURL string, providerHosts ...string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	host := strings.ToLower(u.Hostname())
+	for _, candidate := range providerHosts {
+		candidate = strings.ToLower(strings.TrimSpace(candidate))
+		if host == candidate || strings.HasSuffix(host, "."+candidate) {
 			return true
 		}
 	}

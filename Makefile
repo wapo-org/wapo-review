@@ -1,4 +1,4 @@
-GO := /var/lib/t3-server/.local/go/bin/go
+GO ?= $(shell command -v go 2>/dev/null || echo /var/lib/t3-server/.local/go/bin/go)
 CGO_ENABLED := 0
 
 .PHONY: build test vet clean

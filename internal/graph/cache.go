@@ -105,6 +105,9 @@ func (c *ProfilerCache) SeedBase(tenant, repo, _ string) (string, *CodebaseIndex
 		return "", nil, err
 	}
 	x, err := c.Load(tenant, repo, m.BaseSHA)
+	if err == nil && x.CommitSHA != m.BaseSHA {
+		return "", nil, os.ErrNotExist
+	}
 	return m.BaseSHA, x, err
 }
 

@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -116,7 +117,7 @@ func (v *Verifier) verify(d FindingDraft, ws *workspace.SharedWorkspace) (Verify
 		return VerifyResponse{Errors: []string{"file is not in this PR"}, Hints: v.closest(p)}, workspace.VerifiedFinding{}
 	}
 	full := filepath.Join(v.Root, filepath.FromSlash(p))
-	b, err := os.ReadFile(full)
+	b, err := readVerifierFile(full)
 	if err != nil {
 		return VerifyResponse{Errors: []string{"file does not exist in repository"}, Hints: v.closest(p)}, workspace.VerifiedFinding{}
 	}
@@ -207,6 +208,24 @@ func (v *Verifier) verify(d FindingDraft, ws *workspace.SharedWorkspace) (Verify
 		CreatedAt:     time.Now().UTC(),
 	}
 	return VerifyResponse{Accepted: true, FindingID: id, OnDiffLine: onDiff}, vf
+}
+
+const maxVerifierFileBytes = 32 << 20
+
+func readVerifierFile(path string) ([]byte, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	data, err := io.ReadAll(io.LimitReader(f, maxVerifierFileBytes+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > maxVerifierFileBytes {
+		return nil, fmt.Errorf("file exceeds verifier size limit")
+	}
+	return data, nil
 }
 
 // NormalizeSeverity maps common LLM severity aliases (e.g. P0/P1/P2/P3, error/warning)

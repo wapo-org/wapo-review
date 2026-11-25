@@ -51,8 +51,10 @@ func LoadRepoConfig(baseYAML, gitattributes []byte) (RepoConfig, error) {
 		}
 		r := ast.GitAttributeRule{Pattern: f[0]}
 		for _, a := range f[1:] {
-			if a == "linguist-generated=true" {
+			if a == "linguist-generated" || a == "linguist-generated=true" {
 				r.Generated = true
+			} else if a == "-linguist-generated" || a == "linguist-generated=false" {
+				r.Generated = false
 			}
 		}
 		if r.Generated {

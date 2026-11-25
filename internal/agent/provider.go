@@ -62,6 +62,19 @@ func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout
 	if base != nil {
 		c = *base
 	}
+	previousRedirect := c.CheckRedirect
+	c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		if len(via) > 0 && (req.URL.Scheme != via[0].URL.Scheme || req.URL.Host != via[0].URL.Host) {
+			return http.ErrUseLastResponse
+		}
+		if previousRedirect != nil {
+			return previousRedirect(req, via)
+		}
+		if len(via) >= 10 {
+			return fmt.Errorf("stopped after 10 redirects")
+		}
+		return nil
+	}
 	if timeout > 0 && c.Timeout == 0 {
 		c.Timeout = timeout
 	}

@@ -108,7 +108,7 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 		if e != nil {
 			return e
 		}
-		im = downscaleMaxWidth(im, 640)
+		im = downscaleToCell(im, 640, 1200)
 		imgs = append(imgs, im)
 		if im.Bounds().Dx() > maxW {
 			maxW = im.Bounds().Dx()
@@ -164,14 +164,21 @@ func decodeBounded(f *os.File) (image.Image, string, error) {
 	im, _, err := image.Decode(f)
 	return im, format, err
 }
-func downscaleMaxWidth(src image.Image, maxW int) image.Image {
+func downscaleToCell(src image.Image, maxW, maxH int) image.Image {
 	b := src.Bounds()
 	w, h := b.Dx(), b.Dy()
-	if maxW <= 0 || w <= maxW || w <= 0 || h <= 0 {
+	if maxW <= 0 || maxH <= 0 || w <= 0 || h <= 0 {
 		return src
 	}
-	newW := maxW
-	newH := max(1, (h*newW)/w)
+	newW, newH := w, h
+	if w > maxW || h > maxH {
+		scale := min(float64(maxW)/float64(w), float64(maxH)/float64(h))
+		newW = max(1, int(float64(w)*scale))
+		newH = max(1, int(float64(h)*scale))
+	}
+	if newW == w && newH == h {
+		return src
+	}
 	dst := image.NewRGBA(image.Rect(0, 0, newW, newH))
 	for y := 0; y < newH; y++ {
 		sy := b.Min.Y + (y*h)/newH

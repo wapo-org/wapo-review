@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -82,10 +83,12 @@ func (l *LocalRunner) persistDelivery(in ReviewInput, gen uint64, status string,
 	if runErr != nil {
 		errStr = runErr.Error()
 	}
-	_, _ = l.DB.Exec(
+	if _, err := l.DB.Exec(
 		`INSERT OR REPLACE INTO deliveries(run_id, repo, pr_number, status, result, error, updated_at) VALUES(?,?,?,?,?,?,?)`,
 		in.RunID, in.Repo, in.PRNumber, status, blob, errStr, time.Now().UTC().Format(time.RFC3339Nano),
-	)
+	); err != nil {
+		log.Printf("persist delivery %s (%s): %v", in.RunID, status, err)
+	}
 }
 
 // Start begins (or coalesces/supersedes) a PR review run keyed by RunID (or repo:pr).
@@ -136,6 +139,9 @@ func (l *LocalRunner) Start(ctx context.Context, in ReviewInput) (RunRef, error)
 
 		l.persistDelivery(in, entry.gen, "running", nil, nil)
 		out, err := l.execute(runCtx, in)
+		if err == nil && runCtx.Err() != nil {
+			err = runCtx.Err()
+		}
 
 		l.mu.Lock()
 		current := l.runs[id] == entry && runCtx.Err() == nil
@@ -143,6 +149,9 @@ func (l *LocalRunner) Start(ctx context.Context, in ReviewInput) (RunRef, error)
 			res := ReviewResult{Ref: RunRef{ID: id}, Output: out}
 			entry.result = &res
 		} else {
+			if err == nil {
+				err = context.Canceled
+			}
 			entry.err = err
 		}
 		entry.cancel = nil

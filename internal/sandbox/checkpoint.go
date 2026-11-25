@@ -56,7 +56,9 @@ cd "$1"
 head_rev=$(git rev-parse HEAD)
 tmp_idx=$(mktemp)
 trap 'rm -f "$tmp_idx"' EXIT
-cp .git/index "$tmp_idx" 2>/dev/null || true
+if [ -e .git/index ]; then
+  cp .git/index "$tmp_idx"
+fi
 GIT_INDEX_FILE="$tmp_idx" git add -A
 tree_hash=$(GIT_INDEX_FILE="$tmp_idx" git write-tree)
 printf '%s %s\n' "$head_rev" "$tree_hash"

@@ -82,12 +82,12 @@ func TestSpecialistV2FocusesAndBalancedQuotas(t *testing.T) {
 		sharder.PRFile{Path: "billing/ledger.ts", Patch: "@@ -1 +1 @@\n+purge compact replay"},
 		sharder.PRFile{Path: "auth/keyring.ts", Patch: "@@ -1 +1 @@\n+encrypt sha256 consent"},
 	)
-	batches := SelectSpecialistBatchesWithFeedback(files, nil, SpecialistFeedback{}, 5, 12000)
+	batches := SelectSpecialistBatchesWithFeedback(files, nil, SpecialistFeedback{}, 6, 12000)
 	seen := map[string]bool{}
 	for _, batch := range batches {
 		seen[batch.Focus] = true
 	}
-	for _, focus := range []string{"abstraction_contract", "logic_bs", "state_machine", "accounting_lifecycle", "auth_crypto_parity"} {
+	for _, focus := range []string{"abstraction_contract", "logic_bs", "state_machine", "accounting_lifecycle", "auth_crypto_parity", "trust_boundary_protocol"} {
 		if !seen[focus] {
 			t.Errorf("balanced batches omitted focus %q: %+v", focus, batches)
 		}
@@ -140,6 +140,42 @@ func TestSpecialistInvestigationRulesRequireInspectionAndConcreteFindings(t *tes
 		if !strings.Contains(specialistInvestigationRules, required) {
 			t.Errorf("investigation prompt missing %q", required)
 		}
+	}
+}
+
+func TestTrustBoundaryProtocolLensScoresSignalsAndPrompt(t *testing.T) {
+	f := sharder.PRFile{Path: "internal/sandbox/runner.go", Patch: "@@ -1 +1 @@\n+cmd := exec.CommandContext(ctx, name)\n+data, _ := os.ReadFile(path)"}
+	scores, reasons, _ := scoreSpecialistFile(f, nil, SpecialistFeedback{})
+	if scores["trust_boundary_protocol"] < 2 {
+		t.Fatalf("trust boundary lens did not score exec/filesystem signals: scores=%v reasons=%v", scores, reasons)
+	}
+	for _, required := range []string{"untrusted PR", "symmetric sibling", "Responses API", "GitHub 422", "SHA-pinned"} {
+		if !strings.Contains(strings.Join(specialistChecklists["trust_boundary_protocol"], " "), required) {
+			t.Errorf("trust boundary checklist missing %q", required)
+		}
+	}
+}
+
+func TestTrustBoundaryExpansionIncludesChangedSibling(t *testing.T) {
+	files := []sharder.PRFile{
+		{Path: "internal/sandbox/runner.go", Patch: "@@ -1 +1 @@\n+exec.CommandContext(ctx, name)"},
+		{Path: "internal/sandbox/localboot.go", Patch: "@@ -1 +1 @@\n+start container"},
+		{Path: "internal/sandbox/other.go", Patch: "@@ -1 +1 @@\n+ReadFile(path)"},
+	}
+	batches := SelectSpecialistBatchesWithFeedback(files, nil, SpecialistFeedback{}, 20, 12000)
+	seenSibling := false
+	for _, b := range batches {
+		if b.Focus != "trust_boundary_protocol" {
+			continue
+		}
+		for _, f := range b.Files {
+			if f.Path == "internal/sandbox/localboot.go" {
+				seenSibling = true
+			}
+		}
+	}
+	if !seenSibling {
+		t.Fatalf("trust boundary batch omitted same-package sibling: %+v", batches)
 	}
 }
 

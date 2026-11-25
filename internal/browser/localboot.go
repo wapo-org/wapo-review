@@ -205,7 +205,11 @@ func DetectLocalServices(repoRoot string) LocalAppPlan {
 						HealthPath: "/",
 					})
 				case hasDep(p, "nuxt", "astro", "react-scripts"):
-					port := parsePortFromScript(devScript, 3000)
+					fallback := 3000
+					if hasDep(p, "astro") {
+						fallback = 4321
+					}
+					port := parsePortFromScript(devScript, fallback)
 					webCandidates = append(webCandidates, LocalServiceSpec{
 						Name:       nonEmpty(p.Name, dirRel, "web"),
 						Role:       "web",
@@ -388,7 +392,7 @@ func BootLocalApp(ctx context.Context, container sandbox.Container, hostRepoDir 
 		}
 		var parts []string
 		for _, pf := range pidFiles {
-			parts = append(parts, fmt.Sprintf(`if [ -f %s ]; then kill -TERM "$(cat %s)" 2>/dev/null || true; rm -f %s; fi`, shellQuote(pf), shellQuote(pf), shellQuote(pf)))
+			parts = append(parts, fmt.Sprintf(`if [ -f %s ]; then pid=$(cat %s); kill -TERM -"$pid" 2>/dev/null || true; sleep 1; kill -KILL -"$pid" 2>/dev/null || true; rm -f %s; fi`, shellQuote(pf), shellQuote(pf), shellQuote(pf)))
 		}
 		killCtx, cancel := context.WithTimeout(context.WithoutCancel(cctx), 5*time.Second)
 		defer cancel()
@@ -401,7 +405,7 @@ func BootLocalApp(ctx context.Context, container sandbox.Container, hostRepoDir 
 		for k, v := range spec.Env {
 			fmt.Fprintf(&envPrefix, "%s=%s ", k, shellQuote(v))
 		}
-		launch := fmt.Sprintf("cd %s && nohup env %s sh -c %s >%s 2>&1 </dev/null & echo $! > %s",
+		launch := fmt.Sprintf("cd %s && setsid nohup env %s sh -c %s >%s 2>&1 </dev/null & echo $! > %s",
 			shellQuote(dir), envPrefix.String(), shellQuote(spec.Command), shellQuote(logFile), shellQuote(pidFile))
 		res, err := container.Exec(ctx, sandbox.ExecOpts{Command: []string{"sh", "-c", launch}, Timeout: 15 * time.Second})
 		if err != nil || res.ExitCode != 0 {

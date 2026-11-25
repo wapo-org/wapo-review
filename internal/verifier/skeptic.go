@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -155,8 +156,13 @@ func skepticPrompt(root string, findings []workspace.VerifiedFinding) string {
 	for _, f := range findings {
 		fmt.Fprintf(&b, "\nFinding %s\nFile: %s\nLines: %d..%d\nSeverity: %s\nCategory: %s\nTitle: %s\nBody: %s\nEvidenceQuote: %s\nSource context:\n", f.ID, f.File, f.StartLine, f.EndLine, f.Severity, f.Category, f.Title, f.Body, f.EvidenceQuote)
 		path := filepath.Join(root, filepath.FromSlash(f.File))
-		data, err := os.ReadFile(path)
+		file, err := os.Open(path)
 		if err != nil {
+			continue
+		}
+		data, err := io.ReadAll(io.LimitReader(file, maxVerifierFileBytes+1))
+		_ = file.Close()
+		if err != nil || len(data) > maxVerifierFileBytes {
 			continue
 		}
 		lines := strings.Split(string(data), "\n")

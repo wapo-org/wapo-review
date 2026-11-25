@@ -43,6 +43,9 @@ func TestReplyExtractionAndRanking(t *testing.T) {
 	if _, _, ok := ParseRememberCommand("remember(code_review): prefer table tests"); !ok {
 		t.Fatal("remember parse failed")
 	}
+	if scope, text, ok := ParseRememberCommand("/remember: always check migrations"); !ok || scope != "all" || text != "always check migrations" {
+		t.Fatalf("slash remember parse: %q %q %v", scope, text, ok)
+	}
 	for _, body := range []string{"Fixed.", "Thanks!", "> Always preserve quoted text\n?", "Is this intentional?"} {
 		if _, _, ok := ExtractMemoryFromReply(body, true); ok {
 			t.Errorf("accepted %q", body)

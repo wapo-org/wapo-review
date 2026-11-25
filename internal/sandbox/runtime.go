@@ -164,9 +164,47 @@ func (c *LocalContainer) WriteFile(ctx context.Context, targetPath string, data 
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	root := "."
+	if c != nil && strings.TrimSpace(c.Root) != "" {
+		root = c.Root
+	}
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return err
+	}
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		return err
+	}
 	p := targetPath
-	if c != nil && c.Root != "" && !strings.HasPrefix(filepath.Clean(targetPath), filepath.Clean(c.Root)) {
-		p = filepath.Join(c.Root, strings.TrimPrefix(targetPath, "/"))
+	if !filepath.IsAbs(p) {
+		p = filepath.Join(root, p)
+	} else if c != nil && c.Root != "" {
+		cleanRoot := filepath.Clean(root)
+		if filepath.Clean(p) != cleanRoot && !strings.HasPrefix(filepath.Clean(p), cleanRoot+string(filepath.Separator)) {
+			p = filepath.Join(root, strings.TrimLeft(p, string(filepath.Separator)))
+		}
+	}
+	p, err = filepath.Abs(p)
+	if err != nil {
+		return err
+	}
+	parent, err := filepath.EvalSymlinks(filepath.Dir(p))
+	if err != nil {
+		return err
+	}
+	p = filepath.Join(parent, filepath.Base(p))
+	if info, statErr := os.Lstat(p); statErr == nil && info.Mode()&os.ModeSymlink != 0 {
+		p, err = filepath.EvalSymlinks(p)
+		if err != nil {
+			return err
+		}
+	} else if statErr != nil && !os.IsNotExist(statErr) {
+		return statErr
+	}
+	rel, err := filepath.Rel(root, p)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("write path escapes container root")
 	}
 	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
 		return err
@@ -343,11 +381,11 @@ func BuildPodmanRunArgs(name string, cfg PodmanConfig) []string {
 }
 
 type PodmanContainer struct {
-	Name      string
-	Registry  *ActiveRegistry
-	Config    PodmanConfig
-	Image     string
-	execFn    func(context.Context, ExecOpts) (ExecResult, error)
+	Name     string
+	Registry *ActiveRegistry
+	Config   PodmanConfig
+	Image    string
+	execFn   func(context.Context, ExecOpts) (ExecResult, error)
 }
 
 func NewPodmanContainer(ctx context.Context, image string, registry *ActiveRegistry) (*PodmanContainer, error) {
@@ -373,7 +411,11 @@ func NewPodmanContainerWithConfig(ctx context.Context, cfg PodmanConfig, registr
 	args := BuildPodmanRunArgs(name, cfg)
 	res, err := p.execFn(ctx, ExecOpts{Command: args, Timeout: 30 * time.Second, MaxOutputBytes: 8192})
 	if err != nil || res.ExitCode != 0 {
-		if registry != nil {
+		// Best-effort cleanup of any partially created container; keep it tracked if removal fails.
+		rmCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		rmRes, rmErr := p.execFn(rmCtx, ExecOpts{Command: []string{"podman", "--cgroup-manager=" + p.cgroupManager(), "rm", "--force", name}, Timeout: 10 * time.Second, MaxOutputBytes: 4096})
+		cancel()
+		if registry != nil && rmErr == nil && rmRes.ExitCode == 0 {
 			registry.Remove(name)
 		}
 		if err != nil {
@@ -459,14 +501,14 @@ func (p *PodmanContainer) WriteFile(ctx context.Context, targetPath string, data
 
 func (p *PodmanContainer) Close(ctx context.Context) error {
 	res, err := p.runner()(ctx, ExecOpts{Command: []string{"podman", "--cgroup-manager=" + p.cgroupManager(), "rm", "--force", p.Name}, Timeout: 30 * time.Second, MaxOutputBytes: 8192})
-	if p.Registry != nil {
-		p.Registry.Remove(p.Name)
-	}
 	if err != nil {
 		return err
 	}
 	if res.ExitCode != 0 {
 		return fmt.Errorf("podman rm %s failed (exit %d): %s", p.Name, res.ExitCode, strings.TrimSpace(res.Stderr))
+	}
+	if p.Registry != nil {
+		p.Registry.Remove(p.Name)
 	}
 	return nil
 }

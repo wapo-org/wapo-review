@@ -77,9 +77,12 @@ func ScopeFinding(f Finding, d Diff) bool {
 	if f.NewCode {
 		return true
 	}
-	for n := f.StartLine; n <= f.EndLine; n++ {
+	end := f.EndLine
+	if end < f.StartLine {
+		end = f.StartLine
+	}
+	for n := f.StartLine; n <= end; n++ {
 		if d.IsNew(f.File, n) {
-			f.NewCode = true
 			return true
 		}
 	}

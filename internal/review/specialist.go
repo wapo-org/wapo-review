@@ -3,6 +3,7 @@ package review
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -58,7 +59,7 @@ type scoredPRFile struct {
 	hunks   int
 }
 
-var specialistFocusOrder = []string{"accounting_lifecycle", "state_machine", "auth_crypto_parity", "abstraction_contract", "logic_bs"}
+var specialistFocusOrder = []string{"accounting_lifecycle", "state_machine", "auth_crypto_parity", "abstraction_contract", "logic_bs", "trust_boundary_protocol"}
 
 var specialistChecklists = map[string][]string{
 	"abstraction_contract": {
@@ -86,6 +87,11 @@ var specialistChecklists = map[string][]string{
 		"Compare keyrings, ciphertext versions (v1/v2), and envelope encoding across services, modules, migrations, and rotation scripts. Verify legacy data remains readable where required.",
 		"Check key invalidation slice/revision CAS binding, consent enforcement, and auth/header trust boundaries at every entry point.",
 	},
+	"trust_boundary_protocol": {
+		"Trace untrusted PR, user, and external inputs across host execution, filesystem containment, browser and HTTP egress, redirects, and model-visible payload serialization. Check exec/Command, ReadFile/WriteFile/EvalSymlinks, temp paths, headers, cookies, StorageState, SSRF, DNS, URL matching, and secret redaction.",
+		"Inspect symmetric sibling primitives in the same package. If ReadFile has a symlink or size check, inspect WriteFile and PreparePR. If one HTTP client strips auth on redirect, inspect sibling clients and retry paths. Pair runner/localboot, scorer/media, and equivalent adapters.",
+		"Verify third-party protocol invariants invisible to local Go or TypeScript types, including Responses API reasoning-item replay and incomplete status handling, GitHub 422 fallback event preservation, non-idempotent POST/PATCH retries, SHA-pinned checkouts, hostname versus full-URL matching, and OAuth, webhook, and signature verification.",
+	},
 }
 
 const specialistInvestigationRules = "For EVERY assigned file, you MUST inspect surrounding functions, callers, or sibling/paired modules using read_file or grep before calling mark_file_reviewed — never rubber-stamp a file from the diff hunk alone.\n" +
@@ -107,6 +113,12 @@ func SelectSpecialistBatchesWithFeedback(files []sharder.PRFile, idx *graph.Code
 		}
 	}
 	grouped := map[string][]scoredPRFile{}
+	byPath := make(map[string]sharder.PRFile, len(files))
+	for _, f := range files {
+		if !f.IsTest && strings.TrimSpace(f.Patch) != "" {
+			byPath[f.Path] = f
+		}
+	}
 	for _, f := range files {
 		if f.IsTest || strings.TrimSpace(f.Patch) == "" {
 			continue
@@ -124,17 +136,69 @@ func SelectSpecialistBatchesWithFeedback(files []sharder.PRFile, idx *graph.Code
 			}
 			return focusIndex(qualified[i]) < focusIndex(qualified[j])
 		})
-		if len(qualified) > 2 {
-			qualified = qualified[:2]
+		if len(qualified) > 3 {
+			qualified = qualified[:3]
 		}
 		for _, focus := range qualified {
 			grouped[focus] = append(grouped[focus], scoredPRFile{f, scores[focus], reasons[focus], hunks})
 		}
 	}
+	// Expand boundary leads to a small, deterministic set of changed sibling
+	// primitives in the same directory or graph relationship.
+	trustSeen := map[string]bool{}
+	for _, sf := range grouped["trust_boundary_protocol"] {
+		trustSeen[sf.file.Path] = true
+	}
+	var boundarySeeds []string
+	for _, f := range files {
+		if f.IsTest || strings.TrimSpace(f.Patch) == "" {
+			continue
+		}
+		scores, _, _ := scoreSpecialistFile(f, idx, fb)
+		if scores["trust_boundary_protocol"] >= 2 || fb.LeadTargets[f.Path] > 0 {
+			boundarySeeds = append(boundarySeeds, f.Path)
+		}
+	}
+	sort.Strings(boundarySeeds)
+	for _, seed := range boundarySeeds {
+		candidatePaths := map[string]bool{}
+		seedDir := filepath.Dir(filepath.ToSlash(seed))
+		for path := range byPath {
+			if path != seed && filepath.Dir(filepath.ToSlash(path)) == seedDir {
+				candidatePaths[path] = true
+			}
+		}
+		if idx != nil {
+			for _, path := range append(append(idx.PairedModules(seed), idx.ImportersOf(seed)...), idx.ImportsOf(seed)...) {
+				if _, ok := byPath[path]; ok && path != seed {
+					candidatePaths[path] = true
+				}
+			}
+		}
+		paths := make([]string, 0, len(candidatePaths))
+		for path := range candidatePaths {
+			paths = append(paths, path)
+		}
+		sort.Strings(paths)
+		added := 0
+		for _, path := range paths {
+			if trustSeen[path] || added >= 2 {
+				continue
+			}
+			f := byPath[path]
+			_, reasons, hunks := scoreSpecialistFile(f, idx, fb)
+			grouped["trust_boundary_protocol"] = append(grouped["trust_boundary_protocol"], scoredPRFile{
+				file: f, score: 2, hunks: hunks,
+				reasons: append(reasons["trust_boundary_protocol"], "same-package sibling of "+seed),
+			})
+			trustSeen[path] = true
+			added++
+		}
+	}
 	if maxBatches <= 0 {
 		maxBatches = (prodCount + 13) / 14
-		if maxBatches < 5 {
-			maxBatches = 5
+		if maxBatches < len(specialistFocusOrder) {
+			maxBatches = len(specialistFocusOrder)
 		}
 		if maxBatches > 20 {
 			maxBatches = 20
@@ -284,6 +348,32 @@ func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb Speciali
 		}
 		add("auth_crypto_parity", "authentication or cryptography signal", pts)
 	}
+	trustPathTerms := []string{"sandbox", "runner", "localboot", "browser", "playwright", "storage", "cookie", "header", "redirect", "ssrf", "dns", "checkout", "clone", "oauth", "webhook", "signature", "redact", "serialize", "protocol", "openai", "anthropic", "github", "http", "client", "secret", "temp"}
+	trustCodeTerms := []string{"exec.command", "exec.commandcontext", "readfile", "writefile", "evalsymlinks", "storage_state", "checkredirect", "http.client", "http.newrequest", "url.", "dns.", "git clone", "git checkout", "sha", "redact", "tool-output", "tool output", "reasoning", "incomplete", "oauth", "webhook", "signature"}
+	trustPathHit := false
+	for _, term := range trustPathTerms {
+		if strings.Contains(path, term) {
+			trustPathHit = true
+			break
+		}
+	}
+	trustCodeHit := false
+	for _, term := range trustCodeTerms {
+		if strings.Contains(p, term) {
+			trustCodeHit = true
+			break
+		}
+	}
+	if trustPathHit || trustCodeHit {
+		pts := 3
+		if trustPathHit {
+			pts += 2
+		}
+		if trustCodeHit {
+			pts++
+		}
+		add("trust_boundary_protocol", "trust boundary or external protocol signal", pts)
+	}
 	if maxDelta > 0 {
 		add("logic_bs", fmt.Sprintf("complexity delta +%d", maxDelta), min(6, maxDelta/4))
 	}
@@ -313,6 +403,11 @@ func scoreSpecialistFile(f sharder.PRFile, idx *graph.CodebaseIndex, fb Speciali
 		if len(idx.ImportersOf(f.Path)) > 0 || len(idx.ImportsOf(f.Path)) > 0 {
 			add("abstraction_contract", "cross-package import relationship", 2)
 		}
+	}
+	// Boundary findings need a bounded second look at paired primitives. Keep
+	// expansion deterministic and limited to changed files and direct graph peers.
+	if scores["trust_boundary_protocol"] >= 2 || fb.LeadTargets[f.Path] > 0 {
+		add("trust_boundary_protocol", "boundary sibling expansion", 2)
 	}
 	return scores, reasons, hunks
 }

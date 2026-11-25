@@ -3,6 +3,7 @@ package redact
 import (
 	"fmt"
 	"log/slog"
+	"reflect"
 	"regexp"
 	"strings"
 	"sync"
@@ -17,7 +18,8 @@ type Redactor struct {
 
 var patterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)\b(?:ghs_|ghp_|sk-or-|sk-ant-)[A-Za-z0-9_-]{8,}`),
-	regexp.MustCompile(`(?s)-----BEGIN .*? PRIVATE KEY-----.*?-----END .*? PRIVATE KEY-----`),
+	regexp.MustCompile(`(?s)-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----.*?-----END (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----`),
+	regexp.MustCompile(`(?s)-----BEGIN ENCRYPTED PRIVATE KEY-----.*?-----END ENCRYPTED PRIVATE KEY-----`),
 	regexp.MustCompile(`(?i)\bBearer\s+[A-Za-z0-9._~+/-]+=*`),
 }
 
@@ -67,6 +69,28 @@ func (r *Redactor) RedactValue(value any) any {
 		}
 		return out
 	default:
+		if value == nil {
+			return nil
+		}
+		rv := reflect.ValueOf(value)
+		switch rv.Kind() {
+		case reflect.Slice, reflect.Array:
+			out := make([]any, rv.Len())
+			for i := range out {
+				out[i] = r.RedactValue(rv.Index(i).Interface())
+			}
+			return out
+		case reflect.Map:
+			out := make(map[any]any, rv.Len())
+			iter := rv.MapRange()
+			for iter.Next() {
+				out[r.RedactValue(iter.Key().Interface())] = r.RedactValue(iter.Value().Interface())
+			}
+			return out
+		}
+		if stringer, ok := value.(fmt.Stringer); ok {
+			return r.RedactString(stringer.String())
+		}
 		return value
 	}
 }

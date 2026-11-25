@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -36,6 +37,7 @@ type CheckPlan struct {
 	ScreenshotDir    string            `json:"screenshot_dir,omitempty"`
 	RecordVideo      bool              `json:"record_video,omitempty"`
 	ExtraHTTPHeaders map[string]string `json:"extra_http_headers,omitempty"`
+	ResolvedIP       string            `json:"resolved_ip,omitempty"`
 }
 
 type StepResult struct {
@@ -90,10 +92,11 @@ async function main() {
   const { chromium } = await loadPlaywright();
   const screenshotDir = plan.screenshot_dir || "/tmp/wapo-screenshots";
   fs.mkdirSync(screenshotDir, { recursive: true, mode: 0o700 });
+  const runID = Date.now() + "-" + process.pid + "-" + Math.random().toString(16).slice(2);
 
   const browser = await chromium.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-dev-shm-usage"],
+    args: ["--no-sandbox", "--disable-dev-shm-usage", ...(plan.resolved_ip && plan.url ? ["--host-resolver-rules=MAP " + new URL(plan.url).hostname + " " + plan.resolved_ip] : [])],
   });
   const ctxOpts = {};
   if (plan.storage_state) ctxOpts.storageState = plan.storage_state;
@@ -101,7 +104,7 @@ async function main() {
 
   const context = await browser.newContext(ctxOpts);
   const page = await context.newPage();
-  if (plan.extra_http_headers) {
+  if (plan.extra_http_headers && plan.url) {
     const targetOrigin = new URL(plan.url).origin;
     await page.route("**/*", async (route) => {
       const req = route.request();
@@ -173,7 +176,7 @@ async function main() {
           break;
         }
         case "screenshot": {
-          const fname = path.join(screenshotDir, (step.label || "step-" + idx).replace(/[^a-zA-Z0-9._-]/g, "_") + ".png");
+          const fname = path.join(screenshotDir, runID + "-" + (plan.scenario_id || "check").replace(/[^a-zA-Z0-9._-]/g, "_") + "-step-" + idx + "-" + (step.label || "screenshot").replace(/[^a-zA-Z0-9._-]/g, "_") + ".png");
           await page.screenshot({ path: fname, fullPage: false });
           fs.chmodSync(fname, 0o600);
           report.screenshots.push(fname);
@@ -248,9 +251,12 @@ func (e *SandboxPlaywrightExecutor) Run(ctx context.Context, c *sandbox.Containe
 
 	command := e.RunnerCommand
 	if len(command) == 0 {
-		const scriptPath = "/tmp/wapo-browser-runner.mjs"
+		scriptPath := "/tmp/wapo-browser-runner.mjs"
 		if err := (*c).WriteFile(ctx, scriptPath, []byte(PlaywrightRunnerScript), 0o600, ""); err != nil {
 			return CheckReport{}, fmt.Errorf("write browser runner script: %w", err)
+		}
+		if local, ok := (*c).(*sandbox.LocalContainer); ok && local.Root != "" {
+			scriptPath = filepath.Join(local.Root, "tmp", "wapo-browser-runner.mjs")
 		}
 		command = []string{"node", scriptPath}
 	}
@@ -368,6 +374,7 @@ func (t checkTool) InvokableRun(ctx context.Context, raw string, _ ...tool.Optio
 	}
 	t.h.mu.Unlock()
 
+	r.StorageState = nil
 	b, _ := json.Marshal(r)
 	return string(b), nil
 }

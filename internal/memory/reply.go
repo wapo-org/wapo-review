@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-var remember = regexp.MustCompile(`(?is)^\s*remember(?:\s*\(\s*([a-z_]+)\s*\))?\s*:\s*(.*?)\s*$`)
+var remember = regexp.MustCompile(`(?is)^\s*/?remember(?:\s*\(\s*([a-z_]+)\s*\))?\s*:\s*(.*?)\s*$`)
 
 func ParseRememberCommand(instructions string) (string, string, bool) {
 	m := remember.FindStringSubmatch(instructions)

@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	gts "github.com/odvcencio/gotreesitter"
@@ -104,6 +105,9 @@ var classTypes = map[string]bool{
 }
 
 func CognitiveComplexities(file string, src []byte) ([]FunctionComplexity, error) {
+	if excludedComplexityPath(file) {
+		return nil, nil
+	}
 	p, err := ast.Parse(file, src)
 	if err != nil {
 		return nil, err
@@ -178,6 +182,22 @@ func CognitiveComplexities(file string, src []byte) ([]FunctionComplexity, error
 	}
 	collect(root, nil)
 	return out, nil
+}
+
+func excludedComplexityPath(file string) bool {
+	clean := strings.ToLower(strings.Trim(path.Clean(strings.ReplaceAll(file, "\\", "/")), "/"))
+	base := path.Base(clean)
+	if strings.HasSuffix(base, "_test.go") || strings.Contains(base, ".test.") || strings.Contains(base, ".spec.") ||
+		strings.HasSuffix(base, ".pb.go") || strings.HasSuffix(base, "_gen.go") {
+		return true
+	}
+	for _, segment := range strings.Split(clean, "/") {
+		switch segment {
+		case "tests", "__tests__", "testdata", "fixtures", "golden", "mocks", "vendor", "node_modules":
+			return true
+		}
+	}
+	return strings.Contains(clean, "evals/cases/") || strings.HasPrefix(clean, "evals/cases/")
 }
 
 func extractFuncNameWithParent(n, parent *gts.Node, lang *gts.Language, src []byte) string {

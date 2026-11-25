@@ -86,7 +86,7 @@ func extractInvariants(src []byte) (tables, statuses []string) {
 
 func LanguageForFile(path string) *gts.Language {
 	switch strings.ToLower(filepath.Ext(path)) {
-	case ".ts":
+	case ".ts", ".mts", ".cts":
 		return grammars.TypescriptLanguage()
 	case ".tsx":
 		return grammars.TsxLanguage()

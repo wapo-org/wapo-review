@@ -538,12 +538,16 @@ func run(args []string) error {
 			defer close(shutdownDone)
 			<-ctx.Done()
 			shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
 			_ = server.Shutdown(shutdown)
+			cancel()
 			if stopHatchetWorker != nil {
 				_ = stopHatchetWorker()
 			}
-			_ = registry.Cleanup(shutdown)
+			cleanup, cleanupCancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cleanupCancel()
+			if err := registry.Cleanup(cleanup); err != nil {
+				log.Printf("cleanup active containers: %v", err)
+			}
 		}()
 
 		err = server.ListenAndServe()

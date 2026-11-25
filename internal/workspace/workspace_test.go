@@ -1,6 +1,8 @@
 package workspace
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"sync"
@@ -67,5 +69,23 @@ func TestLeadEnrichmentRoundTrip(t *testing.T) {
 	}
 	if leads[0].InvariantType != "state_machine" || leads[0].Evidence != "transition at b.go:42" {
 		t.Fatalf("enrichment lost: %+v", leads[0])
+	}
+}
+
+func TestPostLeadResponseIncludesGeneratedIdentity(t *testing.T) {
+	w, err := New(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	response, err := NewPostLeadTool(w, "shard-a").InvokableRun(context.Background(), `{"target_file":"a.go","question":"check invariant"}`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var lead Lead
+	if err := json.Unmarshal([]byte(response), &lead); err != nil {
+		t.Fatal(err)
+	}
+	if lead.ID == "" || lead.CreatedAt.IsZero() || lead.FromShard != "shard-a" {
+		t.Fatalf("lead identity missing: %+v", lead)
 	}
 }

@@ -60,6 +60,21 @@ func runGit(t *testing.T, dir string, args ...string) string {
 	return strings.TrimSpace(string(out))
 }
 
+func TestPreparePRPathRejectsSymlinkOutsideCheckout(t *testing.T) {
+	checkout := t.TempDir()
+	outside := filepath.Join(t.TempDir(), "secret.txt")
+	if err := os.WriteFile(outside, []byte("must not enter PR context"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(checkout, "changed.txt")
+	if err := os.Symlink(outside, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := safePRPath(checkout, "changed.txt"); err == nil {
+		t.Fatal("expected checkout symlink escape to be rejected before os.ReadFile")
+	}
+}
+
 func TestEndToEndReviewPipelineWithLocalRunnerAndMockGitHub(t *testing.T) {
 	bare := filepath.Join(t.TempDir(), "origin.git")
 	seed := filepath.Join(t.TempDir(), "seed")

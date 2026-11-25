@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/wapo-org/wapo-review/internal/redact"
 )
 
 type Finding struct {
@@ -54,7 +56,36 @@ var secretPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)(api[_-]?key|secret|token)\s*[:=]\s*["']([A-Za-z0-9_\-/+=]{20,})["']`),
 }
 
-var envVarNameRe = regexp.MustCompile(`^[A-Z][A-Z0-9_]{3,}$`)
+var envVarNameRe = regexp.MustCompile(`^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$`)
+
+func isEnvVarReference(line, candidate string) bool {
+	if !envVarNameRe.MatchString(candidate) {
+		return false
+	}
+	lowLine := strings.ToLower(line)
+	if strings.Contains(lowLine, "env") || strings.Contains(lowLine, "getenv") || strings.Contains(lowLine, "vault") || strings.Contains(lowLine, "secret_name") || strings.Contains(lowLine, "key_name") {
+		return true
+	}
+	for _, suffix := range []string{"_API_KEY", "_SECRET_KEY", "_ACCESS_KEY", "_PRIVATE_KEY", "_AUTH_TOKEN", "_BOT_TOKEN", "_TOKEN", "_SECRET", "_PASSWORD"} {
+		if strings.HasSuffix(candidate, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
+const maxLifecycleEvidenceRunes = 500
+
+var scannerRedactor = redact.New()
+
+func lifecycleEvidence(hook, command string) string {
+	evidence := scannerRedactor.RedactString(hook + ": " + command)
+	runes := []rune(evidence)
+	if len(runes) > maxLifecycleEvidenceRunes {
+		return string(runes[:maxLifecycleEvidenceRunes]) + "..."
+	}
+	return evidence
+}
 
 func isEnvVarConstantLine(line string) bool {
 	re := secretPatterns[3]
@@ -114,7 +145,7 @@ func ScanFile(path string, src []byte) []Finding {
 	for i, line := range lines {
 		for _, p := range secretPatterns {
 			for _, candidate := range secretCandidates(line, p) {
-				if isPlaceholderLine(candidate) || (p == secretPatterns[3] && envVarNameRe.MatchString(candidate)) {
+				if isPlaceholderLine(candidate) || (p == secretPatterns[3] && isEnvVarReference(line, candidate)) {
 					continue
 				}
 				if candidate != "" {
@@ -201,7 +232,7 @@ func scanPackageJSON(path string, src []byte) []Finding {
 				1,
 				1,
 				fmt.Sprintf("Lifecycle script %q executes remote or shell command", hook),
-				hook+": "+pkg.Scripts[hook],
+				lifecycleEvidence(hook, pkg.Scripts[hook]),
 			))
 		}
 	}
@@ -339,7 +370,7 @@ func RunAll(ctx context.Context, in RunInput) []Finding {
 				continue
 			}
 			if !f.NewCode {
-				f.NewCode = in.Diff.IsNew(path, f.StartLine)
+				f.NewCode = ScopeFinding(f, in.Diff)
 			}
 			if len(in.Diff.Files) == 0 || f.NewCode || f.RepoWide {
 				out = append(out, f)
@@ -353,7 +384,7 @@ func RunAll(ctx context.Context, in RunInput) []Finding {
 		if !enabled {
 			continue
 		}
-		f.NewCode = in.Diff.IsNew(f.File, f.StartLine)
+		f.NewCode = ScopeFinding(f, in.Diff)
 		if len(in.Diff.Files) == 0 || f.NewCode {
 			out = append(out, f)
 		}

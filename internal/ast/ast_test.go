@@ -5,6 +5,8 @@ import "testing"
 func TestParseSupportedLanguages(t *testing.T) {
 	cases := map[string]string{
 		"a.ts":   "export function run() { return 1 }",
+		"a.mts":  "export function run() { return 1 }",
+		"a.cts":  "export function run() { return 1 }",
 		"a.tsx":  "export const View = () => <div />",
 		"a.py":   "def run():\n    return 1\n",
 		"a.go":   "package p\nfunc Run() int { return 1 }",

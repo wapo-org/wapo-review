@@ -204,11 +204,12 @@ func CheckoutRepo(ctx context.Context, c Container, s CheckoutSpec) (CheckoutRes
 	env := map[string]string{
 		"GIT_TERMINAL_PROMPT": "0",
 	}
+	var stdinData []byte
+	hasAuth := "0"
 	if s.Token != "" {
 		basic := base64.StdEncoding.EncodeToString([]byte("x-access-token:" + s.Token))
-		env["GIT_CONFIG_COUNT"] = "1"
-		env["GIT_CONFIG_KEY_0"] = "http.extraheader"
-		env["GIT_CONFIG_VALUE_0"] = "AUTHORIZATION: basic " + basic
+		stdinData = []byte("[http]\n\textraHeader = AUTHORIZATION: basic " + basic + "\n")
+		hasAuth = "1"
 	}
 
 	script := `set -eu
@@ -219,6 +220,24 @@ base_ref="$4"
 base_sha="$5"
 head_sha="$6"
 pr_num="$7"
+has_auth="$8"
+
+tmp_gitcfg=""
+cleanup() {
+  if [ -n "$tmp_gitcfg" ]; then
+    rm -f "$tmp_gitcfg"
+  fi
+}
+trap cleanup EXIT
+
+if [ "$has_auth" = "1" ]; then
+  old_umask=$(umask)
+  umask 077
+  tmp_gitcfg=$(mktemp)
+  cat > "$tmp_gitcfg"
+  umask "$old_umask"
+  export GIT_CONFIG_GLOBAL="$tmp_gitcfg"
+fi
 
 mkdir -p "$ws"
 cd "$ws"
@@ -235,9 +254,9 @@ used_pr_fallback=0
 checkout_ref=""
 
 if [ -n "$head_sha" ]; then
-  if git -c credential.helper= fetch --depth "$depth" origin "$head_sha" >/dev/null 2>&1; then
+  if git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "$head_sha" >/dev/null 2>&1; then
     checkout_ref="$head_sha"
-  elif [ "$pr_num" != "0" ] && git -c credential.helper= fetch --depth "$depth" origin "refs/pull/$pr_num/head" >/dev/null 2>&1; then
+  elif [ "$pr_num" != "0" ] && git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "refs/pull/$pr_num/head" >/dev/null 2>&1; then
     used_pr_fallback=1
     checkout_ref="FETCH_HEAD"
   else
@@ -245,11 +264,11 @@ if [ -n "$head_sha" ]; then
     exit 1
   fi
 elif [ "$pr_num" != "0" ]; then
-  git -c credential.helper= fetch --depth "$depth" origin "refs/pull/$pr_num/head"
+  git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "refs/pull/$pr_num/head"
   used_pr_fallback=1
   checkout_ref="FETCH_HEAD"
 elif [ -n "$base_ref" ]; then
-  git -c credential.helper= fetch --depth "$depth" origin "$base_ref"
+  git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "$base_ref"
   checkout_ref="FETCH_HEAD"
 else
   echo "no head_sha, pr_num, or base_ref supplied" >&2
@@ -258,12 +277,15 @@ fi
 
 git checkout -q --detach "$checkout_ref"
 resolved_head=$(git rev-parse HEAD)
+if [ -n "$head_sha" ]; then
+  case "$resolved_head" in "$head_sha"*) ;; *) echo "checked out HEAD does not match requested head_sha" >&2; exit 1 ;; esac
+fi
 
 used_base_sha=0
 diff_base=""
 if [ -n "$base_sha" ]; then
   if ! git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
-    git -c credential.helper= fetch --depth "$depth" origin "$base_sha" >/dev/null 2>&1 || true
+    git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "$base_sha" >/dev/null 2>&1 || true
   fi
   if git cat-file -e "$base_sha^{commit}" 2>/dev/null; then
     diff_base="$base_sha"
@@ -272,9 +294,9 @@ if [ -n "$base_sha" ]; then
 fi
 
 if [ -z "$diff_base" ] && [ -n "$base_ref" ]; then
-  if git -c credential.helper= fetch --depth "$depth" origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref" >/dev/null 2>&1; then
+  if git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "refs/heads/$base_ref:refs/remotes/origin/$base_ref" >/dev/null 2>&1; then
     diff_base="origin/$base_ref"
-  elif git -c credential.helper= fetch --depth "$depth" origin "$base_ref" >/dev/null 2>&1; then
+  elif git -c http.followRedirects=initial -c credential.helper= fetch --depth "$depth" origin "$base_ref" >/dev/null 2>&1; then
     diff_base=$(git rev-parse FETCH_HEAD)
   fi
 fi
@@ -288,9 +310,9 @@ printf 'HEAD_SHA=%s\nDIFF_BASE=%s\nUSED_PR_FALLBACK=%s\nUSED_BASE_SHA=%s\n' "$re
 	args := []string{
 		"sh", "-c", script, "sh",
 		ws, remote, fmt.Sprint(s.Depth),
-		s.BaseRef, s.BaseSHA, s.HeadSHA, fmt.Sprint(s.PRNumber),
+		s.BaseRef, s.BaseSHA, s.HeadSHA, fmt.Sprint(s.PRNumber), hasAuth,
 	}
-	r, err := c.Exec(ctx, ExecOpts{Command: args, Env: env, Timeout: 2 * time.Minute, MaxOutputBytes: 1 << 16})
+	r, err := c.Exec(ctx, ExecOpts{Command: args, Env: env, Stdin: stdinData, Timeout: 2 * time.Minute, MaxOutputBytes: 1 << 16})
 	if err != nil {
 		return CheckoutResult{}, err
 	}

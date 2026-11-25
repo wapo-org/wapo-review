@@ -165,7 +165,23 @@ func (s *Store) Remove(repo, id string) (bool, error) {
 	if e != nil {
 		return false, e
 	}
-	e = os.WriteFile(p, b, 0600)
+	tmp, e := os.CreateTemp(filepath.Dir(p), ".memory-*")
+	if e != nil {
+		return false, e
+	}
+	tmpName := tmp.Name()
+	if _, e = tmp.Write(b); e == nil {
+		e = tmp.Chmod(0600)
+	}
+	if closeErr := tmp.Close(); e == nil {
+		e = closeErr
+	}
+	if e == nil {
+		e = os.Rename(tmpName, p)
+	}
+	if e != nil {
+		_ = os.Remove(tmpName)
+	}
 	return e == nil, e
 }
 

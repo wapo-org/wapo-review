@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -69,28 +70,30 @@ type Pipeline struct {
 }
 
 type runState struct {
-	mu           sync.Mutex
-	generation   uint64
-	publishedSHA string
-	in           orchestrator.ReviewInput
-	pr           githubapp.PullRequest
-	diffBase     string
-	files        []githubapp.File
-	container    sandbox.Container
-	ws           *workspace.SharedWorkspace
-	workRoot     string
-	cfg          analyzer.RepoConfig
-	head         map[string][]byte
-	baseFiles    map[string][]byte
-	idx          *graph.CodebaseIndex
-	retriever    *semantic.Retriever
-	ver          *verifier.Verifier
-	specialist   specialistSummary
-	sandboxPass  map[string]bool
-	statics      []analyzer.Finding
-	complex      []analyzer.FunctionComplexity
-	gate         gate.Result
-	final        consolidator.ConsolidatedResult
+	mu                sync.Mutex
+	generation        uint64
+	publishedSHA      string
+	publishedCheckSHA string
+	publishedCheckID  int64
+	in                orchestrator.ReviewInput
+	pr                githubapp.PullRequest
+	diffBase          string
+	files             []githubapp.File
+	container         sandbox.Container
+	ws                *workspace.SharedWorkspace
+	workRoot          string
+	cfg               analyzer.RepoConfig
+	head              map[string][]byte
+	baseFiles         map[string][]byte
+	idx               *graph.CodebaseIndex
+	retriever         *semantic.Retriever
+	ver               *verifier.Verifier
+	specialist        specialistSummary
+	sandboxPass       map[string]bool
+	statics           []analyzer.Finding
+	complex           []analyzer.FunctionComplexity
+	gate              gate.Result
+	final             consolidator.ConsolidatedResult
 }
 
 func safePRPath(workspaceDir, name string) (string, error) {
@@ -185,7 +188,9 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 	cleanup := true
 	defer func() {
 		if cleanup {
-			_ = container.Close(context.Background())
+			if container != nil {
+				_ = container.Close(context.Background())
+			}
 			_ = os.RemoveAll(root)
 		}
 	}()
@@ -239,7 +244,10 @@ func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (
 		f := &files[i]
 		path, pathErr := safePRPath(container.WorkspaceDir(), f.Filename)
 		if pathErr != nil {
-			return orchestrator.StageResult{}, pathErr
+			// A GitHub filename can name a symlink in the checkout. Do not let a
+			// symlink target outside the checkout enter the host-side PR context.
+			p.logInfo("skip_unsafe_pr_file", "run_id", in.RunID, "file", f.Filename, "error", pathErr.Error())
+			continue
 		}
 		if repoCfg.Excluded(f.Filename) {
 			continue
@@ -807,6 +815,13 @@ func (p *Pipeline) ReviewShards(ctx context.Context, in orchestrator.ReviewInput
 				fb.ExistingFindings = existing
 				for _, f := range existing {
 					fb.FindingsByFile[f.File]++
+					boundaryText := strings.ToLower(f.Category + " " + f.Title + " " + f.Body)
+					for _, signal := range []string{"boundary", "filesystem", "symlink", "exec", "redact", "resource", "http", "protocol", "redirect", "ssrf", "secret", "cookie", "auth"} {
+						if strings.Contains(boundaryText, signal) {
+							fb.LeadTargets[f.File]++
+							break
+						}
+					}
 				}
 			}
 			if leads, err := ws.ReadAllLeads(); err == nil {
@@ -856,6 +871,7 @@ func (p *Pipeline) Consolidate(ctx context.Context, in orchestrator.ReviewInput,
 	ws := s.ws
 	statics := s.statics
 	complexities := s.complex
+	files := s.files
 	sandboxPass := s.sandboxPass
 	cfg := s.cfg
 	container := s.container
@@ -904,6 +920,7 @@ func (p *Pipeline) Consolidate(ctx context.Context, in orchestrator.ReviewInput,
 	} else {
 		result = consolidator.Consolidate(shardFindings, statics, leads)
 	}
+	result.ExecutableCode = hasTestableCodeChanges(files)
 
 	// Run fail-open adversarial failure-scenario skeptic gate on LLM findings
 	// to eliminate garbled, speculative, or code-contradicted submissions while
@@ -1168,7 +1185,7 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 		}
 		previewURL = resolved
 		modeDesc = "remote-preview"
-		if p.QAProfile != nil {
+		if p.QAProfile != nil && isVercelPreviewHost(resolved, p.QAProfile) {
 			if bypass := strings.TrimSpace(p.QAProfile.Vercel["web_bypass_secret"]); bypass != "" {
 				defaultHeaders = map[string]string{"x-vercel-protection-bypass": bypass}
 			}
@@ -1318,6 +1335,29 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 	}, nil
 }
 
+func isVercelPreviewHost(rawURL string, profile *secrets.QAProfile) bool {
+	u, err := url.Parse(strings.TrimSpace(rawURL))
+	if err != nil {
+		return false
+	}
+	host := strings.ToLower(strings.TrimSpace(u.Hostname()))
+	if host == "" {
+		return false
+	}
+	if host == "vercel.app" || strings.HasSuffix(host, ".vercel.app") {
+		return true
+	}
+	if profile != nil {
+		for _, key := range []string{"web_domain", "project_domain", "preview_domain"} {
+			dom := strings.ToLower(strings.TrimSpace(profile.Vercel[key]))
+			if dom != "" && (host == dom || strings.HasSuffix(host, "."+dom)) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInput, _ orchestrator.StageResult, _ orchestrator.StageResult) (orchestrator.StageResult, error) {
 	s := p.state(in.RunID)
 	s.mu.Lock()
@@ -1327,15 +1367,25 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	final := s.final
 	container := s.container
 	workRoot := s.workRoot
-	if s.publishedSHA == pr.Head.SHA {
+	existingCheckID := s.publishedCheckID
+	existingCheckSHA := s.publishedCheckSHA
+	if pr.Head.SHA == "" {
+		s.mu.Unlock()
+		return orchestrator.StageResult{}, fmt.Errorf("publish review: missing prepared run state for run %q", in.RunID)
+	}
+	if s.publishedSHA != "" && s.publishedSHA == pr.Head.SHA {
 		s.mu.Unlock()
 		return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": pr.Head.SHA, "idempotent": true}}, nil
 	}
 	s.mu.Unlock()
 
+	published := false
 	defer func() {
+		if !published {
+			return
+		}
 		if container != nil {
-			_ = container.Close(ctx)
+			_ = container.Close(context.Background())
 		}
 		if workRoot != "" {
 			_ = os.RemoveAll(workRoot)
@@ -1355,9 +1405,18 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	if err != nil {
 		return orchestrator.StageResult{}, err
 	}
-	checkID, err := gate.PublishGateCheckRun(ctx, c, in.Repo, pr.Head.SHA, gateRes)
-	if err != nil {
-		return orchestrator.StageResult{}, err
+	checkID := existingCheckID
+	if existingCheckSHA != pr.Head.SHA || checkID == 0 {
+		checkID, err = gate.PublishGateCheckRun(ctx, c, in.Repo, pr.Head.SHA, gateRes)
+		if err != nil {
+			return orchestrator.StageResult{}, err
+		}
+		s.mu.Lock()
+		if s.generation == generation {
+			s.publishedCheckID = checkID
+			s.publishedCheckSHA = pr.Head.SHA
+		}
+		s.mu.Unlock()
 	}
 	formatted := consolidator.FormatPRReview(final, 25)
 	if err := c.SubmitReview(ctx, in.Repo, in.PRNumber, pr.Head.SHA, formatted.Event, formatted.Body, formatted.Comments); err != nil {
@@ -1368,6 +1427,7 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 		s.publishedSHA = pr.Head.SHA
 	}
 	s.mu.Unlock()
+	published = true
 	p.logInfo("stage_done", "stage", "publish_review", "run_id", in.RunID, "check_run_id", checkID, "event", formatted.Event, "inline_comments", len(formatted.Comments), "total_findings", len(final.Findings))
 	return orchestrator.StageResult{
 		Version: 1,

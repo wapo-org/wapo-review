@@ -69,6 +69,23 @@ func TestFormatReviewCapsAndMarksOverflow(t *testing.T) {
 		t.Fatal("critical finding should request changes")
 	}
 }
+
+func TestFormatReviewDemotesDocumentationFindingsForCodePR(t *testing.T) {
+	res := ConsolidatedResult{
+		ExecutableCode: true,
+		Findings: []ConsolidatedFinding{
+			{ID: "doc", File: "docs/design.md", StartLine: 4, Severity: "medium", Title: "Outdated retry contract", Body: "The documented retry behavior is stale.", OnDiffLine: true, NewCode: true},
+			{ID: "critical-doc", File: "README.md", StartLine: 8, Severity: "critical", Title: "Secret leak in setup example", Body: "A credential is exposed.", OnDiffLine: true, NewCode: true},
+		},
+	}
+	r := FormatPRReview(res, 25)
+	if len(r.Comments) != 1 || r.Comments[0]["path"] != "README.md" {
+		t.Fatalf("expected only critical documentation finding inline, got %#v", r.Comments)
+	}
+	if !contains(r.Body, "## Design / Documentation Notes") || !contains(r.Body, "Outdated retry contract") {
+		t.Fatalf("expected documentation notes section, got %q", r.Body)
+	}
+}
 func contains(s, sub string) bool {
 	for i := 0; i+len(sub) <= len(s); i++ {
 		if s[i:i+len(sub)] == sub {

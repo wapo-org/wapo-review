@@ -72,9 +72,22 @@ func (c *Client) request(ctx context.Context, method, path string, payload any) 
 	}
 	cl := c.HTTP
 	if cl == nil {
-		cl = http.DefaultClient
+		cl = &http.Client{CheckRedirect: refuseCrossOriginRedirect}
+	} else if cl.CheckRedirect == nil {
+		copy := *cl
+		copy.CheckRedirect = refuseCrossOriginRedirect
+		cl = &copy
 	}
 	return cl.Do(req)
+}
+func refuseCrossOriginRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) > 0 && !strings.EqualFold(req.URL.Scheme, via[0].URL.Scheme) || len(via) > 0 && !strings.EqualFold(req.URL.Host, via[0].URL.Host) {
+		return http.ErrUseLastResponse
+	}
+	if len(via) >= 10 {
+		return fmt.Errorf("too many redirects")
+	}
+	return nil
 }
 func decodeResponse(resp *http.Response, dst any) error {
 	defer resp.Body.Close()
@@ -230,7 +243,7 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 			if err != nil {
 				return 0, err
 			}
-			if resp.StatusCode == 404 || resp.StatusCode == 502 || resp.StatusCode == 503 || resp.StatusCode == 504 {
+			if resp.StatusCode == 404 {
 				resp.Body.Close()
 				if attempt < 2 {
 					select {

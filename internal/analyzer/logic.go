@@ -145,34 +145,58 @@ var (
 	goGuardGtRe   = regexp.MustCompile(`if\s+(\w+)\s*>\s*len\(\s*(\w+)\s*\)`)
 )
 
+func isSubtractedBound(txt string, matchEnd int) bool {
+	rest := strings.TrimLeft(txt[matchEnd:], " \t")
+	return strings.HasPrefix(rest, "-")
+}
+
 func checkLoopBounds(n *gts.Node, path string, src []byte) (Finding, bool) {
 	txt := n.Text(src)
 	line := int(n.StartPoint().Row) + 1
-	if m := loopBoundGoRe.FindStringSubmatch(txt); m != nil {
-		idxVar, arrVar := m[1], m[2]
+	if loc := loopBoundGoRe.FindStringSubmatchIndex(txt); loc != nil && !isSubtractedBound(txt, loc[1]) {
+		idxVar, arrVar := txt[loc[2]:loc[3]], txt[loc[4]:loc[5]]
 		if strings.Contains(txt, arrVar+"["+idxVar+"]") && !hasTerminalBoundsGuard(txt, idxVar, arrVar) {
 			return newFinding("LOGIC.bounds", "logic", "high", path, line, int(n.EndPoint().Row)+1,
-				fmt.Sprintf("Off-by-one loop condition %s <= len(%s) indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), m[0]), true
+				fmt.Sprintf("Off-by-one loop condition %s <= len(%s) indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), txt[loc[0]:loc[1]]), true
 		}
 	}
-	if m := loopBoundJSRe.FindStringSubmatch(txt); m != nil {
-		idxVar, arrVar := m[1], m[2]
+	if loc := loopBoundJSRe.FindStringSubmatchIndex(txt); loc != nil && !isSubtractedBound(txt, loc[1]) {
+		idxVar, arrVar := txt[loc[2]:loc[3]], txt[loc[4]:loc[5]]
 		if strings.Contains(txt, arrVar+"["+idxVar+"]") && !hasTerminalBoundsGuard(txt, idxVar, arrVar) {
 			return newFinding("LOGIC.bounds", "logic", "high", path, line, int(n.EndPoint().Row)+1,
-				fmt.Sprintf("Off-by-one loop condition %s <= %s.length indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), m[0]), true
+				fmt.Sprintf("Off-by-one loop condition %s <= %s.length indexes %s[%s]", idxVar, arrVar, arrVar, idxVar), txt[loc[0]:loc[1]]), true
 		}
 	}
 	return Finding{}, false
 }
 
 func hasTerminalBoundsGuard(loop, index, slice string) bool {
-	guard := regexp.MustCompile(`(?s)if\s+` + regexp.QuoteMeta(index) + `\s*(?:==|>=)\s*(?:len\(\s*` + regexp.QuoteMeta(slice) + `\s*\)|` + regexp.QuoteMeta(slice) + `\.length)\s*\{?\s*(?:return\b|break\b|continue\b)`)
-	match := guard.FindStringIndex(loop)
-	if match == nil {
+	bodyStart := strings.IndexByte(loop, '{')
+	if bodyStart < 0 {
 		return false
 	}
-	indexing := strings.Index(loop, slice+"["+index+"]")
-	return indexing < 0 || match[0] < indexing
+	body := loop[bodyStart+1:]
+	guard := regexp.MustCompile(`(?s)if\s+` + regexp.QuoteMeta(index) + `\s*(?:==|>=)\s*(?:len\(\s*` + regexp.QuoteMeta(slice) + `\s*\)|` + regexp.QuoteMeta(slice) + `\.length)\s*\{?\s*(?:return\b|break\b|continue\b)`)
+	indexing := strings.Index(body, slice+"["+index+"]")
+	for _, match := range guard.FindAllStringIndex(body, -1) {
+		if indexing >= 0 && match[0] >= indexing {
+			continue
+		}
+		// Require the guard to be at top-level depth inside the loop body (not nested in another conditional).
+		depth := 0
+		for _, ch := range body[:match[0]] {
+			switch ch {
+			case '{':
+				depth++
+			case '}':
+				depth--
+			}
+		}
+		if depth == 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func checkGoGuardOffByOne(fn *gts.Node, path string, src []byte) (Finding, bool) {
@@ -687,11 +711,17 @@ func isTopLevelNullableType(typeNode *gts.Node, lang *gts.Language, src []byte) 
 
 func firstDirectDerefOffset(name, body string) int {
 	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\.([A-Za-z_][A-Za-z0-9_]*)`)
-	loc := re.FindStringIndex(body)
-	if loc == nil {
-		return -1
+	for _, loc := range re.FindAllStringIndex(body, -1) {
+		// Skip property chains on another receiver such as obj.name.prop or obj?.name.prop.
+		if loc[0] > 0 {
+			prev := body[loc[0]-1]
+			if prev == '.' {
+				continue
+			}
+		}
+		return loc[0]
 	}
-	return loc[0]
+	return -1
 }
 
 func isParamGuardedBeforeDeref(name, body string) bool {
@@ -701,15 +731,35 @@ func isParamGuardedBeforeDeref(name, body string) bool {
 	}
 	prefix := body[:deref]
 	esc := regexp.QuoteMeta(name)
-	guardRe := regexp.MustCompile(
-		`(\bif\s*\(\s*!?\s*` + esc + `\b)|` +
-			`((\|\||&&)\s*!?\s*` + esc + `\b)|` +
+	// Same-expression short-circuit / ternary / nullish coalescing / reassignment directly before deref.
+	exprRe := regexp.MustCompile(
+		`((\|\||&&)\s*!?\s*` + esc + `\b)|` +
 			`(\b` + esc + `\s*\?\s*[^.?])|` +
-			`(\bif\s+` + esc + `\s+is\s+(not\s+)?None\b)|` +
-			`(\b` + esc + `\s*(!==?|===?)\s*(null|undefined|None)\b)|` +
 			`(\b` + esc + `\s*(\?\?|\&\&))|` +
-			`(\b` + esc + `\?\.)|` +
 			`(\b` + esc + `\s*=\s*)`,
 	)
-	return guardRe.MatchString(prefix)
+	if exprRe.MatchString(prefix) {
+		return true
+	}
+	// Control-flow if-guards must either still enclose the dereference (open brace) or exit early (return/throw/continue/break).
+	ifGuardRe := regexp.MustCompile(
+		`(\bif\s*\(\s*!?\s*` + esc + `\b)|` +
+			`(\bif\s+` + esc + `\s+is\s+(not\s+)?None\b)|` +
+			`(\bif\s*\(?\s*` + esc + `\s*(!==?|===?)\s*(null|undefined|None)\b)`,
+	)
+	for _, loc := range ifGuardRe.FindAllStringIndex(prefix, -1) {
+		segment := prefix[loc[0]:]
+		openBraces := strings.Count(segment, "{") - strings.Count(segment, "}")
+		if openBraces > 0 {
+			return true
+		}
+		// Python indentation-based guard or brace-closed early exit.
+		if strings.Contains(segment, "return") || strings.Contains(segment, "throw") || strings.Contains(segment, "raise") || strings.Contains(segment, "continue") || strings.Contains(segment, "break") {
+			return true
+		}
+		if strings.Contains(segment, ":") && !strings.Contains(segment, "{") {
+			return true
+		}
+	}
+	return false
 }

@@ -45,6 +45,7 @@ type ConsolidatedResult struct {
 	BrowserSummary     string                `json:"browser_summary,omitempty"`
 	BrowserReport      string                `json:"browser_report,omitempty"`
 	VisualSummary      string                `json:"visual_summary,omitempty"`
+	ExecutableCode     bool                  `json:"executable_code,omitempty"`
 }
 
 type Review struct {
@@ -325,17 +326,36 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 		body.WriteString("\n")
 	}
 	var overflow []ConsolidatedFinding
+	var documentation []ConsolidatedFinding
 	for _, f := range fs {
 		if f.NewCode && (rank(f.Severity) >= 5 || res.QualityGate == "failed") {
 			review.Event = "REQUEST_CHANGES"
 		} else if review.Event == "APPROVE" && rank(f.Severity) >= 2 {
 			review.Event = "COMMENT"
 		}
+		docOnly := res.ExecutableCode && isDocumentationFile(f.File) && !isCriticalOrSecret(f)
+		if docOnly {
+			documentation = append(documentation, f)
+			continue
+		}
 		if f.OnDiffLine && f.StartLine >= 1 && len(review.Comments) < maxInline {
 			review.Comments = append(review.Comments, map[string]any{"path": f.File, "line": f.StartLine, "side": "RIGHT", "body": findingBody(f)})
 		} else {
 			overflow = append(overflow, f)
 		}
+	}
+	if len(documentation) > 0 {
+		body.WriteString("## Design / Documentation Notes\n")
+		for _, f := range documentation {
+			title := strings.TrimSpace(f.Title)
+			detail := strings.TrimSpace(f.Body)
+			if detail == "" || strings.EqualFold(title, detail) {
+				fmt.Fprintf(&body, "- **%s:%d [%s]** %s <!-- wapo-review-finding:%s -->\n", f.File, f.StartLine, f.Severity, title, f.ID)
+			} else {
+				fmt.Fprintf(&body, "- **%s:%d [%s] %s** %s <!-- wapo-review-finding:%s -->\n", f.File, f.StartLine, f.Severity, title, detail, f.ID)
+			}
+		}
+		body.WriteString("\n")
 	}
 	if res.QualityGate == "failed" {
 		review.Event = "REQUEST_CHANGES"
@@ -355,6 +375,19 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 	}
 	review.Body = strings.TrimSpace(body.String())
 	return review
+}
+
+func isDocumentationFile(path string) bool {
+	p := strings.ToLower(strings.TrimPrefix(strings.ReplaceAll(path, "\\", "/"), "./"))
+	return strings.HasPrefix(p, "docs/") && strings.HasSuffix(p, ".md") || strings.HasSuffix(p, ".md")
+}
+
+func isCriticalOrSecret(f ConsolidatedFinding) bool {
+	if rank(f.Severity) >= 6 {
+		return true
+	}
+	text := strings.ToLower(f.Category + " " + f.Title + " " + f.Body + " " + f.Evidence)
+	return strings.Contains(text, "secret") && (strings.Contains(text, "leak") || strings.Contains(text, "credential") || strings.Contains(text, "token"))
 }
 func findingBody(f ConsolidatedFinding) string {
 	title := strings.TrimSpace(f.Title)

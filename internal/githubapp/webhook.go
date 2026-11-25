@@ -91,7 +91,12 @@ func (h WebhookHandler) verifyAny(body []byte, sig string) bool {
 }
 
 func (h WebhookHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(io.LimitReader(r.Body, 2<<20))
+	const maxBody = 10 << 20
+	body, err := io.ReadAll(io.LimitReader(r.Body, maxBody+1))
+	if len(body) > maxBody {
+		http.Error(w, "Payload too large", http.StatusRequestEntityTooLarge)
+		return
+	}
 	if err != nil || !h.verifyAny(body, r.Header.Get("X-Hub-Signature-256")) {
 		http.Error(w, "Invalid signature", http.StatusUnauthorized)
 		return

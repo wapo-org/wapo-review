@@ -205,6 +205,12 @@ func NewPostLeadTool(w *SharedWorkspace, shard string) tool.InvokableTool {
 				return "", e
 			}
 			l.FromShard = shard
+			if l.ID == "" {
+				l.ID = randomID()
+			}
+			if l.CreatedAt.IsZero() {
+				l.CreatedAt = time.Now().UTC()
+			}
 			if e := w.AppendLead(l); e != nil {
 				return "", e
 			}

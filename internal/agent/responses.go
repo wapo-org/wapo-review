@@ -83,6 +83,17 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 				input = append(input, map[string]any{"role": "user", "content": msg.Content})
 			}
 		case schema.Assistant:
+			if items, ok := msg.Extra["openai_responses_output_items"].([]map[string]any); ok && len(items) > 0 {
+				for _, item := range items {
+					input = append(input, item)
+				}
+				break
+			}
+			if reasoning, ok := msg.Extra["openai_responses_reasoning_items"].([]map[string]any); ok {
+				for _, item := range reasoning {
+					input = append(input, item)
+				}
+			}
 			if strings.TrimSpace(msg.Content) != "" {
 				input = append(input, map[string]any{"role": "assistant", "content": msg.Content})
 			}
@@ -98,11 +109,6 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 					"arguments": tc.Function.Arguments,
 				})
 			}
-			if reasoning, ok := msg.Extra["openai_responses_reasoning_items"].([]map[string]any); ok {
-				for _, item := range reasoning {
-					input = append(input, item)
-				}
-			}
 		case schema.Tool:
 			input = append(input, map[string]any{
 				"type":    "function_call_output",
@@ -113,9 +119,10 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 	}
 
 	payload := map[string]any{
-		"model": m.modelName,
-		"input": input,
-		"store": false,
+		"model":   m.modelName,
+		"input":   input,
+		"store":   false,
+		"include": []string{"reasoning.encrypted_content"},
 	}
 	if len(instructions) > 0 {
 		payload["instructions"] = strings.Join(instructions, "\n\n")
@@ -180,8 +187,9 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 			Reason string `json:"reason"`
 		} `json:"incomplete_details"`
 		Output []struct {
-			Type    string `json:"type"`
-			Summary []struct {
+			Type             string `json:"type"`
+			EncryptedContent string `json:"encrypted_content,omitempty"`
+			Summary          []struct {
 				Type string `json:"type"`
 				Text string `json:"text"`
 			} `json:"summary"`
@@ -236,15 +244,29 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 
 	var textParts []string
 	var reasoningItems []map[string]any
+	var orderedOutput []map[string]any
 	for _, item := range parsed.Output {
 		switch item.Type {
 		case "reasoning":
-			reasoningItems = append(reasoningItems, map[string]any{"type": "reasoning", "id": item.ID, "summary": item.Summary})
+			rItem := map[string]any{"type": "reasoning", "id": item.ID, "summary": item.Summary}
+			if item.EncryptedContent != "" {
+				rItem["encrypted_content"] = item.EncryptedContent
+			}
+			reasoningItems = append(reasoningItems, rItem)
+			orderedOutput = append(orderedOutput, rItem)
 		case "message":
+			var msgTexts []string
 			for _, c := range item.Content {
 				if (c.Type == "output_text" || c.Type == "text") && c.Text != "" {
 					textParts = append(textParts, c.Text)
+					msgTexts = append(msgTexts, c.Text)
 				}
+			}
+			if len(msgTexts) > 0 {
+				orderedOutput = append(orderedOutput, map[string]any{
+					"role":    "assistant",
+					"content": strings.Join(msgTexts, "\n"),
+				})
 			}
 		case "function_call":
 			cid := item.CallID
@@ -259,10 +281,22 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 					Arguments: item.Arguments,
 				},
 			})
+			orderedOutput = append(orderedOutput, map[string]any{
+				"type":      "function_call",
+				"call_id":   cid,
+				"name":      item.Name,
+				"arguments": item.Arguments,
+			})
 		}
 	}
-	if len(reasoningItems) > 0 {
-		out.Extra = map[string]any{"openai_responses_reasoning_items": reasoningItems}
+	if len(reasoningItems) > 0 || len(orderedOutput) > 0 {
+		out.Extra = map[string]any{}
+		if len(reasoningItems) > 0 {
+			out.Extra["openai_responses_reasoning_items"] = reasoningItems
+		}
+		if len(orderedOutput) > 0 {
+			out.Extra["openai_responses_output_items"] = orderedOutput
+		}
 	}
 	if len(textParts) > 0 {
 		out.Content = strings.Join(textParts, "\n")
