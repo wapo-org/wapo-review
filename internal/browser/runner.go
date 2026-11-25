@@ -112,8 +112,10 @@ async function main() {
       const req = route.request();
       const target = new URL(req.url());
       const literal = target.hostname.replace(/^\\[|\\]$/g, "");
-      const isPrivateLiteral = /^(localhost|.*\\.localhost)$/i.test(literal) || (() => { const parts = literal.split(".").map(Number); return parts.length === 4 && parts.every(n => Number.isInteger(n) && n >= 0 && n <= 255) && (parts[0] === 10 || parts[0] === 127 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 192 && parts[1] === 168) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)); })() || literal === "::1" || literal === "::";
-      const localAuthorized = targetOrigin && /^(http:\/\/)?(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(new URL(targetOrigin).origin);
+	  const privateIPv4 = value => { const parts = value.split(".").map(Number); return parts.length === 4 && parts.every(n => Number.isInteger(n) && n >= 0 && n <= 255) && (parts[0] === 10 || parts[0] === 127 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 192 && parts[1] === 168) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)); };
+	  const isPrivateLiteral = /^(localhost|.*\.localhost)$/i.test(literal) || privateIPv4(literal) || literal === "::1" || literal === "::" || /^f[cd][0-9a-f]{2}:/i.test(literal) || /^fe[89ab][0-9a-f]:/i.test(literal) || (/^::ffff:/i.test(literal) && privateIPv4(literal.slice(7)));
+	  let localAuthorized = false;
+	  if (targetOrigin) { const authorized = new URL(targetOrigin); localAuthorized = authorized.hostname === "localhost" || authorized.hostname === "127.0.0.1" || authorized.hostname === "::1"; }
       if (isPrivateLiteral && !localAuthorized) { await route.abort(); return; }
       const headers = { ...req.headers() };
       if (targetOrigin && target.origin === targetOrigin) Object.assign(headers, plan.extra_http_headers || {});
@@ -358,7 +360,8 @@ func (t checkTool) InvokableRun(ctx context.Context, raw string, _ ...tool.Optio
 	if t.h.AuthorizedOrigin != "" {
 		p.AuthorizedOrigin = t.h.AuthorizedOrigin
 	}
-	if len(t.h.PinnedHostIP) > 0 && p.ResolvedIP == "" {
+	p.ResolvedIP = ""
+	if len(t.h.PinnedHostIP) > 0 {
 		if u, err := url.Parse(p.URL); err == nil {
 			p.ResolvedIP = t.h.PinnedHostIP[u.Hostname()]
 		}
@@ -377,6 +380,10 @@ func (t checkTool) InvokableRun(ctx context.Context, raw string, _ ...tool.Optio
 
 	r, err := t.h.Executor.Run(ctx, t.h.Container, p)
 	if err != nil {
+		t.h.mu.Lock()
+		t.h.Telemetry.BrowserCheckExecutions++
+		t.h.Telemetry.BrowserCheckFailures++
+		t.h.mu.Unlock()
 		return "", err
 	}
 	t.h.mu.Lock()

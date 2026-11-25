@@ -4,6 +4,7 @@ CGO_ENABLED := 0
 .PHONY: build test vet clean
 
 build:
+	mkdir -p bin
 	CGO_ENABLED=$(CGO_ENABLED) $(GO) build -o bin/wapo-review ./cmd/wapo-review
 
 test:

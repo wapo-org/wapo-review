@@ -35,7 +35,8 @@ type WebhookEvent struct {
 			Login string `json:"login"`
 			Type  string `json:"type"`
 		} `json:"user"`
-		InReplyTo int64 `json:"in_reply_to_id"`
+		AuthorAssociation string `json:"author_association"`
+		InReplyTo         int64  `json:"in_reply_to_id"`
 	} `json:"comment"`
 	PullRequest struct {
 		Number int  `json:"number"`
@@ -53,6 +54,18 @@ type WebhookEvent struct {
 	Sender struct {
 		Login string `json:"login"`
 	} `json:"sender"`
+}
+
+// IsTrustedAuthorAssociation reports whether a GitHub author_association value
+// belongs to a repository maintainer or collaborator permitted to store persistent
+// review instructions.
+func IsTrustedAuthorAssociation(assoc string) bool {
+	switch strings.ToUpper(strings.TrimSpace(assoc)) {
+	case "OWNER", "MEMBER", "COLLABORATOR":
+		return true
+	default:
+		return false
+	}
 }
 
 func VerifyWebhookSignature(body []byte, signature, secret string) bool {

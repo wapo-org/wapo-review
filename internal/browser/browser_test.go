@@ -90,6 +90,10 @@ func TestSuppressFalseBlockers(t *testing.T) {
 	if len(kept) != 1 || kept[0].Kind != "product_bug" || len(supp) != 3 {
 		t.Fatalf("with telemetry expected 1 kept (product_bug) and 3 suppressed, got kept=%+v supp=%+v", kept, supp)
 	}
+	keptFailed, suppFailed := SuppressFalseBlockers(blockers, RunTelemetry{BrowserCheckExecutions: 1, BrowserCheckFailures: 1})
+	if len(keptFailed) != 4 || len(suppFailed) != 0 {
+		t.Fatalf("failed browser run must not suppress blockers, got kept=%+v supp=%+v", keptFailed, suppFailed)
+	}
 }
 
 func TestHandsOnRunnerEnforcesBrowserCheckAndPairedRollback(t *testing.T) {

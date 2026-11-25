@@ -81,10 +81,11 @@ func (p *QAProfile) KnownValues() []string {
 	return filtered
 }
 func (p *QAProfile) Describe() map[string]any {
-	out := map[string]any{"source": p.Source, "vercel": []string{}, "personas": map[string]string{}, "secrets": map[string]string{}}
+	out := map[string]any{"source": "", "vercel": []string{}, "personas": map[string]string{}, "secrets": map[string]string{}}
 	if p == nil {
 		return out
 	}
+	out["source"] = p.Source
 	v := out["vercel"].([]string)
 	for k, x := range p.Vercel {
 		if x != "" {

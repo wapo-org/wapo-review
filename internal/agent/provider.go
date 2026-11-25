@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -40,12 +41,15 @@ type RetryPolicy struct {
 type headerTransport struct {
 	base    http.RoundTripper
 	headers map[string]string
+	origin  string
 }
 
 func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	clone := req.Clone(req.Context())
-	for k, v := range t.headers {
-		clone.Header.Set(k, v)
+	if originForURL(clone.URL.String()) == t.origin {
+		for k, v := range t.headers {
+			clone.Header.Set(k, v)
+		}
 	}
 	base := t.base
 	if base == nil {
@@ -54,7 +58,15 @@ func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return base.RoundTrip(clone)
 }
 
-func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout time.Duration) *http.Client {
+func originForURL(raw string) string {
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return ""
+	}
+	return strings.ToLower(u.Scheme) + "://" + strings.ToLower(u.Host)
+}
+
+func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout time.Duration, endpoint string) *http.Client {
 	var c http.Client
 	if base != nil {
 		c = *base
@@ -88,7 +100,7 @@ func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout
 		for k, v := range headers {
 			copied[k] = v
 		}
-		c.Transport = &headerTransport{base: c.Transport, headers: copied}
+		c.Transport = &headerTransport{base: c.Transport, headers: copied, origin: originForURL(endpoint)}
 	}
 	if c.Transport == nil {
 		c.Transport = http.DefaultTransport
@@ -139,7 +151,7 @@ func NewModel(ctx context.Context, cfg ProviderConfig) (model.ToolCallingChatMod
 			Model:      cfg.Model,
 			BaseURL:    cfg.BaseURL,
 			Timeout:    cfg.Timeout,
-			HTTPClient: httpClientWithHeaders(cfg.HTTPClient, cfg.ExtraHeaders, cfg.Timeout),
+			HTTPClient: httpClientWithHeaders(cfg.HTTPClient, cfg.ExtraHeaders, cfg.Timeout, cfg.BaseURL),
 		}
 		if cfg.MaxTokens > 0 {
 			mt := cfg.MaxTokens

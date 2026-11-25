@@ -28,7 +28,7 @@ type responsesChatModel struct {
 }
 
 func newResponsesChatModel(cfg ProviderConfig) model.ToolCallingChatModel {
-	cli := httpClientWithHeaders(cfg.HTTPClient, cfg.ExtraHeaders, cfg.Timeout)
+	cli := httpClientWithHeaders(cfg.HTTPClient, cfg.ExtraHeaders, cfg.Timeout, cfg.BaseURL)
 	if cli == nil {
 		cli = &http.Client{Timeout: cfg.Timeout}
 	}

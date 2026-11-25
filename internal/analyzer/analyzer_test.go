@@ -347,3 +347,46 @@ func TestDetectClonesSkipsTestFiles(t *testing.T) {
 		t.Fatalf("expected DetectClones to skip test files, got %+v", findings)
 	}
 }
+
+func TestNullableGuardPrecision(t *testing.T) {
+	cases := []struct {
+		name      string
+		code      string
+		wantFound bool
+	}{
+		{
+			name:      "null assignment is not a guard",
+			code:      "export function f(user: { name: string } | null) { user = null; return user.name; }\n",
+			wantFound: true,
+		},
+		{
+			name:      "non-null comparison with early return leaves null unguarded",
+			code:      "export function f(user: { name: string } | null) { if (user != null) { return 'ok'; } return user.name; }\n",
+			wantFound: true,
+		},
+		{
+			name:      "non-null comparison encloses dereference safely",
+			code:      "export function f(user: { name: string } | null) { if (user != null) { return user.name; } return ''; }\n",
+			wantFound: false,
+		},
+		{
+			name:      "nested conditional return in negated guard does not guarantee exit",
+			code:      "export function f(user: { name: string } | null, recover: boolean) { if (!user) { if (recover) { return ''; } } return user.name; }\n",
+			wantFound: true,
+		},
+		{
+			name:      "unconditional return in negated guard is safe",
+			code:      "export function f(user: { name: string } | null) { if (!user) { return ''; } return user.name; }\n",
+			wantFound: false,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			fs := AnalyzeNullableParameters("src/guard.ts", []byte(tc.code))
+			got := len(fs) > 0
+			if got != tc.wantFound {
+				t.Fatalf("AnalyzeNullableParameters(%s): got %d findings (%+v), wantFound=%v", tc.name, len(fs), fs, tc.wantFound)
+			}
+		})
+	}
+}

@@ -22,6 +22,7 @@ import (
 
 type ConsolidatedFinding struct {
 	ID          string   `json:"id"`
+	RuleID      string   `json:"rule_id,omitempty"`
 	File        string   `json:"file"`
 	StartLine   int      `json:"start_line"`
 	EndLine     int      `json:"end_line"`
@@ -69,7 +70,7 @@ func fromAnalyzer(f analyzer.Finding) ConsolidatedFinding {
 	// Function-level complexity and clone alerts belong in Check Runs and summary
 	// sections so inline PR diff comments stay 100% high-signal bug/security findings.
 	onDiff := f.NewCode && !strings.HasPrefix(f.RuleID, "COMPLEXITY.") && !strings.HasPrefix(f.RuleID, "CLONE.")
-	return ConsolidatedFinding{ID: id, File: f.File, StartLine: f.StartLine, EndLine: f.EndLine, Severity: f.Severity, Category: f.Category, Title: f.Message, Body: "", Evidence: f.Evidence, Fingerprint: f.Fingerprint, OnDiffLine: onDiff, NewCode: f.NewCode, Sources: []string{"analyzer:" + f.RuleID}}
+	return ConsolidatedFinding{ID: id, RuleID: f.RuleID, File: f.File, StartLine: f.StartLine, EndLine: f.EndLine, Severity: f.Severity, Category: f.Category, Title: f.Message, Body: "", Evidence: f.Evidence, Fingerprint: f.Fingerprint, OnDiffLine: onDiff, NewCode: f.NewCode, Sources: []string{"analyzer:" + f.RuleID}}
 }
 
 func isRetractedFinding(title, body string) bool {
@@ -340,7 +341,7 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 			continue
 		}
 		if isThresholdMaintainabilityFinding(f) {
-			if strings.Contains(strings.ToUpper(strings.Join(f.Sources, " ")+" "+f.Category+" "+f.Title), "COMPLEXITY.") {
+			if strings.HasPrefix(f.RuleID, "COMPLEXITY.") {
 				complexityCount++
 			} else {
 				cloneCount++
@@ -390,8 +391,7 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 }
 
 func isThresholdMaintainabilityFinding(f ConsolidatedFinding) bool {
-	identity := strings.ToUpper(strings.Join(f.Sources, " ") + " " + f.Category + " " + f.Title)
-	return strings.Contains(identity, "COMPLEXITY.") || strings.Contains(identity, "CLONE.")
+	return strings.HasPrefix(f.RuleID, "COMPLEXITY.") || strings.HasPrefix(f.RuleID, "CLONE.")
 }
 
 func isDocumentationFile(path string) bool {

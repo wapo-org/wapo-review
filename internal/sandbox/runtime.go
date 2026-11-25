@@ -195,7 +195,7 @@ func (c *LocalContainer) WriteFile(ctx context.Context, targetPath string, data 
 		resolved, resolveErr := filepath.EvalSymlinks(ancestor)
 		if resolveErr == nil {
 			rel, relErr := filepath.Rel(root, resolved)
-			if relErr != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			if relErr != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
 				return fmt.Errorf("write path escapes container root")
 			}
 			break
@@ -217,7 +217,7 @@ func (c *LocalContainer) WriteFile(ctx context.Context, targetPath string, data 
 		return err
 	}
 	rel, err := filepath.Rel(root, parent)
-	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
 		return fmt.Errorf("write path escapes container root")
 	}
 	p = filepath.Join(parent, filepath.Base(full))
@@ -590,7 +590,9 @@ func (r *ActiveRegistry) Cleanup(ctx context.Context) error {
 		if err != nil && first == nil {
 			first = err
 		}
-		r.Remove(n)
+		if err == nil {
+			r.Remove(n)
+		}
 	}
 	return first
 }

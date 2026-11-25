@@ -17,6 +17,10 @@ func (l SkillLoader) Load(names ...string) ([]Skill, error) {
 	if err != nil {
 		return nil, err
 	}
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		return nil, err
+	}
 	sort.Strings(names)
 	skills := make([]Skill, 0, len(names))
 	for _, name := range names {

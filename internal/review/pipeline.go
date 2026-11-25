@@ -334,15 +334,20 @@ func (p *Pipeline) SandboxGates(ctx context.Context, in orchestrator.ReviewInput
 	res := map[string]any{}
 	passed := map[string]bool{}
 	if !p.SkipDepInstall {
-		install, err := sandbox.InstallDependencies(ctx, container)
-		if err != nil {
-			res["install_error"] = err.Error()
+		if _, host := container.(*sandbox.LocalContainer); host {
+			res["install_error"] = "refusing dependency install on host LocalContainer"
 			passed["install_dependencies"] = false
-		} else if install != nil {
-			res["install"] = install
-			passed[install.ID] = install.Status == "passed"
 		} else {
-			passed["install_dependencies"] = true
+			install, err := sandbox.InstallDependencies(ctx, container)
+			if err != nil {
+				res["install_error"] = err.Error()
+				passed["install_dependencies"] = false
+			} else if install != nil {
+				res["install"] = install
+				passed[install.ID] = install.Status == "passed"
+			} else {
+				passed["install_dependencies"] = true
+			}
 		}
 	}
 
@@ -383,6 +388,7 @@ func (p *Pipeline) GraphAndStatic(ctx context.Context, in orchestrator.ReviewInp
 			patchText = "+++ b/" + f.Filename + "\n" + patchText
 		}
 		parsed := analyzer.ParseUnifiedDiff(patchText)
+		diff.HasDiff = diff.HasDiff || parsed.HasDiff
 		for path, lines := range parsed.ChangedLines {
 			diff.ChangedLines[path] = lines
 		}
@@ -1395,12 +1401,15 @@ func isVercelPreviewHost(rawURL string, profile *secrets.QAProfile) bool {
 
 func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInput, _ orchestrator.StageResult, _ orchestrator.StageResult) (orchestrator.StageResult, error) {
 	p.mu.Lock()
-	if publishedSHA := p.publishedSHAs[in.RunID]; publishedSHA != "" {
-		p.mu.Unlock()
-		return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": publishedSHA, "idempotent": true}}, nil
-	}
+	publishedSHA := p.publishedSHAs[in.RunID]
+	s := p.runs[in.RunID]
 	p.mu.Unlock()
-	s := p.state(in.RunID)
+	if s == nil {
+		if publishedSHA != "" {
+			return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": publishedSHA, "idempotent": true}}, nil
+		}
+		return orchestrator.StageResult{}, fmt.Errorf("publish review: missing prepared run state for run %q", in.RunID)
+	}
 	s.mu.Lock()
 	generation := s.generation
 	pr := s.pr
@@ -1413,6 +1422,10 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	if pr.Head.SHA == "" {
 		s.mu.Unlock()
 		return orchestrator.StageResult{}, fmt.Errorf("publish review: missing prepared run state for run %q", in.RunID)
+	}
+	if publishedSHA != "" && publishedSHA == pr.Head.SHA {
+		s.mu.Unlock()
+		return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": pr.Head.SHA, "idempotent": true}}, nil
 	}
 	if s.publishedSHA != "" && s.publishedSHA == pr.Head.SHA {
 		s.mu.Unlock()
@@ -1528,6 +1541,9 @@ func isRetryablePublishError(err error) bool {
 func HandleReviewCommentReply(ctx context.Context, c *githubapp.Client, store *memory.Store, e githubapp.WebhookEvent) error {
 	if c == nil || store == nil {
 		return fmt.Errorf("client and memory store are required")
+	}
+	if !githubapp.IsTrustedAuthorAssociation(e.Comment.AuthorAssociation) {
+		return nil
 	}
 	isBotThread := e.Comment.InReplyTo > 0
 	if isBotThread {

@@ -3,6 +3,7 @@ package sandbox
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -51,6 +52,18 @@ func TestLocalContainerBoundedOutputAndTimeout(t *testing.T) {
 	}
 	if r.ExitCode != 124 {
 		t.Fatalf("expected exit 124 on timeout, got %d", r.ExitCode)
+	}
+}
+
+func TestLocalContainerWriteFileAtRoot(t *testing.T) {
+	root := t.TempDir()
+	c := &LocalContainer{Root: root}
+	if err := c.WriteFile(context.Background(), "config.json", []byte(`{"ok":true}`), 0o600, ""); err != nil {
+		t.Fatalf("write at container root: %v", err)
+	}
+	got, err := os.ReadFile(filepath.Join(root, "config.json"))
+	if err != nil || string(got) != `{"ok":true}` {
+		t.Fatalf("unexpected file contents %q, err=%v", got, err)
 	}
 }
 
@@ -114,6 +127,25 @@ func TestActiveRegistryTrackingAndCleanup(t *testing.T) {
 	}
 	if len(cleaned) != 2 || len(reg.Names()) != 0 {
 		t.Fatalf("expected 2 cleaned and 0 remaining, got cleaned=%v remaining=%v", cleaned, reg.Names())
+	}
+}
+
+func TestActiveRegistryKeepsFailedCleanupForRetry(t *testing.T) {
+	reg := NewActiveRegistry()
+	calls := 0
+	reg.cleanup = func(context.Context, string) error {
+		calls++
+		if calls == 1 {
+			return fmt.Errorf("temporary failure")
+		}
+		return nil
+	}
+	reg.Add("container")
+	if err := reg.Cleanup(context.Background()); err == nil || len(reg.Names()) != 1 {
+		t.Fatalf("failed cleanup should retain name, err=%v names=%v", err, reg.Names())
+	}
+	if err := reg.Cleanup(context.Background()); err != nil || len(reg.Names()) != 0 {
+		t.Fatalf("retry cleanup failed, err=%v names=%v", err, reg.Names())
 	}
 }
 

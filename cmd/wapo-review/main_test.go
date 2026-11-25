@@ -107,7 +107,7 @@ func TestServerWebhookSignatureDispatchAndReplyMemory(t *testing.T) {
 	}
 
 	// 3. Signed review comment reply -> stores memory note + posts reply
-	replyPayload := []byte(`{"action":"created","repository":{"full_name":"org/repo"},"pull_request":{"number":5},"comment":{"id":11,"in_reply_to_id":10,"user":{"login":"alice"},"body":"/remember Keep SQL queries parameterized"}}`)
+	replyPayload := []byte(`{"action":"created","repository":{"full_name":"org/repo"},"pull_request":{"number":5},"comment":{"id":11,"in_reply_to_id":10,"author_association":"MEMBER","user":{"login":"alice"},"body":"/remember Keep SQL queries parameterized"}}`)
 	repReq := httptest.NewRequest("POST", "/webhook", strings.NewReader(string(replyPayload)))
 	repReq.Header.Set("X-GitHub-Event", "pull_request_review_comment")
 	repReq.Header.Set("X-Hub-Signature-256", signBody(replyPayload, "whsec"))

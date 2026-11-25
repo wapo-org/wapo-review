@@ -17,7 +17,9 @@ func New(w io.Writer, format string, redactor *redact.Redactor) *Logger {
 		redactor = redact.New()
 	}
 	var handler slog.Handler
-	options := &slog.HandlerOptions{}
+	options := &slog.HandlerOptions{ReplaceAttr: func(_ []string, attr slog.Attr) slog.Attr {
+		return redactAttr(redactor, attr)
+	}}
 	if format == "text" {
 		handler = slog.NewTextHandler(w, options)
 	} else {
@@ -53,6 +55,7 @@ func (l *Logger) attrs(args ...any) []any {
 
 func redactAttr(r *redact.Redactor, attr slog.Attr) slog.Attr {
 	attr.Key = r.RedactString(attr.Key)
+	attr.Value = attr.Value.Resolve()
 	if attr.Value.Kind() == slog.KindGroup {
 		items := attr.Value.Group()
 		for i := range items {

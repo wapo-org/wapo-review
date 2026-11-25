@@ -24,12 +24,11 @@ func IsAllowedSandboxVaultKey(key string) bool {
 func CollectSandboxVaultSecrets(ctx context.Context, profile *QAProfile, adapter Adapter) map[string]string {
 	out := map[string]string{}
 	if adapter != nil {
-		if keys, e := adapter.ListKeys(ctx); e == nil {
-			for _, k := range keys {
-				if IsAllowedSandboxVaultKey(k) {
-					if v, e := adapter.Get(ctx, k); e == nil && v != "" {
-						out[k] = v
-					}
+		keys, _ := adapter.ListKeys(ctx)
+		for _, k := range keys {
+			if IsAllowedSandboxVaultKey(k) {
+				if v, e := adapter.Get(ctx, k); e == nil && v != "" {
+					out[k] = v
 				}
 			}
 		}

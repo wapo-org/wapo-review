@@ -102,7 +102,7 @@ func (c *ProfilerCache) SeedBase(tenant, repo, baseSHA string) (string, *Codebas
 		CommitSHA string `json:"commit_sha"`
 		BaseSHA   string `json:"base_sha"`
 	}
-	if err := json.Unmarshal(b, &m); err != nil || m.BaseSHA == "" || (baseSHA != "" && m.CommitSHA != baseSHA) {
+	if err := json.Unmarshal(b, &m); err != nil || m.BaseSHA == "" || baseSHA == "" || m.BaseSHA != baseSHA {
 		if err == nil {
 			err = os.ErrNotExist
 		}

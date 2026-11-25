@@ -239,9 +239,6 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 		return 0, e
 	}
 	remainingChunks := chunks[1:]
-	if fallback {
-		remainingChunks = append([][]Annotation{chunks[0]}, remainingChunks...)
-	}
 	for _, chunk := range remainingChunks {
 		for attempt := 0; ; attempt++ {
 			resp, err := c.request(ctx, "PATCH", fmt.Sprintf("/repos/%s/check-runs/%d", repo, created.ID), map[string]any{"output": map[string]any{"title": title, "summary": summary, "annotations": chunk}})

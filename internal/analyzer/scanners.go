@@ -80,6 +80,7 @@ var scannerRedactor = redact.New()
 
 func lifecycleEvidence(hook, command string) string {
 	evidence := scannerRedactor.RedactString(hook + ": " + command)
+	evidence = regexp.MustCompile(`(?i)(\b(?:key|token|secret|password)\s*=\s*)([^\s;&,]+)|\b(authorization\s*:\s*)([^\s;&,]+)`).ReplaceAllString(evidence, "$1[redacted]$3[redacted]")
 	runes := []rune(evidence)
 	if len(runes) > maxLifecycleEvidenceRunes {
 		return string(runes[:maxLifecycleEvidenceRunes]) + "..."

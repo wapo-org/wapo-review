@@ -129,7 +129,19 @@ func InstallDependencies(ctx context.Context, c Container) (*GateResult, error) 
 		return nil, err
 	}
 	eco := DetectEcosystems(strings.Split(files.Stdout, "\n"))
+	if !hasWorkspaceFile(files.Stdout, "requirements.txt") {
+		eco.Python = false
+	}
 	return InstallDependenciesWithCommand(ctx, c, selectInstallCommand(eco))
+}
+
+func hasWorkspaceFile(files, name string) bool {
+	for _, file := range strings.Split(files, "\n") {
+		if strings.TrimSpace(file) == name {
+			return true
+		}
+	}
+	return false
 }
 
 func selectInstallCommand(eco Ecosystems) []string {

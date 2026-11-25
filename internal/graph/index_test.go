@@ -69,7 +69,7 @@ func TestIndexIncrementalCopyCyclesTestsPageRankAndCache(t *testing.T) {
 	if err := cache.Save(extra, "base1"); err != nil {
 		t.Fatalf("Save head3 failed: %v", err)
 	}
-	baseSHA, seeded, err := cache.SeedBase("tenant1", "org_repo", "head3")
+	baseSHA, seeded, err := cache.SeedBase("tenant1", "org_repo", "base1")
 	if err != nil || baseSHA != "base1" || len(seeded.Files) != 5 {
 		t.Fatalf("SeedBase unexpected: sha=%q err=%v", baseSHA, err)
 	}

@@ -57,7 +57,7 @@ func LoadRepoConfig(baseYAML, gitattributes []byte) (RepoConfig, error) {
 				r.Generated = false
 			}
 		}
-		if r.Generated {
+		if len(r.Pattern) > 0 {
 			c.Attributes = append(c.Attributes, r)
 		}
 	}

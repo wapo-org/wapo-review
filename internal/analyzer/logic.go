@@ -738,15 +738,22 @@ func isParamGuardedBeforeDeref(name, body string) bool {
 	}
 	prefix := body[:deref]
 	esc := regexp.QuoteMeta(name)
-	// Same-expression short-circuit / ternary / nullish coalescing / reassignment directly before deref.
+	// Same-expression short-circuit / ternary / nullish coalescing directly before deref.
 	exprRe := regexp.MustCompile(
 		`((\|\||&&)\s*!?\s*` + esc + `\b)|` +
 			`(\b` + esc + `\s*\?\s*[^.?])|` +
-			`(\b` + esc + `\s*(\?\?|\&\&))|` +
-			`(\b` + esc + `\s*=\s*[^=])`,
+			`(\b` + esc + `\s*(\?\?|\&\&))`,
 	)
 	if exprRe.MatchString(prefix) {
 		return true
+	}
+	// Reassignment only guards when assigned a non-null value (not null/undefined/None/nil).
+	assignRe := regexp.MustCompile(`\b` + esc + `\s*=\s*([^=;\n]+)`)
+	for _, m := range assignRe.FindAllStringSubmatch(prefix, -1) {
+		rhs := strings.TrimSpace(m[1])
+		if rhs != "" && rhs != "null" && rhs != "undefined" && rhs != "None" && rhs != "nil" {
+			return true
+		}
 	}
 	// Control-flow if-guards must either still enclose the dereference (open brace) or exit early (return/throw/continue/break).
 	ifGuardRe := regexp.MustCompile(
@@ -754,7 +761,8 @@ func isParamGuardedBeforeDeref(name, body string) bool {
 	)
 	for _, loc := range ifGuardRe.FindAllStringIndex(prefix, -1) {
 		guard := prefix[loc[0]:loc[1]]
-		negated := strings.Contains(guard, "!") || strings.Contains(guard, "==") || strings.Contains(guard, " is None")
+		hasNotEq := strings.Contains(guard, "!=")
+		negated := (!hasNotEq && (strings.Contains(guard, "!") || strings.Contains(guard, "=="))) || strings.Contains(guard, " is None")
 		segment := prefix[loc[1]:]
 		openBraces := strings.Count(segment, "{") - strings.Count(segment, "}")
 		if openBraces > 0 && !negated {
@@ -763,12 +771,14 @@ func isParamGuardedBeforeDeref(name, body string) bool {
 		if openBraces == 0 && negated && guardBlockExits(segment) {
 			return true
 		}
-		if strings.Contains(guard, " is None") && strings.Contains(guard, "not") {
+		if strings.Contains(guard, " is not None") {
 			return true
 		}
 	}
 	return false
 }
+
+var exitKeywordRe = regexp.MustCompile(`\b(return|throw|raise|continue|break)\b`)
 
 func guardBlockExits(segment string) bool {
 	open := strings.IndexByte(segment, '{')
@@ -776,6 +786,7 @@ func guardBlockExits(segment string) bool {
 		return false
 	}
 	depth := 1
+	closeIdx := -1
 	for i := open + 1; i < len(segment); i++ {
 		switch segment[i] {
 		case '{':
@@ -783,9 +794,37 @@ func guardBlockExits(segment string) bool {
 		case '}':
 			depth--
 			if depth == 0 {
-				return regexp.MustCompile(`\b(return|throw|raise|continue|break)\b`).MatchString(segment[open+1 : i])
+				closeIdx = i
+			}
+		}
+		if closeIdx >= 0 {
+			break
+		}
+	}
+	if closeIdx < 0 {
+		return false
+	}
+	// Check for an exit keyword at top-level depth (depth 0) inside the guard block,
+	// ignoring exits nested inside inner conditionals like `if (recover) { return; }`.
+	inner := segment[open+1 : closeIdx]
+	var topLevel strings.Builder
+	subDepth := 0
+	for i := 0; i < len(inner); i++ {
+		ch := inner[i]
+		switch ch {
+		case '{':
+			subDepth++
+			topLevel.WriteByte(' ')
+		case '}':
+			if subDepth > 0 {
+				subDepth--
+			}
+			topLevel.WriteByte(' ')
+		default:
+			if subDepth == 0 {
+				topLevel.WriteByte(ch)
 			}
 		}
 	}
-	return false
+	return exitKeywordRe.MatchString(topLevel.String())
 }

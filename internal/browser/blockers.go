@@ -8,13 +8,14 @@ type Blocker struct {
 }
 type RunTelemetry struct {
 	BrowserCheckExecutions int
+	BrowserCheckFailures   int
 	ScreenshotsCaptured    int
 	ContactSheetCaptured   bool
 	Rollbacks              int
 }
 
 func SuppressFalseBlockers(blockers []Blocker, telemetry RunTelemetry) (kept, suppressed []Blocker) {
-	validated := telemetry.BrowserCheckExecutions > 0 || telemetry.ContactSheetCaptured
+	validated := telemetry.BrowserCheckExecutions > telemetry.BrowserCheckFailures || telemetry.ContactSheetCaptured
 	for _, b := range blockers {
 		if validated && (b.Kind == "browser_runtime" || b.Kind == "development_preview" || b.Kind == "test_account") {
 			b.SuppressionReason = "validated browser or contact-sheet evidence exists"

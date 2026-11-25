@@ -124,7 +124,7 @@ func TestCreateCompletedCheckRunFallbackAndChunkedPatchRetry(t *testing.T) {
 	id, err := (&Client{BaseURL: s1.URL}).CreateCompletedCheckRun(context.Background(), "a/b", "Wapo Gate", "head", "failure", "Gate", "sum", []Annotation{
 		{Path: "./a.go", StartLine: 0, EndLine: 0, Level: "failure", Message: "bad"},
 	})
-	if err != nil || id != 99 || postCalls != 3 {
+	if err != nil || id != 99 || postCalls != 2 {
 		t.Fatalf("422 fallback failed: id=%d posts=%d err=%v", id, postCalls, err)
 	}
 
@@ -155,7 +155,7 @@ func TestCreateCompletedCheckRunFallbackAndChunkedPatchRetry(t *testing.T) {
 	}
 }
 
-func TestCreateCompletedCheckRunReplaysFirstAnnotationChunkAfter422(t *testing.T) {
+func TestCreateCompletedCheckRunSkipsRejectedAnnotationChunkAfter422(t *testing.T) {
 	var postAnnotations bool
 	var replayed int
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -187,8 +187,8 @@ func TestCreateCompletedCheckRunReplaysFirstAnnotationChunkAfter422(t *testing.T
 	}))
 	defer s.Close()
 	_, err := (&Client{BaseURL: s.URL}).CreateCompletedCheckRun(context.Background(), "a/b", "check", "head", "success", "title", "summary", []Annotation{{Path: "a.go", StartLine: 1, EndLine: 1, Message: "first"}})
-	if err != nil || replayed != 1 {
-		t.Fatalf("first annotation chunk lost: replayed=%d err=%v", replayed, err)
+	if err != nil || replayed != 0 {
+		t.Fatalf("rejected annotation chunk was replayed: replayed=%d err=%v", replayed, err)
 	}
 }
 

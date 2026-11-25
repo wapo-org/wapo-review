@@ -643,7 +643,7 @@ func ComputeComplexityFindings(path string, headSrc, baseSrc []byte, cfg Complex
 		} else {
 			fn.Delta = fn.Score
 		}
-		touched := len(diff.Files) == 0
+		touched := !diff.HasDiff
 		if !touched {
 			for ln := fn.StartLine; ln <= fn.EndLine; ln++ {
 				if diff.IsNew(path, ln) {

@@ -500,6 +500,11 @@ func (p *Pipeline) runSpecialistPassWithFeedback(ctx context.Context, in orchest
 		g.Go(func() error {
 			m, err := p.ModelFactory(gctx)
 			if err != nil || m == nil {
+				if err != nil {
+					p.logInfo("specialist_model_error", "run_id", in.RunID, "batch", batch.ID, "focus", batch.Focus, "error", err.Error())
+				} else {
+					p.logInfo("specialist_model_error", "run_id", in.RunID, "batch", batch.ID, "focus", batch.Focus, "error", "model factory returned nil model")
+				}
 				return nil
 			}
 			reviewed := map[string]bool{}

@@ -84,6 +84,8 @@ func (m MediaStore) PruneExpired(maxAge time.Duration) error {
 }
 
 func BuildContactSheet(ctx context.Context, frames []string, output string, cols, rows int) error {
+	const maxFrames = 16
+	const maxCanvasPixels = 40_000_000
 	if cols <= 0 {
 		cols = 4
 	}
@@ -92,6 +94,15 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 	}
 	if len(frames) == 0 {
 		return errors.New("no frames supplied")
+	}
+	if cols > maxFrames {
+		cols = maxFrames
+	}
+	if rows > maxFrames {
+		rows = maxFrames
+	}
+	if cols*rows > maxFrames {
+		rows = (maxFrames + cols - 1) / cols
 	}
 	if len(frames) > cols*rows {
 		frames = frames[:cols*rows]
@@ -117,6 +128,16 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 			maxH = im.Bounds().Dy()
 		}
 	}
+	for maxW*cols > maxCanvasPixels/(maxH*rows) {
+		if maxW >= maxH && maxW > 1 {
+			maxW /= 2
+		} else if maxH > 1 {
+			maxH /= 2
+		} else {
+			return errors.New("contact sheet dimensions exceed limit")
+		}
+		imgs = downscaleImages(imgs, maxW, maxH)
+	}
 	out := image.NewRGBA(image.Rect(0, 0, maxW*cols, maxH*rows))
 	for i, im := range imgs {
 		x := (i % cols) * maxW
@@ -139,6 +160,13 @@ func BuildContactSheet(ctx context.Context, frames []string, output string, cols
 		e = os.Chmod(output, 0600)
 	}
 	return e
+}
+
+func downscaleImages(images []image.Image, maxW, maxH int) []image.Image {
+	for i, img := range images {
+		images[i] = downscaleToCell(img, maxW, maxH)
+	}
+	return images
 }
 
 const maxImageBytes = 20 << 20

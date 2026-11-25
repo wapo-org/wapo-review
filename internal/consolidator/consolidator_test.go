@@ -150,6 +150,17 @@ func TestFormatPRReviewSummarizesComplexityAndClone(t *testing.T) {
 	}
 }
 
+func TestSecurityTitleContainingCloneMethodStaysInline(t *testing.T) {
+	security := workspace.VerifiedFinding{ID: "url", File: "fetch.go", StartLine: 8, EndLine: 8, Severity: "high", Category: "security", Title: "Reject untrusted URLs in clone.Fetch", Body: "Untrusted URLs can reach the request client.", OnDiffLine: true}
+	review := FormatPRReview(Consolidate([]workspace.VerifiedFinding{security}, nil, nil), 25)
+	if len(review.Comments) != 1 {
+		t.Fatalf("security finding should remain inline, got %#v", review.Comments)
+	}
+	if !strings.Contains(review.Comments[0]["body"].(string), security.Title) || strings.Contains(review.Body, "duplicate-block items omitted") {
+		t.Fatalf("security finding was misclassified as a clone finding: %#v %q", review.Comments, review.Body)
+	}
+}
+
 func TestConsolidateDropsRetractedFindings(t *testing.T) {
 	got := Consolidate([]workspace.VerifiedFinding{
 		{ID: "1", File: "a.ts", StartLine: 10, Severity: "medium", Title: "ignore", Body: "actually fine. no bug."},
