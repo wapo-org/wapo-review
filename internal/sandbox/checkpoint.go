@@ -54,8 +54,9 @@ func (m *CheckpointManager) Save(ctx context.Context, label string, state Browse
 		script := `set -eu
 cd "$1"
 head_rev=$(git rev-parse HEAD)
-tmp_idx=$(mktemp)
-trap 'rm -f "$tmp_idx"' EXIT
+tmp_dir=$(mktemp -d)
+tmp_idx="$tmp_dir/index"
+trap 'rm -rf "$tmp_dir"' EXIT
 if [ -e .git/index ]; then
   cp .git/index "$tmp_idx"
 fi

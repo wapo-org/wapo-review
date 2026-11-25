@@ -240,6 +240,24 @@ func TestVerifyAndRecordNearDuplicateRules(t *testing.T) {
 	}
 }
 
+func TestVerifierRejectsTraversalAndEscapingSymlink(t *testing.T) {
+	root := t.TempDir()
+	outside := t.TempDir()
+	if err := os.WriteFile(filepath.Join(outside, "secret.go"), []byte("package secret\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(outside, "secret.go"), filepath.Join(root, "escape.go")); err != nil {
+		t.Fatal(err)
+	}
+	v := New(root, []string{"../secret.go", "escape.go"}, nil)
+	for _, file := range []string{"../secret.go", "escape.go"} {
+		resp, _ := v.verify(FindingDraft{File: file, Title: "A valid finding", Body: "This describes a concrete issue in the source file.", StartLine: 1, EndLine: 1, EvidenceQuote: "package secret"}, nil)
+		if resp.Accepted {
+			t.Fatalf("accepted escaping path %q", file)
+		}
+	}
+}
+
 func TestFindingQualityRejectsMalformedAndUncertain(t *testing.T) {
 	for _, tc := range []struct{ title, body string }{
 		{"(cannot)", "This concrete description is long enough to pass."},

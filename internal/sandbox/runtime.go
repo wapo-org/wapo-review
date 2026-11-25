@@ -189,11 +189,38 @@ func (c *LocalContainer) WriteFile(ctx context.Context, targetPath string, data 
 	if err != nil {
 		return err
 	}
-	parent, err := filepath.EvalSymlinks(filepath.Dir(p))
+	full := p
+	ancestor := filepath.Dir(full)
+	for {
+		resolved, resolveErr := filepath.EvalSymlinks(ancestor)
+		if resolveErr == nil {
+			rel, relErr := filepath.Rel(root, resolved)
+			if relErr != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+				return fmt.Errorf("write path escapes container root")
+			}
+			break
+		}
+		if !os.IsNotExist(resolveErr) {
+			return resolveErr
+		}
+		parent := filepath.Dir(ancestor)
+		if parent == ancestor {
+			return resolveErr
+		}
+		ancestor = parent
+	}
+	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+		return err
+	}
+	parent, err := filepath.EvalSymlinks(filepath.Dir(full))
 	if err != nil {
 		return err
 	}
-	p = filepath.Join(parent, filepath.Base(p))
+	rel, err := filepath.Rel(root, parent)
+	if err != nil || rel == "." || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("write path escapes container root")
+	}
+	p = filepath.Join(parent, filepath.Base(full))
 	if info, statErr := os.Lstat(p); statErr == nil && info.Mode()&os.ModeSymlink != 0 {
 		p, err = filepath.EvalSymlinks(p)
 		if err != nil {
@@ -202,12 +229,9 @@ func (c *LocalContainer) WriteFile(ctx context.Context, targetPath string, data 
 	} else if statErr != nil && !os.IsNotExist(statErr) {
 		return statErr
 	}
-	rel, err := filepath.Rel(root, p)
+	rel, err = filepath.Rel(root, p)
 	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
 		return fmt.Errorf("write path escapes container root")
-	}
-	if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
-		return err
 	}
 	return os.WriteFile(p, data, mode)
 }

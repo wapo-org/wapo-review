@@ -82,6 +82,17 @@ func TestIndexIncrementalCopyCyclesTestsPageRankAndCache(t *testing.T) {
 	}
 }
 
+func TestSeedBaseRejectsDifferentRequestedBase(t *testing.T) {
+	cache := NewProfilerCache(t.TempDir())
+	idx := NewCodebaseIndex(map[string][]byte{"a.go": []byte("package a")}, "t", "r", "base-one")
+	if err := cache.Save(idx, "base-one"); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := cache.SeedBase("t", "r", "base-two"); err == nil {
+		t.Fatal("SeedBase returned a different base SHA")
+	}
+}
+
 func TestInvariantNeighbors(t *testing.T) {
 	files := map[string][]byte{
 		"apps/api/src/secrets.ts": []byte(`db.query("accounts");`),

@@ -7,6 +7,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"net/http/httptest"
@@ -123,7 +124,7 @@ func TestCreateCompletedCheckRunFallbackAndChunkedPatchRetry(t *testing.T) {
 	id, err := (&Client{BaseURL: s1.URL}).CreateCompletedCheckRun(context.Background(), "a/b", "Wapo Gate", "head", "failure", "Gate", "sum", []Annotation{
 		{Path: "./a.go", StartLine: 0, EndLine: 0, Level: "failure", Message: "bad"},
 	})
-	if err != nil || id != 99 || postCalls != 2 {
+	if err != nil || id != 99 || postCalls != 3 {
 		t.Fatalf("422 fallback failed: id=%d posts=%d err=%v", id, postCalls, err)
 	}
 
@@ -151,6 +152,43 @@ func TestCreateCompletedCheckRunFallbackAndChunkedPatchRetry(t *testing.T) {
 	id2, err := (&Client{BaseURL: s2.URL}).CreateCompletedCheckRun(context.Background(), "a/b", "Wapo Gate", "head", "success", "Gate", "sum", anns)
 	if err != nil || id2 != 101 || patchCalls != 2 {
 		t.Fatalf("chunked patch retry failed: id=%d patches=%d err=%v", id2, patchCalls, err)
+	}
+}
+
+func TestCreateCompletedCheckRunReplaysFirstAnnotationChunkAfter422(t *testing.T) {
+	var postAnnotations bool
+	var replayed int
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			var payload struct {
+				Output struct {
+					Annotations []Annotation `json:"annotations"`
+				} `json:"output"`
+			}
+			_ = json.NewDecoder(r.Body).Decode(&payload)
+			if len(payload.Output.Annotations) > 0 && !postAnnotations {
+				postAnnotations = true
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				return
+			}
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte(`{"id":9}`))
+			return
+		}
+		var payload struct {
+			Output struct {
+				Annotations []Annotation `json:"annotations"`
+			} `json:"output"`
+		}
+		_ = json.NewDecoder(r.Body).Decode(&payload)
+		replayed += len(payload.Output.Annotations)
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"id":9}`))
+	}))
+	defer s.Close()
+	_, err := (&Client{BaseURL: s.URL}).CreateCompletedCheckRun(context.Background(), "a/b", "check", "head", "success", "title", "summary", []Annotation{{Path: "a.go", StartLine: 1, EndLine: 1, Message: "first"}})
+	if err != nil || replayed != 1 {
+		t.Fatalf("first annotation chunk lost: replayed=%d err=%v", replayed, err)
 	}
 }
 

@@ -113,11 +113,26 @@ func (v *Verifier) verify(d FindingDraft, ws *workspace.SharedWorkspace) (Verify
 		return VerifyResponse{Errors: []string{"finding body appears uncertain or incomplete, or the finding is retracted; verify the code before submitting"}}, workspace.VerifiedFinding{}
 	}
 	p := filepath.ToSlash(filepath.Clean(d.File))
+	if filepath.IsAbs(d.File) || p == ".." || strings.HasPrefix(p, "../") {
+		return VerifyResponse{Errors: []string{"file path escapes repository root"}}, workspace.VerifiedFinding{}
+	}
 	if !v.PRFiles[p] {
 		return VerifyResponse{Errors: []string{"file is not in this PR"}, Hints: v.closest(p)}, workspace.VerifiedFinding{}
 	}
-	full := filepath.Join(v.Root, filepath.FromSlash(p))
-	b, err := readVerifierFile(full)
+	root, rootErr := filepath.EvalSymlinks(v.Root)
+	if rootErr != nil {
+		return VerifyResponse{Errors: []string{"repository root is unavailable"}}, workspace.VerifiedFinding{}
+	}
+	full := filepath.Join(root, filepath.FromSlash(p))
+	resolved, pathErr := filepath.EvalSymlinks(full)
+	if pathErr != nil {
+		return VerifyResponse{Errors: []string{"file does not exist in repository"}, Hints: v.closest(p)}, workspace.VerifiedFinding{}
+	}
+	rel, relErr := filepath.Rel(root, resolved)
+	if relErr != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return VerifyResponse{Errors: []string{"file path escapes repository root"}}, workspace.VerifiedFinding{}
+	}
+	b, err := readVerifierFile(resolved)
 	if err != nil {
 		return VerifyResponse{Errors: []string{"file does not exist in repository"}, Hints: v.closest(p)}, workspace.VerifiedFinding{}
 	}

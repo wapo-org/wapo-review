@@ -327,6 +327,7 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 	}
 	var overflow []ConsolidatedFinding
 	var documentation []ConsolidatedFinding
+	complexityCount, cloneCount := 0, 0
 	for _, f := range fs {
 		if f.NewCode && (rank(f.Severity) >= 5 || res.QualityGate == "failed") {
 			review.Event = "REQUEST_CHANGES"
@@ -336,6 +337,14 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 		docOnly := res.ExecutableCode && isDocumentationFile(f.File) && !isCriticalOrSecret(f)
 		if docOnly {
 			documentation = append(documentation, f)
+			continue
+		}
+		if isThresholdMaintainabilityFinding(f) {
+			if strings.Contains(strings.ToUpper(strings.Join(f.Sources, " ")+" "+f.Category+" "+f.Title), "COMPLEXITY.") {
+				complexityCount++
+			} else {
+				cloneCount++
+			}
 			continue
 		}
 		if f.OnDiffLine && f.StartLine >= 1 && len(review.Comments) < maxInline {
@@ -373,8 +382,16 @@ func FormatPRReview(res ConsolidatedResult, maxInline int) Review {
 		}
 		body.WriteString("\n</details>\n")
 	}
+	if complexityCount+cloneCount > 0 {
+		fmt.Fprintf(&body, "\n_Static maintainability summary: %d cognitive-complexity and %d duplicate-block items omitted from inline details._\n", complexityCount, cloneCount)
+	}
 	review.Body = strings.TrimSpace(body.String())
 	return review
+}
+
+func isThresholdMaintainabilityFinding(f ConsolidatedFinding) bool {
+	identity := strings.ToUpper(strings.Join(f.Sources, " ") + " " + f.Category + " " + f.Title)
+	return strings.Contains(identity, "COMPLEXITY.") || strings.Contains(identity, "CLONE.")
 }
 
 func isDocumentationFile(path string) bool {

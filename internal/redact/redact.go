@@ -81,10 +81,14 @@ func (r *Redactor) RedactValue(value any) any {
 			}
 			return out
 		case reflect.Map:
-			out := make(map[any]any, rv.Len())
+			out := make(map[string]any, rv.Len())
 			iter := rv.MapRange()
 			for iter.Next() {
-				out[r.RedactValue(iter.Key().Interface())] = r.RedactValue(iter.Value().Interface())
+				key := fmt.Sprint(iter.Key().Interface())
+				if rv.Type().Key().Kind() == reflect.String {
+					key = iter.Key().String()
+				}
+				out[r.RedactString(key)] = r.RedactValue(iter.Value().Interface())
 			}
 			return out
 		}

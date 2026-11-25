@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 	"unicode/utf8"
 )
@@ -63,6 +64,28 @@ func (s *Store) Load(repo string) ([]Note, error) {
 	return s.load(repo)
 }
 
+func (s *Store) lockRepo(repo string) (func(), error) {
+	p, err := s.path(repo)
+	if err != nil {
+		return nil, err
+	}
+	dir := filepath.Dir(p)
+	if err := os.MkdirAll(dir, 0700); err != nil {
+		return nil, err
+	}
+	f, err := os.OpenFile(filepath.Join(dir, ".lock"), os.O_CREATE|os.O_RDWR, 0600)
+	if err != nil {
+		return nil, err
+	}
+	if err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX); err != nil {
+		f.Close()
+		return nil, err
+	}
+	return func() { _ = syscall.Flock(int(f.Fd()), syscall.LOCK_UN); _ = f.Close() }, nil
+}
+
+func (s *Store) SetRedactor(redactor *redact.Redactor) { s.Redactor = redactor }
+
 func (s *Store) load(repo string) ([]Note, error) {
 	p, e := s.path(repo)
 	if e != nil {
@@ -82,6 +105,11 @@ func (s *Store) load(repo string) ([]Note, error) {
 func (s *Store) Add(repo, text, scope, source string) (Note, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	unlock, e := s.lockRepo(repo)
+	if e != nil {
+		return Note{}, e
+	}
+	defer unlock()
 	if scope == "" {
 		scope = "all"
 	}
@@ -93,9 +121,11 @@ func (s *Store) Add(repo, text, scope, source string) (Note, error) {
 		return Note{}, errors.New("invalid scope")
 	}
 	norm := strings.Join(strings.Fields(text), " ")
-	if s.Redactor != nil {
-		norm = s.Redactor.RedactString(norm)
+	redactor := s.Redactor
+	if redactor == nil {
+		redactor = redact.New()
 	}
+	norm = redactor.RedactString(norm)
 	if len(norm) > MaxNoteChars {
 		norm = truncateRunes(norm, MaxNoteChars)
 	}
@@ -141,6 +171,11 @@ func (s *Store) Add(repo, text, scope, source string) (Note, error) {
 func (s *Store) Remove(repo, id string) (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	unlock, e := s.lockRepo(repo)
+	if e != nil {
+		return false, e
+	}
+	defer unlock()
 	n, e := s.load(repo)
 	if e != nil {
 		return false, e

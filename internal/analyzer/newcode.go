@@ -8,6 +8,7 @@ type LineRange struct{ Start, End int }
 type Diff struct {
 	Files        map[string][]LineRange
 	ChangedLines map[string]map[int]bool
+	HasDiff      bool
 }
 
 func ParseUnifiedDiff(patch string) Diff {
@@ -16,6 +17,9 @@ func ParseUnifiedDiff(patch string) Diff {
 	line := 0
 	inHunk := false
 	for _, s := range strings.Split(patch, "\n") {
+		if strings.HasPrefix(s, "diff --git ") || strings.HasPrefix(s, "--- ") || strings.HasPrefix(s, "+++ ") || strings.HasPrefix(s, "@@") {
+			d.HasDiff = true
+		}
 		if !inHunk && strings.HasPrefix(s, "+++ b/") {
 			file = strings.TrimPrefix(s, "+++ b/")
 			continue

@@ -64,6 +64,13 @@ func PreviewProviderMatches(rawURL string, providerHosts ...string) bool {
 }
 
 func ResolvePreviewURL(statuses, deployments, comments []string, baseURL string) (string, error) {
+	u, _, err := ResolvePreviewTarget(statuses, deployments, comments, baseURL)
+	return u, err
+}
+
+// ResolvePreviewTarget validates a preview URL and pins its hostname to one of
+// the public addresses returned during validation.
+func ResolvePreviewTarget(statuses, deployments, comments []string, baseURL string) (string, string, error) {
 	all := make([]string, 0, len(statuses)+len(deployments)+len(comments)+1)
 	all = append(all, statuses...)
 	all = append(all, deployments...)
@@ -79,12 +86,28 @@ func ResolvePreviewURL(statuses, deployments, comments []string, baseURL string)
 		if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil {
 			continue
 		}
-		if isDisallowedResolvedHost(u.Hostname()) {
+		if isDisallowedHost(u.Hostname()) {
 			continue
 		}
-		return u.String(), nil
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		ips, lookupErr := net.DefaultResolver.LookupIPAddr(ctx, u.Hostname())
+		cancel()
+		if lookupErr != nil || len(ips) == 0 {
+			continue
+		}
+		valid := true
+		for _, item := range ips {
+			ip := item.IP
+			if ip.IsPrivate() || ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() || ip.IsMulticast() {
+				valid = false
+				break
+			}
+		}
+		if valid {
+			return u.String(), ips[0].IP.String(), nil
+		}
 	}
-	return "", errors.New("no safe HTTPS preview URL found")
+	return "", "", errors.New("no safe HTTPS preview URL found")
 }
 
 // ResolveVercelPreview queries the Vercel Deployments API for a READY preview

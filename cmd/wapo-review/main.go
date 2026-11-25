@@ -351,6 +351,7 @@ func run(args []string) error {
 
 		registry := sandbox.NewActiveRegistry()
 		memStore := memory.NewStore(memDir)
+		memStore.SetRedactor(red)
 		client := &githubapp.Client{}
 		modelFactory, providerDesc := defaultModelFactory(cfg)
 

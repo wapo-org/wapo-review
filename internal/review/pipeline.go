@@ -65,8 +65,9 @@ type Pipeline struct {
 	VisionModelFactory      ModelFactory
 	MaxShardConcurrency     int
 
-	mu   sync.Mutex
-	runs map[string]*runState
+	mu            sync.Mutex
+	runs          map[string]*runState
+	publishedSHAs map[string]string
 }
 
 type runState struct {
@@ -161,6 +162,21 @@ func (p *Pipeline) logInfo(msg string, args ...any) {
 }
 
 func (p *Pipeline) PreparePR(ctx context.Context, in orchestrator.ReviewInput) (orchestrator.StageResult, error) {
+	p.mu.Lock()
+	old := p.runs[in.RunID]
+	p.mu.Unlock()
+	if old != nil {
+		old.mu.Lock()
+		oldContainer, oldRoot := old.container, old.workRoot
+		old.container, old.workRoot = nil, ""
+		old.mu.Unlock()
+		if oldContainer != nil {
+			_ = oldContainer.Close(context.Background())
+		}
+		if oldRoot != "" {
+			_ = os.RemoveAll(oldRoot)
+		}
+	}
 	s := p.state(in.RunID)
 	s.mu.Lock()
 	s.generation++
@@ -566,7 +582,11 @@ func (p *Pipeline) ReviewShards(ctx context.Context, in orchestrator.ReviewInput
 	runOneShard := func(runCtx context.Context, sh sharder.Shard) orchestrator.StageResult {
 		m, err := p.ModelFactory(runCtx)
 		if err != nil || m == nil {
-			return orchestrator.StageResult{Version: 1, Status: "skipped", Data: map[string]any{"shard": sh.ID, "error": fmt.Sprint(err)}}
+			missing := make([]string, 0, len(sh.Files))
+			for _, file := range sh.Files {
+				missing = append(missing, file.Path)
+			}
+			return orchestrator.StageResult{Version: 1, Status: "skipped", Data: map[string]any{"shard": sh.ID, "error": fmt.Sprint(err), "missing_files": missing}}
 		}
 		reviewed := map[string]bool{}
 		var revMu sync.Mutex
@@ -1134,6 +1154,7 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 	var previewURL string
 	var modeDesc string
 	var defaultHeaders map[string]string
+	var pinnedHostIP map[string]string
 	var localBootErr error
 
 	// DEFAULT: pull PR code (already checked out in hostRepoDir) and boot it locally inside the sandbox.
@@ -1155,9 +1176,16 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 	var vercelErr error
 	if previewURL == "" && p.QAProfile != nil && pr.Head.SHA != "" {
 		if vURL, hdrs, err := browser.ResolveVercelPreview(ctx, p.QAProfile, pr.Head.SHA); err == nil {
-			previewURL = vURL
-			modeDesc = "remote-preview"
-			defaultHeaders = hdrs
+			if validatedURL, ip, verr := browser.ResolvePreviewTarget(nil, nil, nil, vURL); verr == nil {
+				previewURL = validatedURL
+				modeDesc = "remote-preview"
+				defaultHeaders = hdrs
+				if u, perr := url.Parse(validatedURL); perr == nil && u.Hostname() != "" && ip != "" {
+					pinnedHostIP = map[string]string{u.Hostname(): ip}
+				}
+			} else {
+				vercelErr = verr
+			}
 		} else {
 			vercelErr = err
 		}
@@ -1167,7 +1195,7 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 		if c, err := p.client(ctx, in); err == nil && c != nil {
 			statuses, deployments, comments = c.ListPreviewCandidateURLs(ctx, in.Repo, pr.Head.SHA, in.PRNumber)
 		}
-		resolved, err := browser.ResolvePreviewURL(statuses, deployments, comments, p.PreviewBaseURL)
+		resolved, ip, err := browser.ResolvePreviewTarget(statuses, deployments, comments, p.PreviewBaseURL)
 		if err != nil {
 			var reasons []string
 			if localBootErr != nil {
@@ -1185,11 +1213,19 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 		}
 		previewURL = resolved
 		modeDesc = "remote-preview"
+		if u, perr := url.Parse(resolved); perr == nil && u.Hostname() != "" && ip != "" {
+			pinnedHostIP = map[string]string{u.Hostname(): ip}
+		}
 		if p.QAProfile != nil && isVercelPreviewHost(resolved, p.QAProfile) {
 			if bypass := strings.TrimSpace(p.QAProfile.Vercel["web_bypass_secret"]); bypass != "" {
 				defaultHeaders = map[string]string{"x-vercel-protection-bypass": bypass}
 			}
 		}
+	}
+
+	var authorizedOrigin string
+	if u, perr := url.Parse(previewURL); perr == nil && u.Scheme != "" && u.Host != "" {
+		authorizedOrigin = u.Scheme + "://" + u.Host
 	}
 
 	m, err := p.ModelFactory(ctx)
@@ -1204,14 +1240,16 @@ func (p *Pipeline) BrowserAndVisualQA(ctx context.Context, in orchestrator.Revie
 	}
 	cm := sandbox.NewCheckpointManager(browserContainer)
 	runner := &browser.HandsOnRunner{
-		Loop:           &agent.ReviewLoop{Model: m, MaxTurns: 12, MaxNudges: 2, Redactor: p.Redactor},
-		Executor:       p.BrowserExecutor,
-		Container:      &browserContainer,
-		Checkpoint:     cm,
-		Profile:        p.QAProfile,
-		Memory:         memNotes,
-		DefaultHeaders: defaultHeaders,
-		ScreenshotDir:  containerScreenshotDir,
+		Loop:             &agent.ReviewLoop{Model: m, MaxTurns: 12, MaxNudges: 2, Redactor: p.Redactor},
+		Executor:         p.BrowserExecutor,
+		Container:        &browserContainer,
+		Checkpoint:       cm,
+		Profile:          p.QAProfile,
+		Memory:           memNotes,
+		DefaultHeaders:   defaultHeaders,
+		AuthorizedOrigin: authorizedOrigin,
+		PinnedHostIP:     pinnedHostIP,
+		ScreenshotDir:    containerScreenshotDir,
 	}
 	prompt := buildBrowserIntegrationPrompt(previewURL+" ["+modeDesc+"]", in, pr, files, existingFindings)
 	res, runErr := runner.Run(ctx, prompt)
@@ -1344,9 +1382,6 @@ func isVercelPreviewHost(rawURL string, profile *secrets.QAProfile) bool {
 	if host == "" {
 		return false
 	}
-	if host == "vercel.app" || strings.HasSuffix(host, ".vercel.app") {
-		return true
-	}
 	if profile != nil {
 		for _, key := range []string{"web_domain", "project_domain", "preview_domain"} {
 			dom := strings.ToLower(strings.TrimSpace(profile.Vercel[key]))
@@ -1359,6 +1394,12 @@ func isVercelPreviewHost(rawURL string, profile *secrets.QAProfile) bool {
 }
 
 func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInput, _ orchestrator.StageResult, _ orchestrator.StageResult) (orchestrator.StageResult, error) {
+	p.mu.Lock()
+	if publishedSHA := p.publishedSHAs[in.RunID]; publishedSHA != "" {
+		p.mu.Unlock()
+		return orchestrator.StageResult{Version: 1, Status: "published", Data: map[string]any{"head_sha": publishedSHA, "idempotent": true}}, nil
+	}
+	p.mu.Unlock()
 	s := p.state(in.RunID)
 	s.mu.Lock()
 	generation := s.generation
@@ -1380,10 +1421,7 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	s.mu.Unlock()
 
 	published := false
-	defer func() {
-		if !published {
-			return
-		}
+	cleanup := func() {
 		if container != nil {
 			_ = container.Close(context.Background())
 		}
@@ -1399,16 +1437,33 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 			s.mu.Unlock()
 		}
 		p.mu.Unlock()
+	}
+	defer func() {
+		if !published {
+			return
+		}
+		cleanup()
+	}()
+	defer func() {
+		if ctx.Err() != nil {
+			cleanup()
+		}
 	}()
 
 	c, err := p.client(ctx, in)
 	if err != nil {
+		if !isRetryablePublishError(err) {
+			cleanup()
+		}
 		return orchestrator.StageResult{}, err
 	}
 	checkID := existingCheckID
 	if existingCheckSHA != pr.Head.SHA || checkID == 0 {
 		checkID, err = gate.PublishGateCheckRun(ctx, c, in.Repo, pr.Head.SHA, gateRes)
 		if err != nil {
+			if !isRetryablePublishError(err) {
+				cleanup()
+			}
 			return orchestrator.StageResult{}, err
 		}
 		s.mu.Lock()
@@ -1420,6 +1475,9 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 	}
 	formatted := consolidator.FormatPRReview(final, 25)
 	if err := c.SubmitReview(ctx, in.Repo, in.PRNumber, pr.Head.SHA, formatted.Event, formatted.Body, formatted.Comments); err != nil {
+		if !isRetryablePublishError(err) {
+			cleanup()
+		}
 		return orchestrator.StageResult{}, err
 	}
 	s.mu.Lock()
@@ -1427,6 +1485,20 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 		s.publishedSHA = pr.Head.SHA
 	}
 	s.mu.Unlock()
+	p.mu.Lock()
+	if p.publishedSHAs == nil {
+		p.publishedSHAs = make(map[string]string)
+	}
+	p.publishedSHAs[in.RunID] = pr.Head.SHA
+	if len(p.publishedSHAs) > 1024 {
+		for id := range p.publishedSHAs {
+			if id != in.RunID {
+				delete(p.publishedSHAs, id)
+				break
+			}
+		}
+	}
+	p.mu.Unlock()
 	published = true
 	p.logInfo("stage_done", "stage", "publish_review", "run_id", in.RunID, "check_run_id", checkID, "event", formatted.Event, "inline_comments", len(formatted.Comments), "total_findings", len(final.Findings))
 	return orchestrator.StageResult{
@@ -1438,6 +1510,19 @@ func (p *Pipeline) PublishReview(ctx context.Context, in orchestrator.ReviewInpu
 			"inline_comments": len(formatted.Comments),
 		},
 	}, nil
+}
+
+func isRetryablePublishError(err error) bool {
+	if err == nil {
+		return false
+	}
+	message := err.Error()
+	for _, status := range []string{" 400", " 401", " 403", " 404", " 409", " 422"} {
+		if strings.Contains(message, "GitHub API") && strings.Contains(message, status) {
+			return false
+		}
+	}
+	return true
 }
 
 func HandleReviewCommentReply(ctx context.Context, c *githubapp.Client, store *memory.Store, e githubapp.WebhookEvent) error {

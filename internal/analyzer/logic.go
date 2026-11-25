@@ -147,7 +147,14 @@ var (
 
 func isSubtractedBound(txt string, matchEnd int) bool {
 	rest := strings.TrimLeft(txt[matchEnd:], " \t")
-	return strings.HasPrefix(rest, "-")
+	if !strings.HasPrefix(rest, "-") {
+		return false
+	}
+	term := strings.TrimLeft(rest[1:], " \t")
+	if strings.HasPrefix(term, "0") && (len(term) == 1 || term[1] < '0' || term[1] > '9') {
+		return false
+	}
+	return term != ""
 }
 
 func checkLoopBounds(n *gts.Node, path string, src []byte) (Finding, bool) {
@@ -736,29 +743,48 @@ func isParamGuardedBeforeDeref(name, body string) bool {
 		`((\|\||&&)\s*!?\s*` + esc + `\b)|` +
 			`(\b` + esc + `\s*\?\s*[^.?])|` +
 			`(\b` + esc + `\s*(\?\?|\&\&))|` +
-			`(\b` + esc + `\s*=\s*)`,
+			`(\b` + esc + `\s*=\s*[^=])`,
 	)
 	if exprRe.MatchString(prefix) {
 		return true
 	}
 	// Control-flow if-guards must either still enclose the dereference (open brace) or exit early (return/throw/continue/break).
 	ifGuardRe := regexp.MustCompile(
-		`(\bif\s*\(\s*!?\s*` + esc + `\b)|` +
-			`(\bif\s+` + esc + `\s+is\s+(not\s+)?None\b)|` +
-			`(\bif\s*\(?\s*` + esc + `\s*(!==?|===?)\s*(null|undefined|None)\b)`,
+		`\bif\s*(?:\(\s*)?(!\s*` + esc + `\b(?:\s*\))?|` + esc + `\s*(?:==|===)\s*(?:null|undefined|None)\s*\)?|` + esc + `\s+is\s+(?:not\s+)?None\s*:|` + esc + `\s*(?:!==?|===?)\s*(?:null|undefined|None)\s*\)?|` + esc + `\s*\)?)`,
 	)
 	for _, loc := range ifGuardRe.FindAllStringIndex(prefix, -1) {
-		segment := prefix[loc[0]:]
+		guard := prefix[loc[0]:loc[1]]
+		negated := strings.Contains(guard, "!") || strings.Contains(guard, "==") || strings.Contains(guard, " is None")
+		segment := prefix[loc[1]:]
 		openBraces := strings.Count(segment, "{") - strings.Count(segment, "}")
-		if openBraces > 0 {
+		if openBraces > 0 && !negated {
 			return true
 		}
-		// Python indentation-based guard or brace-closed early exit.
-		if strings.Contains(segment, "return") || strings.Contains(segment, "throw") || strings.Contains(segment, "raise") || strings.Contains(segment, "continue") || strings.Contains(segment, "break") {
+		if openBraces == 0 && negated && guardBlockExits(segment) {
 			return true
 		}
-		if strings.Contains(segment, ":") && !strings.Contains(segment, "{") {
+		if strings.Contains(guard, " is None") && strings.Contains(guard, "not") {
 			return true
+		}
+	}
+	return false
+}
+
+func guardBlockExits(segment string) bool {
+	open := strings.IndexByte(segment, '{')
+	if open < 0 {
+		return false
+	}
+	depth := 1
+	for i := open + 1; i < len(segment); i++ {
+		switch segment[i] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return regexp.MustCompile(`\b(return|throw|raise|continue|break)\b`).MatchString(segment[open+1 : i])
+			}
 		}
 	}
 	return false

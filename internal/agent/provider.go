@@ -55,17 +55,22 @@ func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout time.Duration) *http.Client {
-	if base == nil && len(headers) == 0 {
-		return nil
-	}
 	var c http.Client
 	if base != nil {
 		c = *base
 	}
 	previousRedirect := c.CheckRedirect
 	c.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		if len(via) > 0 && (req.URL.Scheme != via[0].URL.Scheme || req.URL.Host != via[0].URL.Host) {
-			return http.ErrUseLastResponse
+		if len(via) > 0 {
+			previous := via[len(via)-1].URL
+			if !strings.EqualFold(req.URL.Scheme, previous.Scheme) || !strings.EqualFold(req.URL.Host, previous.Host) {
+				for _, key := range []string{"Authorization", "Api-Key", "X-Api-Key", "Cookie"} {
+					req.Header.Del(key)
+				}
+			}
+			if strings.EqualFold(previous.Scheme, "https") && strings.EqualFold(req.URL.Scheme, "http") {
+				return http.ErrUseLastResponse
+			}
 		}
 		if previousRedirect != nil {
 			return previousRedirect(req, via)
@@ -84,6 +89,9 @@ func httpClientWithHeaders(base *http.Client, headers map[string]string, timeout
 			copied[k] = v
 		}
 		c.Transport = &headerTransport{base: c.Transport, headers: copied}
+	}
+	if c.Transport == nil {
+		c.Transport = http.DefaultTransport
 	}
 	return &c
 }

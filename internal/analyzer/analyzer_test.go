@@ -56,6 +56,37 @@ func TestUnifiedDiffNewCodeScoping(t *testing.T) {
 	}
 }
 
+func TestDeletionOnlyDiffDoesNotRunUnscopedFindings(t *testing.T) {
+	diff := ParseUnifiedDiff("diff --git a/a.go b/a.go\n--- a/a.go\n+++ /dev/null\n@@ -1 +0,0 @@\n-old")
+	if !diff.HasDiff || len(diff.Files) != 0 {
+		t.Fatalf("expected deletion-only scoped diff: %+v", diff)
+	}
+	findings := RunAll(context.Background(), RunInput{Files: map[string][]byte{"bad.go": []byte("func f(x []int) { for i := 0; i <= len(x); i++ { _ = x[i] } }")}, Diff: diff})
+	for _, finding := range findings {
+		if finding.RuleID == "LOGIC.bounds" {
+			t.Fatalf("unrelated finding leaked into deletion-only diff: %+v", finding)
+		}
+	}
+}
+
+func TestBoundsAndNullableGuardPolarity(t *testing.T) {
+	src := []byte("func f(x []int) { for i := 0; i <= len(x)-0; i++ { _ = x[i] } }")
+	findings := AnalyzeLogic("a.go", src)
+	found := false
+	for _, finding := range findings {
+		found = found || finding.RuleID == "LOGIC.bounds"
+	}
+	if !found {
+		t.Fatal("expected len(x)-0 to retain the off-by-one finding")
+	}
+	if isParamGuardedBeforeDeref("user", "if (!user) { user.name }") {
+		t.Fatal("negated open guard must not protect dereference")
+	}
+	if isParamGuardedBeforeDeref("user", "if (user == null) { log(user); } return user.name") {
+		t.Fatal("closed guard without an early exit must not protect later dereference")
+	}
+}
+
 func TestSonarCognitiveComplexityAcrossLanguages(t *testing.T) {
 	// 1. TypeScript: boolean sequences (`a && b && c` = +1; `a && b || c` = +2), else if (+1 no nesting), nested lambda (+0, increases nesting)
 	tsSrc := []byte(`

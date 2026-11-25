@@ -89,7 +89,10 @@ var specialistChecklists = map[string][]string{
 	},
 	"trust_boundary_protocol": {
 		"Trace untrusted PR, user, and external inputs across host execution, filesystem containment, browser and HTTP egress, redirects, and model-visible payload serialization. Check exec/Command, ReadFile/WriteFile/EvalSymlinks, temp paths, headers, cookies, StorageState, SSRF, DNS, URL matching, and secret redaction.",
-		"Inspect symmetric sibling primitives in the same package. If ReadFile has a symlink or size check, inspect WriteFile and PreparePR. If one HTTP client strips auth on redirect, inspect sibling clients and retry paths. Pair runner/localboot, scorer/media, and equivalent adapters.",
+		"When a diff changes a guard, redaction, containment, redirect, or header-scoping check, read the entire file and unchanged sibling functions, tools, and handlers in the package. Compare symmetric sibling primitives such as checkTool with checkpointTool, ReadFile with WriteFile, and Verifier with PreparePR, then prove every sibling sink applies the same guard.",
+		"Distinguish provider membership from tenant authorization. Flag wildcard host or domain allowlists such as *.vercel.app, *.netlify.app, *.github.io, and *.amazonaws.com when they attach tenant secrets or bypass headers without verifying project ownership.",
+		"Trace untrusted PR and model input through nil and default fallback branches such as client == nil and headers == nil, then through non-browser sinks including file verifiers, log redactors, and HTTP clients.",
+		"Check hostile termination and retries. Flag secret or temporary-file cleanup that relies only on shell trap EXIT because SIGKILL bypasses it, plus failed-retry and supersession resource leaks.",
 		"Verify third-party protocol invariants invisible to local Go or TypeScript types, including Responses API reasoning-item replay and incomplete status handling, GitHub 422 fallback event preservation, non-idempotent POST/PATCH retries, SHA-pinned checkouts, hostname versus full-URL matching, and OAuth, webhook, and signature verification.",
 	},
 }

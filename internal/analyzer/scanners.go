@@ -372,7 +372,7 @@ func RunAll(ctx context.Context, in RunInput) []Finding {
 			if !f.NewCode {
 				f.NewCode = ScopeFinding(f, in.Diff)
 			}
-			if len(in.Diff.Files) == 0 || f.NewCode || f.RepoWide {
+			if (!in.Diff.HasDiff && len(in.Diff.Files) == 0) || f.NewCode || f.RepoWide {
 				out = append(out, f)
 			}
 		}
@@ -385,7 +385,7 @@ func RunAll(ctx context.Context, in RunInput) []Finding {
 			continue
 		}
 		f.NewCode = ScopeFinding(f, in.Diff)
-		if len(in.Diff.Files) == 0 || f.NewCode {
+		if (!in.Diff.HasDiff && len(in.Diff.Files) == 0) || f.NewCode {
 			out = append(out, f)
 		}
 	}

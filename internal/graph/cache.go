@@ -93,15 +93,19 @@ func (c *ProfilerCache) Load(tenant, repo, sha string) (*CodebaseIndex, error) {
 	return NewCodebaseIndex(sources, tenant, repo, sha), nil
 }
 
-func (c *ProfilerCache) SeedBase(tenant, repo, _ string) (string, *CodebaseIndex, error) {
+func (c *ProfilerCache) SeedBase(tenant, repo, baseSHA string) (string, *CodebaseIndex, error) {
 	b, err := os.ReadFile(filepath.Join(c.directory(tenant, repo), "latest.json"))
 	if err != nil {
 		return "", nil, err
 	}
 	var m struct {
-		BaseSHA string `json:"base_sha"`
+		CommitSHA string `json:"commit_sha"`
+		BaseSHA   string `json:"base_sha"`
 	}
-	if err := json.Unmarshal(b, &m); err != nil || m.BaseSHA == "" {
+	if err := json.Unmarshal(b, &m); err != nil || m.BaseSHA == "" || (baseSHA != "" && m.CommitSHA != baseSHA) {
+		if err == nil {
+			err = os.ErrNotExist
+		}
 		return "", nil, err
 	}
 	x, err := c.Load(tenant, repo, m.BaseSHA)

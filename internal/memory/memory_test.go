@@ -1,9 +1,11 @@
 package memory
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -37,6 +39,37 @@ func TestStoreSecurityDedupRedactionAndCap(t *testing.T) {
 	di, _ := os.Stat(s.Dir)
 	if di.Mode().Perm() != 0700 {
 		t.Fatalf("dir mode %o", di.Mode().Perm())
+	}
+}
+
+func TestStoreDefaultRedactionAndCrossInstanceWrites(t *testing.T) {
+	dir := filepath.Join(t.TempDir(), "memory")
+	first, second := NewStore(dir), NewStore(dir)
+	if _, err := first.Add("owner/repo", "token ghp_abcdefghijklmnopqrstuvwxyz1234567890", "all", "test"); err != nil {
+		t.Fatal(err)
+	}
+	notes, err := first.Load("owner/repo")
+	if err != nil || len(notes) != 1 || strings.Contains(notes[0].Text, "ghp_") {
+		t.Fatalf("default redaction failed: %#v %v", notes, err)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 20; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			store := first
+			if i%2 != 0 {
+				store = second
+			}
+			if _, err := store.Add("owner/repo", fmt.Sprintf("note %d", i), "all", "test"); err != nil {
+				t.Errorf("Add: %v", err)
+			}
+		}(i)
+	}
+	wg.Wait()
+	notes, err = second.Load("owner/repo")
+	if err != nil || len(notes) != 21 {
+		t.Fatalf("cross-instance writes lost: notes=%d err=%v", len(notes), err)
 	}
 }
 func TestReplyExtractionAndRanking(t *testing.T) {

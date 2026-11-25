@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -38,6 +39,7 @@ type CheckPlan struct {
 	RecordVideo      bool              `json:"record_video,omitempty"`
 	ExtraHTTPHeaders map[string]string `json:"extra_http_headers,omitempty"`
 	ResolvedIP       string            `json:"resolved_ip,omitempty"`
+	AuthorizedOrigin string            `json:"authorized_origin,omitempty"`
 }
 
 type StepResult struct {
@@ -104,12 +106,18 @@ async function main() {
 
   const context = await browser.newContext(ctxOpts);
   const page = await context.newPage();
-  if (plan.extra_http_headers && plan.url) {
-    const targetOrigin = new URL(plan.url).origin;
+  if (plan.extra_http_headers || plan.authorized_origin) {
+    const targetOrigin = plan.authorized_origin || "";
     await page.route("**/*", async (route) => {
       const req = route.request();
+      const target = new URL(req.url());
+      const literal = target.hostname.replace(/^\\[|\\]$/g, "");
+      const isPrivateLiteral = /^(localhost|.*\\.localhost)$/i.test(literal) || (() => { const parts = literal.split(".").map(Number); return parts.length === 4 && parts.every(n => Number.isInteger(n) && n >= 0 && n <= 255) && (parts[0] === 10 || parts[0] === 127 || (parts[0] === 169 && parts[1] === 254) || (parts[0] === 192 && parts[1] === 168) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)); })() || literal === "::1" || literal === "::";
+      const localAuthorized = targetOrigin && /^(http:\/\/)?(localhost|127\\.0\\.0\\.1)(:\\d+)?$/i.test(new URL(targetOrigin).origin);
+      if (isPrivateLiteral && !localAuthorized) { await route.abort(); return; }
       const headers = { ...req.headers() };
-      if (new URL(req.url()).origin === targetOrigin) Object.assign(headers, plan.extra_http_headers);
+      if (targetOrigin && target.origin === targetOrigin) Object.assign(headers, plan.extra_http_headers || {});
+      else if (!targetOrigin) for (const key of Object.keys(plan.extra_http_headers || {})) { if (/^(authorization|x-vercel-protection-bypass|cookie|x-api-key|api-key)$/i.test(key)) delete headers[key]; }
       await route.continue({ headers });
     });
   }
@@ -281,16 +289,18 @@ func (e *SandboxPlaywrightExecutor) Run(ctx context.Context, c *sandbox.Containe
 }
 
 type HandsOnRunner struct {
-	Loop           *agent.ReviewLoop
-	Executor       BrowserExecutor
-	Container      *sandbox.Container
-	Checkpoint     *sandbox.CheckpointManager
-	Profile        *secrets.QAProfile
-	Memory         []memory.Note
-	DefaultHeaders map[string]string
-	ScreenshotDir  string
-	Telemetry      RunTelemetry
-	Reports        []CheckReport
+	Loop             *agent.ReviewLoop
+	Executor         BrowserExecutor
+	Container        *sandbox.Container
+	Checkpoint       *sandbox.CheckpointManager
+	Profile          *secrets.QAProfile
+	Memory           []memory.Note
+	DefaultHeaders   map[string]string
+	AuthorizedOrigin string
+	PinnedHostIP     map[string]string
+	ScreenshotDir    string
+	Telemetry        RunTelemetry
+	Reports          []CheckReport
 
 	mu        sync.Mutex
 	lastState sandbox.BrowserState
@@ -344,6 +354,14 @@ func (t checkTool) InvokableRun(ctx context.Context, raw string, _ ...tool.Optio
 	}
 	if t.h.ScreenshotDir != "" {
 		p.ScreenshotDir = t.h.ScreenshotDir
+	}
+	if t.h.AuthorizedOrigin != "" {
+		p.AuthorizedOrigin = t.h.AuthorizedOrigin
+	}
+	if len(t.h.PinnedHostIP) > 0 && p.ResolvedIP == "" {
+		if u, err := url.Parse(p.URL); err == nil {
+			p.ResolvedIP = t.h.PinnedHostIP[u.Hostname()]
+		}
 	}
 	if len(t.h.DefaultHeaders) > 0 {
 		if p.ExtraHTTPHeaders == nil {
@@ -420,6 +438,7 @@ func (t checkpointTool) InvokableRun(ctx context.Context, raw string, _ ...tool.
 		t.h.Telemetry.Rollbacks++
 		t.h.lastState = cp.State
 		t.h.mu.Unlock()
+		cp.State.StorageState = nil
 		b, _ := json.Marshal(cp)
 		return string(b), nil
 	}
@@ -440,6 +459,7 @@ func (t checkpointTool) InvokableRun(ctx context.Context, raw string, _ ...tool.
 	if err != nil {
 		return "", err
 	}
+	cp.State.StorageState = nil
 	b, _ := json.Marshal(cp)
 	return string(b), nil
 }

@@ -130,8 +130,23 @@ func TestAnalyzerFindingsNoDuplicateLinesAndCloneOffInline(t *testing.T) {
 	if strings.Count(commentBody, "Hardcoded AWS key detected") != 1 {
 		t.Fatalf("expected message once in inline comment, got: %q", commentBody)
 	}
-	if strings.Count(review.Body, "Duplicate code block matches src/a.ts:14") != 1 {
-		t.Fatalf("expected clone message once in overflow summary, got: %q", review.Body)
+	if strings.Contains(review.Body, "Duplicate code block matches src/a.ts:14") || !strings.Contains(review.Body, "1 duplicate-block items omitted") {
+		t.Fatalf("expected compact clone summary without verbose finding, got: %q", review.Body)
+	}
+}
+
+func TestFormatPRReviewSummarizesComplexityAndClone(t *testing.T) {
+	findings := []analyzer.Finding{
+		{RuleID: "COMPLEXITY.cognitive", Category: "maintainability", Severity: "low", File: "a.go", StartLine: 2, Message: "Complex function", NewCode: true},
+		{RuleID: "CLONE.duplicate-block", Category: "duplication", Severity: "low", File: "b.go", StartLine: 3, Message: "Repeated block", NewCode: true},
+		{RuleID: "SECURITY.auth", Category: "security", Severity: "high", File: "c.go", StartLine: 4, Message: "Missing authorization", NewCode: true},
+	}
+	review := FormatPRReview(Consolidate(nil, findings, nil), 25)
+	if strings.Contains(review.Body, "Complex function") || strings.Contains(review.Body, "Repeated block") || strings.Contains(review.Body, "Additional findings") {
+		t.Fatalf("maintainability findings should not appear in details: %q", review.Body)
+	}
+	if !strings.Contains(review.Body, "1 cognitive-complexity and 1 duplicate-block items omitted") || len(review.Comments) != 1 {
+		t.Fatalf("expected summary and actionable security comment, got %#v %q", review.Comments, review.Body)
 	}
 }
 

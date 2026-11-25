@@ -2,7 +2,9 @@ package sandbox
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path"
@@ -200,6 +202,16 @@ func CheckoutRepo(ctx context.Context, c Container, s CheckoutSpec) (CheckoutRes
 		s.Depth = 50
 	}
 	ws := workspaceDir(c)
+	var nonce [16]byte
+	if _, err := rand.Read(nonce[:]); err != nil {
+		return CheckoutResult{}, err
+	}
+	gitConfigPath := "/tmp/wapo-gitcfg-" + hex.EncodeToString(nonce[:])
+	defer func() {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_, _ = c.Exec(cleanupCtx, ExecOpts{Command: []string{"rm", "-f", gitConfigPath}, Timeout: 5 * time.Second, MaxOutputBytes: 1024})
+	}()
 
 	env := map[string]string{
 		"GIT_TERMINAL_PROMPT": "0",
@@ -221,19 +233,12 @@ base_sha="$5"
 head_sha="$6"
 pr_num="$7"
 has_auth="$8"
-
-tmp_gitcfg=""
-cleanup() {
-  if [ -n "$tmp_gitcfg" ]; then
-    rm -f "$tmp_gitcfg"
-  fi
-}
-trap cleanup EXIT
+tmp_gitcfg_path="$9"
 
 if [ "$has_auth" = "1" ]; then
   old_umask=$(umask)
   umask 077
-  tmp_gitcfg=$(mktemp)
+  tmp_gitcfg="$tmp_gitcfg_path"
   cat > "$tmp_gitcfg"
   umask "$old_umask"
   export GIT_CONFIG_GLOBAL="$tmp_gitcfg"
@@ -310,7 +315,7 @@ printf 'HEAD_SHA=%s\nDIFF_BASE=%s\nUSED_PR_FALLBACK=%s\nUSED_BASE_SHA=%s\n' "$re
 	args := []string{
 		"sh", "-c", script, "sh",
 		ws, remote, fmt.Sprint(s.Depth),
-		s.BaseRef, s.BaseSHA, s.HeadSHA, fmt.Sprint(s.PRNumber), hasAuth,
+		s.BaseRef, s.BaseSHA, s.HeadSHA, fmt.Sprint(s.PRNumber), hasAuth, gitConfigPath,
 	}
 	r, err := c.Exec(ctx, ExecOpts{Command: args, Env: env, Stdin: stdinData, Timeout: 2 * time.Minute, MaxOutputBytes: 1 << 16})
 	if err != nil {

@@ -223,7 +223,8 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 	if e != nil {
 		return 0, e
 	}
-	if r.StatusCode == 422 && len(chunks[0]) > 0 {
+	fallback := r.StatusCode == 422 && len(chunks[0]) > 0
+	if fallback {
 		r.Body.Close()
 		delete(output, "annotations")
 		r, e = c.request(ctx, "POST", fmt.Sprintf("/repos/%s/check-runs", repo), payload)
@@ -237,7 +238,11 @@ func (c *Client) CreateCompletedCheckRun(ctx context.Context, repo, name, head, 
 	if e = decodeResponse(r, &created); e != nil {
 		return 0, e
 	}
-	for _, chunk := range chunks[1:] {
+	remainingChunks := chunks[1:]
+	if fallback {
+		remainingChunks = append([][]Annotation{chunks[0]}, remainingChunks...)
+	}
+	for _, chunk := range remainingChunks {
 		for attempt := 0; ; attempt++ {
 			resp, err := c.request(ctx, "PATCH", fmt.Sprintf("/repos/%s/check-runs/%d", repo, created.ID), map[string]any{"output": map[string]any{"title": title, "summary": summary, "annotations": chunk}})
 			if err != nil {

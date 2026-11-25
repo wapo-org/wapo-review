@@ -181,8 +181,12 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 	}
 
 	var parsed struct {
-		OutputText        string `json:"output_text"`
-		Status            string `json:"status"`
+		OutputText string `json:"output_text"`
+		Status     string `json:"status"`
+		Error      *struct {
+			Code    string `json:"code"`
+			Message string `json:"message"`
+		} `json:"error"`
 		IncompleteDetails *struct {
 			Reason string `json:"reason"`
 		} `json:"incomplete_details"`
@@ -223,6 +227,12 @@ func (m *responsesChatModel) Generate(ctx context.Context, msgs []*schema.Messag
 			reason = parsed.IncompleteDetails.Reason
 		}
 		return nil, fmt.Errorf("incomplete response: %s", reason)
+	}
+	if parsed.Status == "failed" || parsed.Status == "cancelled" || parsed.Error != nil {
+		if parsed.Error != nil {
+			return nil, fmt.Errorf("response %s: %s: %s", parsed.Status, parsed.Error.Code, parsed.Error.Message)
+		}
+		return nil, fmt.Errorf("response %s", parsed.Status)
 	}
 
 	out := &schema.Message{
