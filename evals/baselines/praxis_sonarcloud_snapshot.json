@@ -1,0 +1,5730 @@
+{
+  "captured_at": "2026-11-22T18:20:55.646710+00:00",
+  "facets": {
+    "languages": [
+      {
+        "count": 662,
+        "val": "c"
+      },
+      {
+        "count": 128,
+        "val": "ts"
+      },
+      {
+        "count": 67,
+        "val": "js"
+      },
+      {
+        "count": 28,
+        "val": "swift"
+      },
+      {
+        "count": 6,
+        "val": "py"
+      }
+    ],
+    "rules": [
+      {
+        "count": 336,
+        "val": "c:S1909"
+      },
+      {
+        "count": 130,
+        "val": "c:S999"
+      },
+      {
+        "count": 118,
+        "val": "c:S1219"
+      },
+      {
+        "count": 33,
+        "val": "typescript:S7773"
+      },
+      {
+        "count": 31,
+        "val": "typescript:S8786"
+      },
+      {
+        "count": 30,
+        "val": "typescript:S1313"
+      },
+      {
+        "count": 24,
+        "val": "c:S1763"
+      },
+      {
+        "count": 24,
+        "val": "swift:S1313"
+      },
+      {
+        "count": 20,
+        "val": "c:S128"
+      },
+      {
+        "count": 19,
+        "val": "c:S912"
+      },
+      {
+        "count": 12,
+        "val": "javascript:S5443"
+      },
+      {
+        "count": 12,
+        "val": "c:S876"
+      },
+      {
+        "count": 11,
+        "val": "jssecurity:S8476"
+      },
+      {
+        "count": 10,
+        "val": "jssecurity:S7044"
+      },
+      {
+        "count": 9,
+        "val": "javascript:S4036"
+      },
+      {
+        "count": 5,
+        "val": "pythonsecurity:S8707"
+      },
+      {
+        "count": 5,
+        "val": "javascript:S8786"
+      },
+      {
+        "count": 4,
+        "val": "javascript:S7773"
+      },
+      {
+        "count": 4,
+        "val": "typescript:S7737"
+      },
+      {
+        "count": 4,
+        "val": "typescript:S2871"
+      },
+      {
+        "count": 4,
+        "val": "javascript:S9383"
+      },
+      {
+        "count": 3,
+        "val": "jssecurity:S8707"
+      },
+      {
+        "count": 3,
+        "val": "typescript:S9379"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S1764"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S6959"
+      },
+      {
+        "count": 2,
+        "val": "javascript:S7737"
+      },
+      {
+        "count": 2,
+        "val": "tssecurity:S8707"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S2245"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S9383"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S5850"
+      },
+      {
+        "count": 2,
+        "val": "swift:S1764"
+      },
+      {
+        "count": 2,
+        "val": "javascript:S3403"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S6679"
+      },
+      {
+        "count": 2,
+        "val": "c:S3519"
+      },
+      {
+        "count": 2,
+        "val": "typescript:S6845"
+      },
+      {
+        "count": 1,
+        "val": "swift:S3923"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S7767"
+      },
+      {
+        "count": 1,
+        "val": "jssecurity:S5145"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S3516"
+      },
+      {
+        "count": 1,
+        "val": "jssecurity:S8705"
+      },
+      {
+        "count": 1,
+        "val": "pythonsecurity:S8705"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S2310"
+      },
+      {
+        "count": 1,
+        "val": "javascript:S2871"
+      },
+      {
+        "count": 1,
+        "val": "swift:S4790"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S5443"
+      },
+      {
+        "count": 1,
+        "val": "jssecurity:S5334"
+      },
+      {
+        "count": 1,
+        "val": "javascript:S1523"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S5852"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S2699"
+      },
+      {
+        "count": 1,
+        "val": "c:S1751"
+      },
+      {
+        "count": 1,
+        "val": "typescript:S6848"
+      }
+    ],
+    "severities": [
+      {
+        "count": 628,
+        "val": "BLOCKER"
+      },
+      {
+        "count": 124,
+        "val": "MAJOR"
+      },
+      {
+        "count": 118,
+        "val": "MINOR"
+      },
+      {
+        "count": 21,
+        "val": "CRITICAL"
+      },
+      {
+        "count": 0,
+        "val": "INFO"
+      }
+    ],
+    "types": [
+      {
+        "count": 768,
+        "val": "CODE_SMELL"
+      },
+      {
+        "count": 62,
+        "val": "VULNERABILITY"
+      },
+      {
+        "count": 61,
+        "val": "BUG"
+      }
+    ]
+  },
+  "files": [
+    {
+      "cognitive_complexity": 22668,
+      "complexity": 13895,
+      "key": "wapo-org_praxis:Packages/PraxisAgent/Sources/CQuickJS/quickjs.c",
+      "language": "c",
+      "ncloc": 56995,
+      "path": "Packages/PraxisAgent/Sources/CQuickJS/quickjs.c"
+    },
+    {
+      "cognitive_complexity": 1594,
+      "complexity": 900,
+      "key": "wapo-org_praxis:Packages/PraxisAgent/Sources/CQuickJS/libregexp.c",
+      "language": "c",
+      "ncloc": 3092,
+      "path": "Packages/PraxisAgent/Sources/CQuickJS/libregexp.c"
+    },
+    {
+      "cognitive_complexity": 701,
+      "complexity": 441,
+      "key": "wapo-org_praxis:Packages/PraxisAgent/Sources/CQuickJS/libunicode.c",
+      "language": "c",
+      "ncloc": 1830,
+      "path": "Packages/PraxisAgent/Sources/CQuickJS/libunicode.c"
+    },
+    {
+      "cognitive_complexity": 488,
+      "complexity": 295,
+      "key": "wapo-org_praxis:Packages/PraxisAgent/Sources/CQuickJS/dtoa.c",
+      "language": "c",
+      "ncloc": 1358,
+      "path": "Packages/PraxisAgent/Sources/CQuickJS/dtoa.c"
+    },
+    {
+      "cognitive_complexity": 438,
+      "complexity": 267,
+      "key": "wapo-org_praxis:cloud/scripts/comment-sweep.mjs",
+      "language": "js",
+      "ncloc": 651,
+      "path": "cloud/scripts/comment-sweep.mjs"
+    },
+    {
+      "cognitive_complexity": 372,
+      "complexity": 253,
+      "key": "wapo-org_praxis:cloud/packages/agent/src/streams.ts",
+      "language": "ts",
+      "ncloc": 345,
+      "path": "cloud/packages/agent/src/streams.ts"
+    },
+    {
+      "cognitive_complexity": 371,
+      "complexity": 304,
+      "key": "wapo-org_praxis:cloud/packages/agent/src/runner.ts",
+      "language": "ts",
+      "ncloc": 423,
+      "path": "cloud/packages/agent/src/runner.ts"
+    },
+    {
+      "cognitive_complexity": 334,
+      "complexity": 363,
+      "key": "wapo-org_praxis:Packages/PraxisAgent/Sources/CQuickJS/cutils.h",
+      "language": "c",
+      "ncloc": 1601,
+      "path": "Packages/PraxisAgent/Sources/CQuickJS/cutils.h"
+    },
+    {
+      "cognitive_complexity": 221,
+      "complexity": 206,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/ElicitationCards.tsx",
+      "language": "ts",
+      "ncloc": 401,
+      "path": "cloud/apps/web/src/components/chat/ElicitationCards.tsx"
+    },
+    {
+      "cognitive_complexity": 210,
+      "complexity": 265,
+      "key": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "language": "ts",
+      "ncloc": 312,
+      "path": "cloud/apps/api/src/service.ts"
+    },
+    {
+      "cognitive_complexity": 187,
+      "complexity": 180,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/useSearchJump.ts",
+      "language": "ts",
+      "ncloc": 399,
+      "path": "cloud/apps/web/src/components/chat/useSearchJump.ts"
+    },
+    {
+      "cognitive_complexity": 164,
+      "complexity": 171,
+      "key": "wapo-org_praxis:cloud/apps/api/src/app.ts",
+      "language": "ts",
+      "ncloc": 161,
+      "path": "cloud/apps/api/src/app.ts"
+    },
+    {
+      "cognitive_complexity": 149,
+      "complexity": 184,
+      "key": "wapo-org_praxis:cloud/apps/api/src/execution.ts",
+      "language": "ts",
+      "ncloc": 347,
+      "path": "cloud/apps/api/src/execution.ts"
+    },
+    {
+      "cognitive_complexity": 137,
+      "complexity": 102,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/tools/import.ts",
+      "language": "ts",
+      "ncloc": 82,
+      "path": "cloud/apps/api/src/features/tools/import.ts"
+    },
+    {
+      "cognitive_complexity": 116,
+      "complexity": 81,
+      "key": "wapo-org_praxis:cloud/apps/web/src/sync/useAccountSync.ts",
+      "language": "ts",
+      "ncloc": 110,
+      "path": "cloud/apps/web/src/sync/useAccountSync.ts"
+    },
+    {
+      "cognitive_complexity": 113,
+      "complexity": 164,
+      "key": "wapo-org_praxis:cloud/packages/glass/src/morph/engine.ts",
+      "language": "ts",
+      "ncloc": 504,
+      "path": "cloud/packages/glass/src/morph/engine.ts"
+    },
+    {
+      "cognitive_complexity": 108,
+      "complexity": 120,
+      "key": "wapo-org_praxis:cloud/packages/glass/src/stretch.ts",
+      "language": "ts",
+      "ncloc": 279,
+      "path": "cloud/packages/glass/src/stretch.ts"
+    },
+    {
+      "cognitive_complexity": 106,
+      "complexity": 86,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolSources.ts",
+      "language": "ts",
+      "ncloc": 179,
+      "path": "cloud/apps/web/src/components/chat/toolSources.ts"
+    },
+    {
+      "cognitive_complexity": 104,
+      "complexity": 153,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/screens/SavedSecrets.tsx",
+      "language": "ts",
+      "ncloc": 361,
+      "path": "cloud/apps/web/src/components/screens/SavedSecrets.tsx"
+    },
+    {
+      "cognitive_complexity": 103,
+      "complexity": 178,
+      "key": "wapo-org_praxis:cloud/apps/web/e2e/morph.pw.ts",
+      "language": "ts",
+      "ncloc": 564,
+      "path": "cloud/apps/web/e2e/morph.pw.ts"
+    },
+    {
+      "cognitive_complexity": 102,
+      "complexity": 93,
+      "key": "wapo-org_praxis:infra/pr-review/github_api.py",
+      "language": "py",
+      "ncloc": 311,
+      "path": "infra/pr-review/github_api.py"
+    },
+    {
+      "cognitive_complexity": 102,
+      "complexity": 59,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/tools/sandbox.ts",
+      "language": "ts",
+      "ncloc": 78,
+      "path": "cloud/apps/api/src/features/tools/sandbox.ts"
+    },
+    {
+      "cognitive_complexity": 100,
+      "complexity": 127,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/chatMotion.ts",
+      "language": "ts",
+      "ncloc": 400,
+      "path": "cloud/apps/web/src/components/chat/chatMotion.ts"
+    },
+    {
+      "cognitive_complexity": 95,
+      "complexity": 111,
+      "key": "wapo-org_praxis:cloud/scripts/check-rules-checks.mjs",
+      "language": "js",
+      "ncloc": 242,
+      "path": "cloud/scripts/check-rules-checks.mjs"
+    },
+    {
+      "cognitive_complexity": 95,
+      "complexity": 94,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/tools.ts",
+      "language": "ts",
+      "ncloc": 321,
+      "path": "cloud/apps/api/src/features/mcp/tools.ts"
+    },
+    {
+      "cognitive_complexity": 93,
+      "complexity": 75,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/codeFence.ts",
+      "language": "ts",
+      "ncloc": 102,
+      "path": "cloud/apps/web/src/components/chat/codeFence.ts"
+    },
+    {
+      "cognitive_complexity": 88,
+      "complexity": 37,
+      "key": "wapo-org_praxis:cloud/apps/web/src/lib/sse.ts",
+      "language": "ts",
+      "ncloc": 149,
+      "path": "cloud/apps/web/src/lib/sse.ts"
+    },
+    {
+      "cognitive_complexity": 86,
+      "complexity": 67,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/WorkEntry.logic.ts",
+      "language": "ts",
+      "ncloc": 302,
+      "path": "cloud/apps/web/src/components/chat/WorkEntry.logic.ts"
+    },
+    {
+      "cognitive_complexity": 83,
+      "complexity": 92,
+      "key": "wapo-org_praxis:cloud/apps/api/src/saved-secrets.ts",
+      "language": "ts",
+      "ncloc": 83,
+      "path": "cloud/apps/api/src/saved-secrets.ts"
+    },
+    {
+      "cognitive_complexity": 83,
+      "complexity": 92,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolDisplay.ts",
+      "language": "ts",
+      "ncloc": 172,
+      "path": "cloud/apps/web/src/components/chat/toolDisplay.ts"
+    },
+    {
+      "cognitive_complexity": 81,
+      "complexity": 100,
+      "key": "wapo-org_praxis:cloud/apps/web/src/state/useRunState.ts",
+      "language": "ts",
+      "ncloc": 323,
+      "path": "cloud/apps/web/src/state/useRunState.ts"
+    },
+    {
+      "cognitive_complexity": 80,
+      "complexity": 87,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/index.ts",
+      "language": "ts",
+      "ncloc": 144,
+      "path": "cloud/apps/api/src/features/mcp/index.ts"
+    },
+    {
+      "cognitive_complexity": 78,
+      "complexity": 128,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/search/SearchPalette.tsx",
+      "language": "ts",
+      "ncloc": 179,
+      "path": "cloud/apps/web/src/components/search/SearchPalette.tsx"
+    },
+    {
+      "cognitive_complexity": 77,
+      "complexity": 64,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/fixture.ts",
+      "language": "ts",
+      "ncloc": 302,
+      "path": "cloud/apps/api/src/features/mcp/fixture.ts"
+    },
+    {
+      "cognitive_complexity": 76,
+      "complexity": 71,
+      "key": "wapo-org_praxis:cloud/apps/api/src/snapshot.ts",
+      "language": "ts",
+      "ncloc": 76,
+      "path": "cloud/apps/api/src/snapshot.ts"
+    },
+    {
+      "cognitive_complexity": 75,
+      "complexity": 86,
+      "key": "wapo-org_praxis:cloud/apps/web/e2e/motion.pw.ts",
+      "language": "ts",
+      "ncloc": 237,
+      "path": "cloud/apps/web/e2e/motion.pw.ts"
+    },
+    {
+      "cognitive_complexity": 75,
+      "complexity": 60,
+      "key": "wapo-org_praxis:cloud/scripts/smoke-remote.mjs",
+      "language": "js",
+      "ncloc": 283,
+      "path": "cloud/scripts/smoke-remote.mjs"
+    },
+    {
+      "cognitive_complexity": 74,
+      "complexity": 87,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/Composer.tsx",
+      "language": "ts",
+      "ncloc": 288,
+      "path": "cloud/apps/web/src/components/chat/Composer.tsx"
+    },
+    {
+      "cognitive_complexity": 74,
+      "complexity": 82,
+      "key": "wapo-org_praxis:cloud/packages/agent/src/subagents/reducer.ts",
+      "language": "ts",
+      "ncloc": 207,
+      "path": "cloud/packages/agent/src/subagents/reducer.ts"
+    },
+    {
+      "cognitive_complexity": 72,
+      "complexity": 98,
+      "key": "wapo-org_praxis:cloud/apps/web/src/state/useSendActions.ts",
+      "language": "ts",
+      "ncloc": 346,
+      "path": "cloud/apps/web/src/state/useSendActions.ts"
+    }
+  ],
+  "is_ground_truth": false,
+  "issues": [
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/scripts/convex-bundle.mjs",
+      "creationDate": "2026-11-22T06:14:42+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "312adf72c528db7779dbc9b4ec5c19bc",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB-It4IgZiFB_GkFNe",
+      "lastChangeAnalysisUuid": "21512163-98be-4196-8700-41ea9eaa9218",
+      "lastChangeSource": "ANALYSIS",
+      "line": 13,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "javascript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 13,
+        "endOffset": 48,
+        "startLine": 13,
+        "startOffset": 17
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/close.pw.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "00e02a3bd040b8b80c71f358505d1cd4",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB94VRz_kWP0RXaCCq",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 89,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 89,
+        "endOffset": 77,
+        "startLine": 89,
+        "startOffset": 67
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/morph.pw.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "82bd251f741451593ec491a37ebf3ae7",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB94Vnz_kWP0RXaCCr",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 48,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 48,
+        "endOffset": 41,
+        "startLine": 48,
+        "startOffset": 31
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/ModelList.tsx",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "6e794c655648e2429eb1e5cdb3ccc000",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB94URz_kWP0RXaCCo",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 168,
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S9383",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "async",
+        "es2017",
+        "promise",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 168,
+        "endOffset": 53,
+        "startLine": 168,
+        "startOffset": 6
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/lib/openrouter-pkce.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "d91f2a032c7f0a11fbc199e1a73f987a",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB94U1z_kWP0RXaCCp",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 11,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 11,
+        "endOffset": 18,
+        "startLine": 11,
+        "startOffset": 13
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/convex/accountRecovery.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "4min",
+      "effort": "4min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/convex/accountRecovery.ts",
+              "msg": "Returned value.",
+              "textRange": {
+                "endLine": 17,
+                "endOffset": 63,
+                "startLine": 17,
+                "startOffset": 59
+              }
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/convex/accountRecovery.ts",
+              "msg": "Returned value.",
+              "textRange": {
+                "endLine": 21,
+                "endOffset": 15,
+                "startLine": 21,
+                "startOffset": 11
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "e9ac3d3b352c794d1cf11db315245487",
+      "impacts": [
+        {
+          "severity": "BLOCKER",
+          "softwareQuality": "MAINTAINABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB90_4z_kWP0RXaCBb",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 16,
+      "message": "Refactor this function to not always return the same value.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S3516",
+      "severity": "BLOCKER",
+      "status": "OPEN",
+      "tags": [
+        "editable-source"
+      ],
+      "textRange": {
+        "endLine": 16,
+        "endOffset": 31,
+        "startLine": 16,
+        "startOffset": 29
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/convex/agent/secrets.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "3358a9523c9dc6068a9ad54f5caa4766",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB90_dz_kWP0RXaCBa",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 11,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 11,
+        "endOffset": 77,
+        "startLine": 11,
+        "startOffset": 72
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:12:29+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/harness/fake-model.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "cad2e7cd5a434258f539f32b6fd5813b",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB91Bbz_kWP0RXaCBf",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 90,
+      "message": "Do not use an object literal as default for parameter `source`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7737",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "confusing",
+        "editable-source",
+        "pitfall"
+      ],
+      "textRange": {
+        "endLine": 90,
+        "endOffset": 63,
+        "startLine": 90,
+        "startOffset": 28
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/sandbox-tools/src/diagnostics.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "aed6235d696a56e90fc1960287935feb",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB91Azz_kWP0RXaCBc",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 66,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 66,
+        "endOffset": 82,
+        "startLine": 66,
+        "startOffset": 17
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/sandbox-tools/src/diagnostics.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "454382da2d147a1931185db3121d026b",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB91Azz_kWP0RXaCBd",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 67,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 67,
+        "endOffset": 64,
+        "startLine": 67,
+        "startOffset": 17
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/sandbox-tools/src/diagnostics.ts",
+      "creationDate": "2026-11-22T06:12:16+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "89921d00473abdc48ccbdf33aceda5f0",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaIB91Azz_kWP0RXaCBe",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 68,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 68,
+        "endOffset": 38,
+        "startLine": 68,
+        "startOffset": 18
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/attachments.pw.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "962c52f3cd3d77f49af1e4fc1a5db2e8",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyIqHBeEI_X5Nso",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 59,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 59,
+        "endOffset": 49,
+        "startLine": 59,
+        "startOffset": 39
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/connectors.pw.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "7b6d770a9fd20432750ae43750e569b8",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcx-qHBeEI_X5Nse",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 54,
+        "endOffset": 78,
+        "startLine": 54,
+        "startOffset": 68
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/search-jump.pw.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "a8b1b8d359b58f8844318ce8722d7e5f",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyPqHBeEI_X5Nsx",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 142,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 142,
+        "endOffset": 33,
+        "startLine": 142,
+        "startOffset": 23
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/search-jump.pw.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "623a9ac7ffb43164713869d37c406491",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyPqHBeEI_X5Nsy",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 143,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 143,
+        "endOffset": 36,
+        "startLine": 143,
+        "startOffset": 26
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useSearchJump.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "ed3108d25192d9bb3f9db7a40957c22a",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxNqHBeEI_X5NsF",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 44,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 44,
+        "endOffset": 36,
+        "startLine": 44,
+        "startOffset": 25
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useSearchJump.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "aa0c07a4912c5ac427fe941330c6be31",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxNqHBeEI_X5NsG",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 384,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 384,
+        "endOffset": 31,
+        "startLine": 384,
+        "startOffset": 21
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useSearchJump.ts",
+      "creationDate": "2026-11-13T20:36:43+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "8e4310337fb26f4e6f0439096ba3d8c1",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxNqHBeEI_X5NsH",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 385,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 385,
+        "endOffset": 34,
+        "startLine": 385,
+        "startOffset": 24
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/smoothText.ts",
+      "creationDate": "2026-11-13T20:11:35+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "f4dcb6cd9519091626a04bb8d3fdbfd5",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxOqHBeEI_X5NsI",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 8,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 8,
+        "endOffset": 51,
+        "startLine": 8,
+        "startOffset": 32
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/smoothText.ts",
+      "creationDate": "2026-11-13T20:11:35+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "f4dcb6cd9519091626a04bb8d3fdbfd5",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxOqHBeEI_X5NsJ",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 8,
+      "message": "Group parts of the regex together to make the intended operator precedence explicit.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S5850",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 8,
+        "endOffset": 49,
+        "startLine": 8,
+        "startOffset": 33
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolSources.ts",
+      "creationDate": "2026-11-13T20:04:12+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "7c486fd0317bef689f853a93894c50dd",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxiqHBeEI_X5NsZ",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 48,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 48,
+        "endOffset": 41,
+        "startLine": 48,
+        "startOffset": 23
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/n2-capture.mjs",
+      "creationDate": "2026-11-13T20:01:07+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "d333cefff24451bd0af3d01badc6b0e8",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy4qHBeEI_X5Nth",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 55,
+        "endOffset": 62,
+        "startLine": 55,
+        "startOffset": 59
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/n2-capture.mjs",
+      "creationDate": "2026-11-13T20:01:07+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "58b3a00e3a241f4d14f29ea45bb038f3",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy4qHBeEI_X5Nti",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 58,
+        "endOffset": 85,
+        "startLine": 58,
+        "startOffset": 82
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/codeFence.ts",
+      "creationDate": "2026-11-13T20:01:07+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "57f1bc6966006ecd781c0e9d851480f0",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxVqHBeEI_X5NsP",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 25,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 25,
+        "endOffset": 75,
+        "startLine": 25,
+        "startOffset": 20
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/codeFence.ts",
+      "creationDate": "2026-11-13T20:01:07+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "638a6a5fe988b6c1edef4b99879607ab",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxVqHBeEI_X5NsQ",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 30,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 30,
+        "endOffset": 46,
+        "startLine": 30,
+        "startOffset": 14
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/ui/code-block/CodeBlock.tsx",
+      "creationDate": "2026-11-13T19:29:49+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "fcc59cbcf1fd5f1bab2932f3c300423b",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxqqHBeEI_X5Nsb",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 125,
+      "message": "`tabIndex` should only be declared on interactive elements.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S6845",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "textRange": {
+        "endLine": 125,
+        "endOffset": 18,
+        "startLine": 125,
+        "startOffset": 6
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/fixtures/old-sw-v1.js",
+      "creationDate": "2026-11-13T11:54:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "b1e45c73725acea5b16c97c9d7fe9797",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyHqHBeEI_X5Nsm",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 37,
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "javascript:S9383",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "async",
+        "es2017",
+        "promise",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 37,
+        "endOffset": 78,
+        "startLine": 37,
+        "startOffset": 14
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/fixtures/old-sw-v1.js",
+      "creationDate": "2026-11-13T11:54:17+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "36905b969c31f78abbc49cc042d2b818",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyHqHBeEI_X5Nsn",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 56,
+      "message": "Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "javascript:S9383",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "async",
+        "es2017",
+        "promise",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 56,
+        "endOffset": 72,
+        "startLine": 56,
+        "startOffset": 14
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/m1.pw.ts",
+      "creationDate": "2026-11-13T11:35:50+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "5b73924f3799823f661a85ea6501c687",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyBqHBeEI_X5Nsg",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 167,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 167,
+        "endOffset": 36,
+        "startLine": 167,
+        "startOffset": 10
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/m1.pw.ts",
+      "creationDate": "2026-11-13T11:35:50+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "5287de1142886aeae5285c5ff985df5c",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyBqHBeEI_X5Nsh",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 227,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 227,
+        "endOffset": 46,
+        "startLine": 227,
+        "startOffset": 20
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/api/src/features/mcp/tools.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "0a9e862409dad17ba3ee5fa2517f1731",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczLqHBeEI_X5NuK",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 204,
+      "message": "Provide a compare function that depends on \"String.localeCompare\", to reliably sort elements alphabetically.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S2871",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "bad-practice",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 204,
+        "endOffset": 102,
+        "startLine": 204,
+        "startOffset": 98
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "485919ca4ead78f92051907e3180ab3f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczbqHBeEI_X5NuV",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Use 'Number.isNaN()' to check for 'NaN' value",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S6679",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [],
+      "textRange": {
+        "endLine": 141,
+        "endOffset": 93,
+        "startLine": 141,
+        "startOffset": 48
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+              "textRange": {
+                "endLine": 141,
+                "endOffset": 69,
+                "startLine": 141,
+                "startOffset": 48
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "485919ca4ead78f92051907e3180ab3f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczbqHBeEI_X5NuW",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Correct one of the identical sub-expressions on both sides of operator \"===\"",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S1764",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "suspicious"
+      ],
+      "textRange": {
+        "endLine": 141,
+        "endOffset": 93,
+        "startLine": 141,
+        "startOffset": 72
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "485919ca4ead78f92051907e3180ab3f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczbqHBeEI_X5NuX",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Use 'Number.isNaN()' to check for 'NaN' value",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S6679",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [],
+      "textRange": {
+        "endLine": 157,
+        "endOffset": 92,
+        "startLine": 157,
+        "startOffset": 47
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+              "textRange": {
+                "endLine": 157,
+                "endOffset": 68,
+                "startLine": 157,
+                "startOffset": 47
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "485919ca4ead78f92051907e3180ab3f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczbqHBeEI_X5NuY",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Correct one of the identical sub-expressions on both sides of operator \"===\"",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S1764",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "suspicious"
+      ],
+      "textRange": {
+        "endLine": 157,
+        "endOffset": 92,
+        "startLine": 157,
+        "startOffset": 71
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-capture.mjs",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "cae79499e16dff32902b3a0aab3d1bf6",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyRqHBeEI_X5Nsz",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 12,
+        "endOffset": 48,
+        "startLine": 12,
+        "startOffset": 31
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 163,
+                "endOffset": 13,
+                "startLine": 163,
+                "startOffset": 8
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 163,
+                "endOffset": 36,
+                "startLine": 163,
+                "startOffset": 35
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "ba6144d06d5c96285f56bfd3acfaf292",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyrqHBeEI_X5NtO",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via faulty LLM-supplied CLI arguments",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 163,
+        "endOffset": 13,
+        "startLine": 163,
+        "startOffset": 8
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 17,
+                "startLine": 164,
+                "startOffset": 8
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-start-probe.ts",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 164,
+                "endOffset": 32,
+                "startLine": 164,
+                "startOffset": 31
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "eaa24baf126db9491a452132ce231eab",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyrqHBeEI_X5NtP",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via faulty LLM-supplied CLI arguments",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "tssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 164,
+        "endOffset": 17,
+        "startLine": 164,
+        "startOffset": 8
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+      "creationDate": "2026-11-13T10:07:08+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 28,
+                "endOffset": 51,
+                "startLine": 28,
+                "startOffset": 19
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 28,
+                "endOffset": 50,
+                "startLine": 28,
+                "startOffset": 29
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "The malicious content is concatenated into the string",
+              "textRange": {
+                "endLine": 28,
+                "endOffset": 42,
+                "startLine": 28,
+                "startOffset": 32
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "A malicious value can be assigned to variable \u2018frames_dir\u2019",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 86,
+                "startLine": 8,
+                "startOffset": 0
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "A malicious value was previously assigned to this data structure",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 37,
+                "startLine": 8,
+                "startOffset": 26
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m1-strip.py",
+              "msg": "Source: a user can craft an HTTP request with malicious content",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 34,
+                "startLine": 8,
+                "startOffset": 26
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "99fec980504ad3e28a7ed1df9012324e",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [
+        "taint"
+      ],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyfqHBeEI_X5NtC",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via command-line argument",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "pythonsecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 28,
+        "endOffset": 51,
+        "startLine": 28,
+        "startOffset": 19
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+      "creationDate": "2026-11-13T02:10:18+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 112,
+                "startLine": 3,
+                "startOffset": 103
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "A malicious value was previously assigned to field \u2018dir\u2019",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 116,
+                "startLine": 3,
+                "startOffset": 113
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "A malicious value can be assigned to field \u2018dir\u2019",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 37,
+                "startLine": 3,
+                "startOffset": 34
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 102,
+                "startLine": 3,
+                "startOffset": 38
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "A malicious value was previously assigned to field \u2018phase\u2019",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 102,
+                "startLine": 3,
+                "startOffset": 97
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "A malicious value can be assigned to field \u2018phase\u2019",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 11,
+                "startLine": 3,
+                "startOffset": 6
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/m2-capture.mjs",
+              "msg": "Source: an llm can pass malicious data through command-line arguments",
+              "textRange": {
+                "endLine": 3,
+                "endOffset": 26,
+                "startLine": 3,
+                "startOffset": 25
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "0dcfa61f94f64e050e58c87ead6c501e",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyRqHBeEI_X5Ns0",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via faulty LLM-supplied CLI arguments",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "jssecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 3,
+        "endOffset": 112,
+        "startLine": 3,
+        "startOffset": 103
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/ResponseTimeline.tsx",
+      "creationDate": "2026-11-13T02:10:18+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "f82e3dda4d875b8986cff24eba3afc5f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxdqHBeEI_X5NsV",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 23,
+      "message": "Add an initial value to this \"reduce()\" call.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S6959",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 23,
+        "endOffset": 21,
+        "startLine": 23,
+        "startOffset": 15
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/ResponseTimeline.tsx",
+      "creationDate": "2026-11-13T02:10:18+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "6e53ce71a93a7c1e70f282d00811375f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxdqHBeEI_X5NsW",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 29,
+      "message": "Add an initial value to this \"reduce()\" call.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S6959",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 29,
+        "endOffset": 21,
+        "startLine": 29,
+        "startOffset": 15
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/tool-display.ts",
+      "creationDate": "2026-11-13T02:10:18+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "29eb99072ac6dfeabc57df06dfd79121",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcz7qHBeEI_X5Nuz",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 6,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 6,
+        "endOffset": 38,
+        "startLine": 6,
+        "startOffset": 14
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/api/src/title-model.ts",
+      "creationDate": "2026-11-13T02:06:31+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "9d6631c07d5bd5357aafae0e2e24ec23",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczXqHBeEI_X5NuT",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 7,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 7,
+        "endOffset": 208,
+        "startLine": 7,
+        "startOffset": 2
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/api/src/title-model.ts",
+      "creationDate": "2026-11-13T02:06:31+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "dc6bb26d811faee07f26a09191d35693",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczYqHBeEI_X5NuU",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 129,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 129,
+        "endOffset": 38,
+        "startLine": 129,
+        "startOffset": 4
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/sidebar.pw.ts",
+      "creationDate": "2026-11-13T02:06:31+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "57718dbd96fd7f3881484a01c49705c3",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyHqHBeEI_X5Nsl",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 249,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 249,
+        "endOffset": 41,
+        "startLine": 249,
+        "startOffset": 31
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/scripted.ts",
+      "creationDate": "2026-11-13T02:06:31+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "524bd8d5a05c5dc82f92d4ce9ca00c59",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczzqHBeEI_X5Nuw",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 394,
+        "endOffset": 61,
+        "startLine": 394,
+        "startOffset": 22
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useStreamAnchor.ts",
+      "creationDate": "2026-11-12T22:51:23+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "413ca1514216c8dccf7854b37cfc8d98",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxgqHBeEI_X5NsX",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 72,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 72,
+        "endOffset": 33,
+        "startLine": 72,
+        "startOffset": 23
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useStreamAnchor.ts",
+      "creationDate": "2026-11-12T22:51:23+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "ace2bca3e1480ac3f4b2df9dedc9002a",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxgqHBeEI_X5NsY",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 73,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 73,
+        "endOffset": 36,
+        "startLine": 73,
+        "startOffset": 26
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/l3-fixtures.ts",
+      "creationDate": "2026-11-12T22:44:01+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "9c2d306d5ae99ebc7bb74fa671df455e",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyTqHBeEI_X5Ns1",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 287,
+        "endOffset": 46,
+        "startLine": 287,
+        "startOffset": 28
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/l3-probe.mjs",
+      "creationDate": "2026-11-12T22:44:01+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "b3eacd037d78830a469056ba3a31bb72",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyhqHBeEI_X5NtD",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 20,
+        "endOffset": 94,
+        "startLine": 20,
+        "startOffset": 82
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/l3-probe.mjs",
+      "creationDate": "2026-11-12T22:44:01+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "b3eacd037d78830a469056ba3a31bb72",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyhqHBeEI_X5NtE",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 20,
+        "endOffset": 147,
+        "startLine": 20,
+        "startOffset": 133
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/MarkdownContent.tsx",
+      "creationDate": "2026-11-12T22:44:01+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "53abc1f4e11e2043beb1b45c28c11cc6",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxcqHBeEI_X5NsU",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 141,
+      "message": "`tabIndex` should only be declared on interactive elements.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S6845",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "textRange": {
+        "endLine": 141,
+        "endOffset": 116,
+        "startLine": 141,
+        "startOffset": 104
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/saved-values.pw.ts",
+      "creationDate": "2026-11-12T22:13:57+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "8d0723359348234e19f6f2643bd686c2",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyMqHBeEI_X5Nss",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 202,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 202,
+        "endOffset": 141,
+        "startLine": 202,
+        "startOffset": 131
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/screens/SavedSecrets.tsx",
+      "creationDate": "2026-11-12T22:13:57+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "1f5484badf89035c8b3ade6b18595648",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxIqHBeEI_X5NsE",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 257,
+      "message": "Remove this \"autoFocus\" attribute, as it can reduce usability and accessibility for users.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S9379",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "textRange": {
+        "endLine": 257,
+        "endOffset": 85,
+        "startLine": 257,
+        "startOffset": 76
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/l2.pw.ts",
+      "creationDate": "2026-11-12T22:08:23+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "4e04a29ac04718657322f074eac78518",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyLqHBeEI_X5Nsq",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 15,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 15,
+        "endOffset": 79,
+        "startLine": 15,
+        "startOffset": 69
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/l2.pw.ts",
+      "creationDate": "2026-11-12T22:08:23+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "1e4a63b22e47e5fb15e1f2c6a9b61e69",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyLqHBeEI_X5Nsr",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 42,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 42,
+        "endOffset": 42,
+        "startLine": 42,
+        "startOffset": 32
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/k2.pw.ts",
+      "creationDate": "2026-11-12T18:20:49+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "830e7890de17e645e6d4f2330343d317",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyOqHBeEI_X5Nst",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 146,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 146,
+        "endOffset": 154,
+        "startLine": 146,
+        "startOffset": 144
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/k2.pw.ts",
+      "creationDate": "2026-11-12T18:20:49+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "0784281ee02f559c4f79bf3ef288c79f",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyOqHBeEI_X5Nsu",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 147,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 147,
+        "endOffset": 50,
+        "startLine": 147,
+        "startOffset": 39
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/k2.pw.ts",
+      "creationDate": "2026-11-12T18:20:49+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "bfd3f9aad09d396f2b7a5fd6fa649d42",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyOqHBeEI_X5Nsv",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 154,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 154,
+        "endOffset": 54,
+        "startLine": 154,
+        "startOffset": 44
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/k2.pw.ts",
+      "creationDate": "2026-11-12T18:20:49+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "bfd3f9aad09d396f2b7a5fd6fa649d42",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcyOqHBeEI_X5Nsw",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 154,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 154,
+        "endOffset": 239,
+        "startLine": 154,
+        "startOffset": 229
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/l2-capture.mjs",
+      "creationDate": "2026-11-12T18:20:49+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "e9a62ddcb75a17debc5dfbb34ad25bba",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyUqHBeEI_X5Ns2",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Do not use an object literal as default for parameter `viewport`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S7737",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "confusing",
+        "editable-source",
+        "pitfall"
+      ],
+      "textRange": {
+        "endLine": 16,
+        "endOffset": 57,
+        "startLine": 16,
+        "startOffset": 49
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/l2-menu-probe.mjs",
+      "creationDate": "2026-11-12T18:10:40+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/l2-menu-probe.mjs",
+              "textRange": {
+                "endLine": 21,
+                "endOffset": 78,
+                "startLine": 21,
+                "startOffset": 77
+              }
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/l2-menu-probe.mjs",
+              "textRange": {
+                "endLine": 21,
+                "endOffset": 92,
+                "startLine": 21,
+                "startOffset": 83
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "113edb2eaeae8d030cd33cf11978934a",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyxqHBeEI_X5NtW",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Remove this \"===\" check; it will always be false. Did you mean to use \"==\"?",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S3403",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 21,
+        "endOffset": 82,
+        "startLine": 21,
+        "startOffset": 79
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/api/src/connector-icons.ts",
+      "creationDate": "2026-11-11T18:08:47+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "0fdf75ef7bfa0c5ea8221a5071eac76b",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczVqHBeEI_X5NuR",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 26,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 26,
+        "endOffset": 86,
+        "startLine": 26,
+        "startOffset": 52
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/api/src/attachments.ts",
+      "creationDate": "2026-11-11T11:36:37+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "e7f87b551dcdab992200f5edd6c11a80",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczWqHBeEI_X5NuS",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 47,
+      "message": "Fix this regular expression that is vulnerable to exponential backtracking, as it can lead to denial of service.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S5852",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "tags": [
+        "cwe",
+        "former-hotspot",
+        "regex",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 47,
+        "endOffset": 159,
+        "startLine": 47,
+        "startOffset": 29
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/k2-capture.mjs",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "4a6d912599aba5512871cc16cc2f9cd7",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyWqHBeEI_X5Ns4",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 9,
+        "endOffset": 41,
+        "startLine": 9,
+        "startOffset": 29
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/k2-capture.mjs",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "df310ce3286470f172a3b3c6e35905ad",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyWqHBeEI_X5Ns5",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Do not use an object literal as default for parameter `source`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S7737",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "confusing",
+        "editable-source",
+        "pitfall"
+      ],
+      "textRange": {
+        "endLine": 58,
+        "endOffset": 56,
+        "startLine": 58,
+        "startOffset": 50
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/k2-capture.mjs",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "3332dcc45a4cf519c35f46eadc568129",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyWqHBeEI_X5Ns6",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 153,
+        "endOffset": 25,
+        "startLine": 153,
+        "startOffset": 15
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/k2-motion.mjs",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "15min",
+      "effort": "15min",
+      "flows": [],
+      "hash": "b25ddb0eef3c74e2031517ae1da0cc97",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcylqHBeEI_X5NtK",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S4036",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 46,
+        "endOffset": 24,
+        "startLine": 46,
+        "startOffset": 15
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/InlineTokens.tsx",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "263a34c3e9bdf62ee88a2b0eba624286",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxTqHBeEI_X5NsO",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 31,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 31,
+        "endOffset": 35,
+        "startLine": 31,
+        "startOffset": 20
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolDisplay.ts",
+      "creationDate": "2026-11-11T10:41:09+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "5f6d49be76b482eec036d515096d2b2b",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxaqHBeEI_X5NsT",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 31,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 31,
+        "endOffset": 36,
+        "startLine": 31,
+        "startOffset": 12
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/packages/glass/src/dropdown/SubContent.tsx",
+      "creationDate": "2026-11-11T00:28:08+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "19897980f5b8b13e6f67b5c3b0d84536",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczlqHBeEI_X5Nul",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 42,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 42,
+        "endOffset": 37,
+        "startLine": 42,
+        "startOffset": 27
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/packages/glass/src/dropdown/SubContent.tsx",
+      "creationDate": "2026-11-11T00:28:08+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "19897980f5b8b13e6f67b5c3b0d84536",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczlqHBeEI_X5Num",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 42,
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 42,
+        "endOffset": 69,
+        "startLine": 42,
+        "startOffset": 59
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/providers.ts",
+      "creationDate": "2026-11-11T00:18:36+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "9ba9a2118ecbf4b651535b785bbcc6dc",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczwqHBeEI_X5Nus",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 119,
+        "endOffset": 109,
+        "startLine": 119,
+        "startOffset": 106
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/providers.ts",
+      "creationDate": "2026-11-11T00:18:36+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "1f032cfb94047b0b0803b676b17b231e",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczwqHBeEI_X5Nut",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 120,
+        "endOffset": 122,
+        "startLine": 120,
+        "startOffset": 119
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-capture.mjs",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "4a6d912599aba5512871cc16cc2f9cd7",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcybqHBeEI_X5Ns9",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 9,
+        "endOffset": 41,
+        "startLine": 9,
+        "startOffset": 29
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-capture.mjs",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "d7d9973683d3c3a3fab818011b186dfd",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcybqHBeEI_X5Ns-",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 92,
+        "endOffset": 112,
+        "startLine": 92,
+        "startOffset": 94
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "LOGICAL",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-corner.mjs",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-corner.mjs",
+              "textRange": {
+                "endLine": 18,
+                "endOffset": 78,
+                "startLine": 18,
+                "startOffset": 77
+              }
+            }
+          ]
+        },
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-corner.mjs",
+              "textRange": {
+                "endLine": 18,
+                "endOffset": 92,
+                "startLine": 18,
+                "startOffset": 83
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "113edb2eaeae8d030cd33cf11978934a",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcysqHBeEI_X5NtQ",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Remove this \"===\" check; it will always be false. Did you mean to use \"==\"?",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S3403",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 18,
+        "endOffset": 82,
+        "startLine": 18,
+        "startOffset": 79
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/j2-vanish-probe.mjs",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "4f47032482d58cf1ae27e6520bf7c9a4",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcykqHBeEI_X5NtJ",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 4,
+        "endOffset": 70,
+        "startLine": 4,
+        "startOffset": 36
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/ReasoningView.tsx",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "96fafdb4351b5397bc8f6aaad4da40aa",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxWqHBeEI_X5NsR",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 228,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 228,
+        "endOffset": 61,
+        "startLine": 228,
+        "startOffset": 53
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/attachmentInfo.ts",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "aa41380995cad80807b4db0efa3b1910",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcxPqHBeEI_X5NsK",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 50,
+        "endOffset": 94,
+        "startLine": 50,
+        "startOffset": 22
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/attachmentInfo.ts",
+      "creationDate": "2026-11-10T16:04:38+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "aa41380995cad80807b4db0efa3b1910",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcxPqHBeEI_X5NsL",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 50,
+        "endOffset": 180,
+        "startLine": 50,
+        "startOffset": 108
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/e2e/close.pw.ts",
+      "creationDate": "2026-11-09T17:12:56+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "9e658349acab04f5c555174b7e1583a9",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcx_qHBeEI_X5Nsf",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.parseFloat` over `parseFloat`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 114,
+        "endOffset": 54,
+        "startLine": 114,
+        "startOffset": 44
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-capture.mjs",
+      "creationDate": "2026-11-09T16:45:42+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "9781834316f2370d47862c8e0d70d799",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyYqHBeEI_X5Ns7",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 11,
+        "endOffset": 44,
+        "startLine": 11,
+        "startOffset": 31
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+      "creationDate": "2026-11-09T16:45:42+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 13,
+                "endOffset": 48,
+                "startLine": 13,
+                "startOffset": 17
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 13,
+                "endOffset": 47,
+                "startLine": 13,
+                "startOffset": 22
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "The malicious content is concatenated into the string",
+              "textRange": {
+                "endLine": 13,
+                "endOffset": 30,
+                "startLine": 13,
+                "startOffset": 25
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value can be assigned to variable \u2018AFTER\u2019",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 34,
+                "startLine": 8,
+                "startOffset": 0
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value was previously assigned to this data structure",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 13,
+                "startLine": 8,
+                "startOffset": 8
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value was previously assigned to this data structure",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 34,
+                "startLine": 8,
+                "startOffset": 21
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "Source: a user can craft an HTTP request with malicious content",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 29,
+                "startLine": 8,
+                "startOffset": 21
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "1b9eaef8eb19af025d28d75b5ffd2d39",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [
+        "taint"
+      ],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcytqHBeEI_X5NtR",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via command-line argument",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "pythonsecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 13,
+        "endOffset": 48,
+        "startLine": 13,
+        "startOffset": 17
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+      "creationDate": "2026-11-09T16:45:42+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [
+        {
+          "locations": [
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "Sink: this invocation is not safe; a malicious value can be used as argument",
+              "textRange": {
+                "endLine": 14,
+                "endOffset": 56,
+                "startLine": 14,
+                "startOffset": 24
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "This concatenation can propagate malicious content to the newly created string",
+              "textRange": {
+                "endLine": 14,
+                "endOffset": 55,
+                "startLine": 14,
+                "startOffset": 29
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "The malicious content is concatenated into the string",
+              "textRange": {
+                "endLine": 14,
+                "endOffset": 38,
+                "startLine": 14,
+                "startOffset": 32
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value can be assigned to variable \u2018BEFORE\u2019",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 34,
+                "startLine": 8,
+                "startOffset": 0
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value was previously assigned to this data structure",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 6,
+                "startLine": 8,
+                "startOffset": 0
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "A malicious value was previously assigned to this data structure",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 34,
+                "startLine": 8,
+                "startOffset": 21
+              }
+            },
+            {
+              "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-compare.py",
+              "msg": "Source: a user can craft an HTTP request with malicious content",
+              "textRange": {
+                "endLine": 8,
+                "endOffset": 29,
+                "startLine": 8,
+                "startOffset": 21
+              }
+            }
+          ]
+        }
+      ],
+      "hash": "b79c60a46f67dfeb41e8c701a0b98084",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [
+        "taint"
+      ],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcytqHBeEI_X5NtS",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Path Traversal via command-line argument",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "pythonsecurity:S8707",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe"
+      ],
+      "textRange": {
+        "endLine": 14,
+        "endOffset": 56,
+        "startLine": 14,
+        "startOffset": 24
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/i1-tray-probe.mjs",
+      "creationDate": "2026-11-09T16:45:42+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "d86e51bdb8bb97f72a9883a52fccbcfc",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcywqHBeEI_X5NtV",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 5,
+        "endOffset": 59,
+        "startLine": 5,
+        "startOffset": 34
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/ElicitationCards.tsx",
+      "creationDate": "2026-11-09T16:45:42+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "acdf610f05400f1b4d3c8152360e292a",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxSqHBeEI_X5NsM",
+      "lastChangeAnalysisUuid": "37fb91fc-ee8a-4d46-b08d-4b87b0ed8397",
+      "lastChangeSource": "ANALYSIS",
+      "line": 77,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 77,
+        "endOffset": 70,
+        "startLine": 77,
+        "startOffset": 42
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/scripted.ts",
+      "creationDate": "2026-11-08T20:35:55+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "0675bcf27d8dfbbe83c289d9da94a4a0",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczzqHBeEI_X5Nuu",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 98,
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 98,
+        "endOffset": 53,
+        "startLine": 98,
+        "startOffset": 22
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CLEAR",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "component": "wapo-org_praxis:cloud/packages/agent/src/scripted.ts",
+      "creationDate": "2026-11-08T20:35:55+0000",
+      "debt": "10min",
+      "effort": "10min",
+      "flows": [],
+      "hash": "0675bcf27d8dfbbe83c289d9da94a4a0",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMczzqHBeEI_X5Nuv",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "line": 98,
+      "message": "Group parts of the regex together to make the intended operator precedence explicit.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S5850",
+      "severity": "MAJOR",
+      "status": "OPEN",
+      "tags": [
+        "regex",
+        "type-dependent"
+      ],
+      "textRange": {
+        "endLine": 98,
+        "endOffset": 51,
+        "startLine": 98,
+        "startOffset": 23
+      },
+      "type": "BUG",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/screens/AccountGateForm.tsx",
+      "creationDate": "2026-11-08T18:45:16+0000",
+      "debt": "5min",
+      "effort": "5min",
+      "flows": [],
+      "hash": "2bf1327b7ce10d8836af6f734f617591",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcvvqHBeEI_X5NsD",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Remove this \"autoFocus\" attribute, as it can reduce usability and accessibility for users.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S9379",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "accessibility",
+        "react"
+      ],
+      "textRange": {
+        "endLine": 113,
+        "endOffset": 108,
+        "startLine": 113,
+        "startOffset": 99
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/h3-search-capture.mjs",
+      "creationDate": "2026-11-08T18:03:59+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "dca3fcea33cdc287bb023f0d062921e6",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcyVqHBeEI_X5Ns3",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 5,
+        "endOffset": 44,
+        "startLine": 5,
+        "startOffset": 31
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/h3-capture.mjs",
+      "creationDate": "2026-11-08T18:03:50+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "dca3fcea33cdc287bb023f0d062921e6",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy2qHBeEI_X5Ntg",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 8,
+        "endOffset": 44,
+        "startLine": 8,
+        "startOffset": 31
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/adapters/auth-clerk.ts",
+      "creationDate": "2026-11-08T17:33:34+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "b5364e78ccfed372d13382aba8bcc20d",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczAqHBeEI_X5Nt1",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 19,
+        "endOffset": 67,
+        "startLine": 19,
+        "startOffset": 64
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "EFFICIENT",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:28:53+0000",
+      "component": "wapo-org_praxis:cloud/apps/api/src/adapters/auth-clerk.ts",
+      "creationDate": "2026-11-08T17:33:34+0000",
+      "debt": "20min",
+      "effort": "20min",
+      "flows": [],
+      "hash": "bee9cf25390d9c2ba9b4054e59500901",
+      "impacts": [
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMczAqHBeEI_X5Nt2",
+      "lastChangeAnalysisUuid": "3387b025-6aba-4fae-b9f5-c6289193ece0",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "typescript:S8786",
+      "severity": "MAJOR",
+      "status": "CLOSED",
+      "tags": [
+        "performance",
+        "regex"
+      ],
+      "textRange": {
+        "endLine": 35,
+        "endOffset": 80,
+        "startLine": 35,
+        "startOffset": 62
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-22T06:28:53+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/g4-captures.mjs",
+      "creationDate": "2026-11-07T22:23:53+0000",
+      "debt": "15min",
+      "effort": "15min",
+      "flows": [],
+      "hash": "80cfeb8e17654e6b2d2806909c33a30a",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy1qHBeEI_X5Ntb",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S4036",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 41,
+        "endOffset": 23,
+        "startLine": 41,
+        "startOffset": 15
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/g4-captures.mjs",
+      "creationDate": "2026-11-07T22:23:53+0000",
+      "debt": "15min",
+      "effort": "15min",
+      "flows": [],
+      "hash": "b25ddb0eef3c74e2031517ae1da0cc97",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy1qHBeEI_X5Ntc",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S4036",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 42,
+        "endOffset": 24,
+        "startLine": 42,
+        "startOffset": 15
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/g4-captures.mjs",
+      "creationDate": "2026-11-07T22:23:53+0000",
+      "debt": "30min",
+      "effort": "30min",
+      "flows": [],
+      "hash": "5549406b95fc8b61124e1ea028331d89",
+      "impacts": [
+        {
+          "severity": "HIGH",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy1qHBeEI_X5Ntd",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure publicly writable directories are used safely here.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S5443",
+      "severity": "CRITICAL",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 74,
+        "endOffset": 36,
+        "startLine": 74,
+        "startOffset": 14
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "COMPLETE",
+      "cleanCodeAttributeCategory": "INTENTIONAL",
+      "closeDate": "2026-11-22T06:29:04+0000",
+      "component": "wapo-org_praxis:cloud/apps/web/scripts/g4-captures.mjs",
+      "creationDate": "2026-11-07T22:23:53+0000",
+      "debt": "15min",
+      "effort": "15min",
+      "flows": [],
+      "hash": "a59503e48025ec5368d6c11655e22845",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "SECURITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "FIXED",
+      "key": "AaHhMcy1qHBeEI_X5Nte",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "message": "Make sure the \"PATH\" variable only contains fixed, unwriteable directories.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "resolution": "FIXED",
+      "rule": "javascript:S4036",
+      "severity": "MINOR",
+      "status": "CLOSED",
+      "tags": [
+        "cwe",
+        "former-hotspot"
+      ],
+      "textRange": {
+        "endLine": 88,
+        "endOffset": 24,
+        "startLine": 88,
+        "startOffset": 15
+      },
+      "type": "VULNERABILITY",
+      "updateDate": "2026-11-22T06:29:04+0000"
+    },
+    {
+      "cleanCodeAttribute": "CONVENTIONAL",
+      "cleanCodeAttributeCategory": "CONSISTENT",
+      "component": "wapo-org_praxis:cloud/apps/web/src/components/chat/useActivityClock.ts",
+      "creationDate": "2026-11-07T16:27:26+0000",
+      "debt": "2min",
+      "effort": "2min",
+      "flows": [],
+      "hash": "0115a93f24d5b655975107d3c4a17063",
+      "impacts": [
+        {
+          "severity": "LOW",
+          "softwareQuality": "MAINTAINABILITY"
+        },
+        {
+          "severity": "MEDIUM",
+          "softwareQuality": "RELIABILITY"
+        }
+      ],
+      "internalTags": [],
+      "issueStatus": "OPEN",
+      "key": "AaHhMcxZqHBeEI_X5NsS",
+      "lastChangeAnalysisUuid": "e8dbc934-f5dc-4802-af80-b29b0c38fdb3",
+      "lastChangeSource": "ANALYSIS",
+      "line": 92,
+      "message": "Prefer `Number.NaN` over `NaN`.",
+      "organization": "wapo-org",
+      "producer": "SCANNER",
+      "project": "wapo-org_praxis",
+      "projectName": "praxis",
+      "rule": "typescript:S7773",
+      "severity": "MINOR",
+      "status": "OPEN",
+      "tags": [
+        "convention",
+        "editable-source",
+        "es2015"
+      ],
+      "textRange": {
+        "endLine": 92,
+        "endOffset": 57,
+        "startLine": 92,
+        "startOffset": 54
+      },
+      "type": "CODE_SMELL",
+      "updateDate": "2026-11-15T21:45:14+0000"
+    }
+  ],
+  "issues_total": 891,
+  "latest_analysis": {
+    "date": "2026-11-22T06:29:14+0000",
+    "events": [
+      {
+        "category": "VERSION",
+        "key": "AaIB-I9UIgZiFB_GkFNh",
+        "name": "not provided"
+      },
+      {
+        "category": "QUALITY_PROFILE",
+        "key": "AaIB-I9SIgZiFB_GkFNg",
+        "name": "Use 'Sonar way core' (yaml)"
+      },
+      {
+        "category": "QUALITY_PROFILE",
+        "key": "AaIB-I9SIgZiFB_GkFNf",
+        "name": "Use 'Sonar way core' (docker)"
+      }
+    ],
+    "key": "21512163-98be-4196-8700-41ea9eaa9218",
+    "manualNewCodePeriodBaseline": false,
+    "projectVersion": "not provided",
+    "revision": "9b6e0fa4832dfb872aa8027e2ff61423f0568a9f"
+  },
+  "local_parity_files": [
+    {
+      "cognitive_complexity": 438,
+      "complexity": 267,
+      "key": "wapo-org_praxis:cloud/scripts/comment-sweep.mjs",
+      "language": "js",
+      "ncloc": 651,
+      "path": "cloud/scripts/comment-sweep.mjs"
+    },
+    {
+      "cognitive_complexity": 372,
+      "complexity": 253,
+      "key": "wapo-org_praxis:cloud/packages/agent/src/streams.ts",
+      "language": "ts",
+      "ncloc": 345,
+      "path": "cloud/packages/agent/src/streams.ts"
+    },
+    {
+      "cognitive_complexity": 371,
+      "complexity": 304,
+      "key": "wapo-org_praxis:cloud/packages/agent/src/runner.ts",
+      "language": "ts",
+      "ncloc": 423,
+      "path": "cloud/packages/agent/src/runner.ts"
+    },
+    {
+      "cognitive_complexity": 221,
+      "complexity": 206,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/ElicitationCards.tsx",
+      "language": "ts",
+      "ncloc": 401,
+      "path": "cloud/apps/web/src/components/chat/ElicitationCards.tsx"
+    },
+    {
+      "cognitive_complexity": 210,
+      "complexity": 265,
+      "key": "wapo-org_praxis:cloud/apps/api/src/service.ts",
+      "language": "ts",
+      "ncloc": 312,
+      "path": "cloud/apps/api/src/service.ts"
+    },
+    {
+      "cognitive_complexity": 187,
+      "complexity": 180,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/useSearchJump.ts",
+      "language": "ts",
+      "ncloc": 399,
+      "path": "cloud/apps/web/src/components/chat/useSearchJump.ts"
+    },
+    {
+      "cognitive_complexity": 164,
+      "complexity": 171,
+      "key": "wapo-org_praxis:cloud/apps/api/src/app.ts",
+      "language": "ts",
+      "ncloc": 161,
+      "path": "cloud/apps/api/src/app.ts"
+    },
+    {
+      "cognitive_complexity": 149,
+      "complexity": 184,
+      "key": "wapo-org_praxis:cloud/apps/api/src/execution.ts",
+      "language": "ts",
+      "ncloc": 347,
+      "path": "cloud/apps/api/src/execution.ts"
+    },
+    {
+      "cognitive_complexity": 137,
+      "complexity": 102,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/tools/import.ts",
+      "language": "ts",
+      "ncloc": 82,
+      "path": "cloud/apps/api/src/features/tools/import.ts"
+    },
+    {
+      "cognitive_complexity": 116,
+      "complexity": 81,
+      "key": "wapo-org_praxis:cloud/apps/web/src/sync/useAccountSync.ts",
+      "language": "ts",
+      "ncloc": 110,
+      "path": "cloud/apps/web/src/sync/useAccountSync.ts"
+    },
+    {
+      "cognitive_complexity": 113,
+      "complexity": 164,
+      "key": "wapo-org_praxis:cloud/packages/glass/src/morph/engine.ts",
+      "language": "ts",
+      "ncloc": 504,
+      "path": "cloud/packages/glass/src/morph/engine.ts"
+    },
+    {
+      "cognitive_complexity": 108,
+      "complexity": 120,
+      "key": "wapo-org_praxis:cloud/packages/glass/src/stretch.ts",
+      "language": "ts",
+      "ncloc": 279,
+      "path": "cloud/packages/glass/src/stretch.ts"
+    },
+    {
+      "cognitive_complexity": 106,
+      "complexity": 86,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolSources.ts",
+      "language": "ts",
+      "ncloc": 179,
+      "path": "cloud/apps/web/src/components/chat/toolSources.ts"
+    },
+    {
+      "cognitive_complexity": 104,
+      "complexity": 153,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/screens/SavedSecrets.tsx",
+      "language": "ts",
+      "ncloc": 361,
+      "path": "cloud/apps/web/src/components/screens/SavedSecrets.tsx"
+    },
+    {
+      "cognitive_complexity": 103,
+      "complexity": 178,
+      "key": "wapo-org_praxis:cloud/apps/web/e2e/morph.pw.ts",
+      "language": "ts",
+      "ncloc": 564,
+      "path": "cloud/apps/web/e2e/morph.pw.ts"
+    },
+    {
+      "cognitive_complexity": 102,
+      "complexity": 59,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/tools/sandbox.ts",
+      "language": "ts",
+      "ncloc": 78,
+      "path": "cloud/apps/api/src/features/tools/sandbox.ts"
+    },
+    {
+      "cognitive_complexity": 100,
+      "complexity": 127,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/chatMotion.ts",
+      "language": "ts",
+      "ncloc": 400,
+      "path": "cloud/apps/web/src/components/chat/chatMotion.ts"
+    },
+    {
+      "cognitive_complexity": 95,
+      "complexity": 111,
+      "key": "wapo-org_praxis:cloud/scripts/check-rules-checks.mjs",
+      "language": "js",
+      "ncloc": 242,
+      "path": "cloud/scripts/check-rules-checks.mjs"
+    },
+    {
+      "cognitive_complexity": 95,
+      "complexity": 94,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/tools.ts",
+      "language": "ts",
+      "ncloc": 321,
+      "path": "cloud/apps/api/src/features/mcp/tools.ts"
+    },
+    {
+      "cognitive_complexity": 93,
+      "complexity": 75,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/codeFence.ts",
+      "language": "ts",
+      "ncloc": 102,
+      "path": "cloud/apps/web/src/components/chat/codeFence.ts"
+    },
+    {
+      "cognitive_complexity": 88,
+      "complexity": 37,
+      "key": "wapo-org_praxis:cloud/apps/web/src/lib/sse.ts",
+      "language": "ts",
+      "ncloc": 149,
+      "path": "cloud/apps/web/src/lib/sse.ts"
+    },
+    {
+      "cognitive_complexity": 86,
+      "complexity": 67,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/WorkEntry.logic.ts",
+      "language": "ts",
+      "ncloc": 302,
+      "path": "cloud/apps/web/src/components/chat/WorkEntry.logic.ts"
+    },
+    {
+      "cognitive_complexity": 83,
+      "complexity": 92,
+      "key": "wapo-org_praxis:cloud/apps/api/src/saved-secrets.ts",
+      "language": "ts",
+      "ncloc": 83,
+      "path": "cloud/apps/api/src/saved-secrets.ts"
+    },
+    {
+      "cognitive_complexity": 83,
+      "complexity": 92,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/chat/toolDisplay.ts",
+      "language": "ts",
+      "ncloc": 172,
+      "path": "cloud/apps/web/src/components/chat/toolDisplay.ts"
+    },
+    {
+      "cognitive_complexity": 81,
+      "complexity": 100,
+      "key": "wapo-org_praxis:cloud/apps/web/src/state/useRunState.ts",
+      "language": "ts",
+      "ncloc": 323,
+      "path": "cloud/apps/web/src/state/useRunState.ts"
+    },
+    {
+      "cognitive_complexity": 80,
+      "complexity": 87,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/index.ts",
+      "language": "ts",
+      "ncloc": 144,
+      "path": "cloud/apps/api/src/features/mcp/index.ts"
+    },
+    {
+      "cognitive_complexity": 78,
+      "complexity": 128,
+      "key": "wapo-org_praxis:cloud/apps/web/src/components/search/SearchPalette.tsx",
+      "language": "ts",
+      "ncloc": 179,
+      "path": "cloud/apps/web/src/components/search/SearchPalette.tsx"
+    },
+    {
+      "cognitive_complexity": 77,
+      "complexity": 64,
+      "key": "wapo-org_praxis:cloud/apps/api/src/features/mcp/fixture.ts",
+      "language": "ts",
+      "ncloc": 302,
+      "path": "cloud/apps/api/src/features/mcp/fixture.ts"
+    },
+    {
+      "cognitive_complexity": 76,
+      "complexity": 71,
+      "key": "wapo-org_praxis:cloud/apps/api/src/snapshot.ts",
+      "language": "ts",
+      "ncloc": 76,
+      "path": "cloud/apps/api/src/snapshot.ts"
+    },
+    {
+      "cognitive_complexity": 75,
+      "complexity": 86,
+      "key": "wapo-org_praxis:cloud/apps/web/e2e/motion.pw.ts",
+      "language": "ts",
+      "ncloc": 237,
+      "path": "cloud/apps/web/e2e/motion.pw.ts"
+    }
+  ],
+  "measures": {
+    "bugs": 55,
+    "code_smells": 742,
+    "cognitive_complexity": 40498,
+    "complexity": 49410,
+    "duplicated_lines_density": 0.5,
+    "ncloc": 218924,
+    "security_hotspots": 0,
+    "vulnerabilities": 15
+  },
+  "project_key": "wapo-org_praxis",
+  "schema_version": "1",
+  "source_api": "https://sonarcloud.io/api"
+}

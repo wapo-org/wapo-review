@@ -1,0 +1,22 @@
+[Unit]
+Description=Wapo Review service (Go v2)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=wapo-review
+Group=wapo-review
+WorkingDirectory=/var/lib/t3-server/projects/wapo-review
+Environment=WAPO_REVIEW_ADDR=127.0.0.1:8788
+Environment=WAPO_REVIEW_STATE_DIR=/var/lib/wapo-review
+StateDirectory=wapo-review
+Environment=WAPO_REVIEW_CREDENTIALS_PATH=/etc/wapo-review/credentials.json
+Environment=ORCHESTRATOR_MODE=local
+UMask=0077
+Delegate=yes
+ExecStart=/var/lib/t3-server/projects/wapo-review/bin/wapo-review serve
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

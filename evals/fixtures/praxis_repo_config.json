@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "install_commands": [
+    {
+      "command": "npm --prefix cloud ci",
+      "workdir": ".",
+      "timeout_seconds": 900,
+      "ignore_scripts_in_model_sandbox": true
+    }
+  ],
+  "gates": [
+    {"key": "typecheck", "rule_id": "GATE.typecheck", "command": "npm --prefix cloud run typecheck", "timeout_seconds": 300},
+    {"key": "test", "rule_id": "GATE.test", "command": "npm --prefix cloud test -- --reporter=dot", "timeout_seconds": 480},
+    {"key": "check-rules", "rule_id": "GATE.check-rules", "command": "node cloud/scripts/check-rules.mjs", "timeout_seconds": 120, "baseline_file": "cloud/scripts/check-rules.baseline.json", "parser": "line_regex"},
+    {"key": "comment-sweep", "rule_id": "GATE.comment-sweep", "command": "node cloud/scripts/comment-sweep.mjs check", "timeout_seconds": 120}
+  ],
+  "rules": {
+    "profile": "default",
+    "custom_rules_file": "cloud/scripts/check-rules.baseline.json",
+    "new_code_only": true
+  },
+  "sessions": {
+    "abstractions": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 40},
+    "maintainability": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 40},
+    "conciseness": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 40},
+    "logic_bs": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 40},
+    "security": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 40},
+    "hands_on": {"harness": "codex", "model": "muse-ember-1.0", "reasoning_effort": "medium", "max_steps": 80}
+  },
+  "issue_tracker": {"provider": "linear", "team_key": "PRA", "issue_id_pattern": "^PRA-\\d+$"},
+  "browser_review": {"enabled": true, "mode": "external_preview", "port": 3000, "health_path": "/", "health_timeout_seconds": 90, "public_recordings": false},
+  "profilers": {"enabled": true, "mutation_budget_seconds": 60, "convention_min_support": 5, "convention_min_ratio": 0.85},
+  "quality_gate": {"new_code_definition": "pr_base", "max_new_issues": 0, "min_new_coverage_pct": 80, "max_new_duplication_pct": 3, "max_function_cognitive_complexity": 15, "missing_coverage_policy": "neutral", "setup_failure_policy": "error"},
+  "fork_policy": "skip",
+  "commands": ["/muse", "@muse-review"]
+}

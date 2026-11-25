@@ -1,0 +1,13 @@
+bin/
+legacy-python/
+.venv/
+*.db
+*.sqlite*
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+qa-profile.json
+coverage.out
+.DS_Store

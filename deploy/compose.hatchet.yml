@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hatchet
+      POSTGRES_PASSWORD: ${HATCHET_DB_PASSWORD:?set HATCHET_DB_PASSWORD}
+      POSTGRES_DB: hatchet
+    volumes:
+      - hatchet_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hatchet -d hatchet"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  hatchet-lite:
+    image: ghcr.io/hatchet-dev/hatchet/hatchet-lite:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://hatchet:${HATCHET_DB_PASSWORD}@postgres:5432/hatchet?sslmode=disable
+      SERVER_GRPC_BIND_ADDRESS: 0.0.0.0
+      SERVER_GRPC_PORT: "7077"
+      SERVER_PORT: "8888"
+      SERVER_AUTH_COOKIE_INSECURE: "false"
+    ports:
+      - "127.0.0.1:7077:7077"
+      - "127.0.0.1:8888:8888"
+
+volumes:
+  hatchet_pgdata:

@@ -1,0 +1,26 @@
+{
+  "schema_version": "1",
+  "corpus_id": "logic_regression_v1",
+  "config_id": "logic-checks-v2",
+  "analyzer_set": ["logic_checks"],
+  "created_at": "2026-11-22T00:00:00Z",
+  "provenance": "Self-authored static code fixtures. SPDX MIT applies to every fixture.",
+  "cases": [
+    {"case_id":"null-ts","language":"TypeScript","license":"MIT","is_clean":false,"files":{"src/a.ts":"function f(user: { name: string } | null) { return user.name; }"},"expected_bugs":[{"bug_id":"b1","category":"logic_null","file":"src/a.ts","line_range":[1,1],"rule_ids":["LOGIC.null-deref"]}]},
+    {"case_id":"null-rust","language":"Rust","license":"MIT","is_clean":false,"files":{"src/a.rs":"pub fn f(user: Option<&str>) -> String { user.unwrap().to_owned() }"},"expected_bugs":[{"bug_id":"b1r","category":"logic_null","file":"src/a.rs","line_range":[1,1],"rule_ids":["LOGIC.null-deref"]}]},
+    {"case_id":"dead","language":"Python","license":"MIT","is_clean":false,"files":{"src/a.py":"if False:\n    run()"},"expected_bugs":[{"bug_id":"b2","category":"logic_dead","file":"src/a.py","line_range":[1,1],"rule_ids":["LOGIC.dead-branch"]}]},
+    {"case_id":"bounds","language":"Go","license":"MIT","is_clean":false,"files":{"src/a.go":"package p\nfunc f(items []int) {\nfor i := 0; i <= len(items); i++ { use(items[i]) }\n}"},"expected_bugs":[{"bug_id":"b3","category":"logic_bounds","file":"src/a.go","line_range":[3,3],"rule_ids":["LOGIC.bounds"]}]},
+    {"case_id":"resource","language":"Python","license":"MIT","is_clean":false,"files":{"src/a.py":"def read(path):\n    handle = open(path)\n    return handle.read()"},"expected_bugs":[{"bug_id":"b4","category":"logic_resource","file":"src/a.py","line_range":[2,2],"rule_ids":["LOGIC.resource-leak"]}]},
+    {"case_id":"swallow","language":"Python","license":"MIT","is_clean":false,"files":{"src/a.py":"try:\n    work()\nexcept Exception: pass"},"expected_bugs":[{"bug_id":"b5","category":"logic_error","file":"src/a.py","line_range":[3,3],"rule_ids":["LOGIC.unhandled-error"]}]},
+    {"case_id":"race","language":"Go","license":"MIT","is_clean":false,"files":{"src/a.go":"package p\nfunc inc() {\n    total := 0\n    go func() { total++ }()\n}"},"expected_bugs":[{"bug_id":"b6","category":"logic_concurrency","file":"src/a.go","line_range":[4,4],"rule_ids":["LOGIC.concurrency"]}]},
+    {"case_id":"sql","language":"Java","license":"MIT","is_clean":false,"files":{"src/a.java":"class S { void f(DB db, String name) { db.execute(\"SELECT * FROM t WHERE n=\" + name); } }"},"expected_bugs":[{"bug_id":"b7","category":"security","file":"src/a.java","line_range":[1,1],"rule_ids":["SEC.injection"]}]},
+    {"case_id":"ssrf","language":"Go","license":"MIT","is_clean":false,"files":{"src/a.go":"package p\nimport \"net/http\"\nfunc f(url string) { http.Get(url) }"},"expected_bugs":[{"bug_id":"b8","category":"security","file":"src/a.go","line_range":[3,3],"rule_ids":["SEC.ssrf-egress"]}]},
+    {"case_id":"clean-query","language":"Python","license":"MIT","is_clean":true,"files":{"src/a.py":"def f(db, value):\n    return db.execute(\"SELECT * FROM t WHERE id = ?\", (value,))"},"expected_bugs":[]},
+    {"case_id":"clean-resource","language":"Python","license":"MIT","is_clean":true,"files":{"src/a.py":"def f(path):\n    with open(path) as handle:\n        return handle.read()"},"expected_bugs":[]},
+    {"case_id":"clean-closed-resource","language":"Python","license":"MIT","is_clean":true,"files":{"src/a.py":"def f(path):\n    handle = open(path)\n    data = handle.read()\n    handle.close()\n    return data"},"expected_bugs":[]},
+    {"case_id":"clean-bound","language":"JavaScript","license":"MIT","is_clean":true,"files":{"src/a.js":"function f(arr) { for (let i = 0; i < arr.length; i++) use(arr[i]); }"},"expected_bugs":[]},
+    {"case_id":"clean-null-optional","language":"TypeScript","license":"MIT","is_clean":true,"files":{"src/a.ts":"function f(user: { name?: string } | null) { return user?.name ?? 'Anonymous'; }"},"expected_bugs":[]},
+    {"case_id":"clean-nonnull-access","language":"TypeScript","license":"MIT","is_clean":true,"files":{"src/a.ts":"function f(user: { name: string }) { return user.name; }"},"expected_bugs":[]},
+    {"case_id":"clean-mutex-goroutine","language":"Go","license":"MIT","is_clean":true,"files":{"src/a.go":"package p\nimport \"sync\"\nfunc f() { var mu sync.Mutex; total := 0; go func() { mu.Lock(); total++; mu.Unlock() }() }"},"expected_bugs":[]}
+  ]
+}
